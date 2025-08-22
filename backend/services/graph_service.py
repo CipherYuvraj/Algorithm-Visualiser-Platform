@@ -1,6 +1,5 @@
 import sys
 from typing import List, Dict, Any
-from models.api_models import GraphRequest, GraphNode, GraphEdge
 
 # Prefer absolute import when running from repo root (uvicorn backend.main:app)
 # Fallback to relative when running inside backend dir (uvicorn main:app)
@@ -26,13 +25,13 @@ class GraphService:
             'prim': self._prim
         }
 
-    async def execute_algorithm(self, algorithm: str, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def execute_algorithm(self, algorithm: str, request) -> List[Dict[str, Any]]:
         if algorithm not in self.algorithms:
             raise ValueError(f"Unknown algorithm: {algorithm}")
         
         return await self.algorithms[algorithm](request)
 
-    async def _bfs(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _bfs(self, request) -> List[Dict[str, Any]]:
         if algorithm_engine is None:
             return await self._fallback_bfs(request)
         
@@ -44,7 +43,7 @@ class GraphService:
         except Exception as e:
             return await self._fallback_bfs(request)
 
-    async def _dfs(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _dfs(self, request) -> List[Dict[str, Any]]:
         if algorithm_engine is None:
             return await self._fallback_dfs(request)
         
@@ -56,7 +55,7 @@ class GraphService:
         except Exception as e:
             return await self._fallback_dfs(request)
 
-    async def _dijkstra(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _dijkstra(self, request) -> List[Dict[str, Any]]:
         if algorithm_engine is None:
             return await self._fallback_dijkstra(request)
         
@@ -69,7 +68,7 @@ class GraphService:
         except Exception as e:
             return await self._fallback_dijkstra(request)
 
-    def _build_cpp_graph(self, request: GraphRequest):
+    def _build_cpp_graph(self, request) :
         graph = algorithm_engine.Graph()
         
         for node in request.nodes:
@@ -96,7 +95,7 @@ class GraphService:
         }
 
     # Fallback Python implementations
-    async def _fallback_bfs(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _fallback_bfs(self, request) -> List[Dict[str, Any]]:
         from collections import deque
         
         steps = []
@@ -170,7 +169,7 @@ class GraphService:
         
         return steps
 
-    async def _fallback_dfs(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _fallback_dfs(self, request) -> List[Dict[str, Any]]:
         steps = []
         adj_list = self._build_adjacency_list(request)
         visited = set()
@@ -233,7 +232,7 @@ class GraphService:
         
         return steps
 
-    async def _fallback_dijkstra(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _fallback_dijkstra(self, request) -> List[Dict[str, Any]]:
         import heapq
         
         steps = []
@@ -309,22 +308,22 @@ class GraphService:
         
         return steps
 
-    def _build_adjacency_list(self, request: GraphRequest) -> Dict[int, List[int]]:
+    def _build_adjacency_list(self, request) -> Dict[int, List[int]]:
         adj_list = {}
         
         for node in request.nodes:
             adj_list[node.id] = []
         
         for edge in request.edges:
-            from_node = edge.from_node if hasattr(edge, 'from_node') else getattr(edge, 'from', None)
+            from_node = getattr(edge, 'from_node', None) or getattr(edge, 'from', None)
             adj_list[from_node].append(edge.to)
             
-            if not edge.directed:
+            if not getattr(edge, 'directed', False):
                 adj_list[edge.to].append(from_node)
         
         return adj_list
 
-    def _build_weighted_adjacency_list(self, request: GraphRequest) -> Dict[int, List[tuple]]:
+    def _build_weighted_adjacency_list(self, request) -> Dict[int, List[tuple]]:
         adj_list = {}
         
         for node in request.nodes:
@@ -339,14 +338,14 @@ class GraphService:
         
         return adj_list
 
-    async def _astar(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _astar(self, request) -> List[Dict[str, Any]]:
         # Placeholder for A* algorithm
         return await self._fallback_dijkstra(request)
 
-    async def _kruskal(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _kruskal(self, request) -> List[Dict[str, Any]]:
         # Placeholder for Kruskal's algorithm
         return []
 
-    async def _prim(self, request: GraphRequest) -> List[Dict[str, Any]]:
+    async def _prim(self, request) -> List[Dict[str, Any]]:
         # Placeholder for Prim's algorithm
         return []

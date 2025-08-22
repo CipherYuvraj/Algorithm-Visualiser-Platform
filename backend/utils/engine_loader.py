@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-def _candidate_dirs(root: Path) -> list[Path]:
+def _candidate_dirs(root: Path) -> list:
     cpp = root / "cpp"
     build = cpp / "build"
     return [

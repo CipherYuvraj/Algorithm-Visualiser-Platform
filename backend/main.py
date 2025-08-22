@@ -1,174 +1,158 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-import json
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional, Dict, Any
 import asyncio
-from typing import List, Dict, Any
-import sys
-import os
 
-# Add the cpp build directory to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'cpp', 'build'))
+app = FastAPI(
+    title="Algorithm Visualizer API",
+    description="Backend API for Algorithm Visualizer Platform",
+    version="1.0.0"
+)
 
-try:
-    import algorithm_engine # pyright: ignore[reportMissingImports]
-except ImportError as e:
-    print(f"Warning: Could not import algorithm_engine: {e}")
-    print("Please build the C++ module first using: cd cpp && mkdir build && cd build && cmake .. && make")
-    algorithm_engine = None
-
-from services.sorting_service import SortingService
-from services.graph_service import GraphService
-from services.string_service import StringService
-from services.dp_service import DPService
-from models.api_models import *
-
-app = FastAPI(title="Algorithm Visualizer API", version="1.0.0")
-
-# CORS middleware
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],  # In production, specify actual origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize services
-sorting_service = SortingService()
-graph_service = GraphService()
-string_service = StringService()
-dp_service = DPService()
+# Lazy import services to avoid import issues
+_sorting_service = None
+_graph_service = None
 
-# WebSocket connection manager
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
+def get_sorting_service():
+    global _sorting_service
+    if _sorting_service is None:
+        try:
+            from backend.services.sorting_service import SortingService
+            _sorting_service = SortingService()
+        except ImportError:
+            try:
+                from services.sorting_service import SortingService
+                _sorting_service = SortingService()
+            except ImportError as e:
+                raise HTTPException(status_code=500, detail=f"Cannot import SortingService: {e}")
+    return _sorting_service
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
+def get_graph_service():
+    global _graph_service
+    if _graph_service is None:
+        try:
+            from backend.services.graph_service import GraphService
+            _graph_service = GraphService()
+        except ImportError:
+            try:
+                from services.graph_service import GraphService
+                _graph_service = GraphService()
+            except ImportError as e:
+                raise HTTPException(status_code=500, detail=f"Cannot import GraphService: {e}")
+    return _graph_service
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+# Request models with Pydantic v2 config
+class SortingRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    array: List[int]
 
-    async def send_personal_message(self, message: dict, websocket: WebSocket):
-        await websocket.send_text(json.dumps(message))
+class GraphNodeModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    id: int
+    label: Optional[str] = ""
+    x: Optional[float] = 0.0
+    y: Optional[float] = 0.0
 
-    async def broadcast(self, message: dict):
-        for connection in self.active_connections:
-            await connection.send_text(json.dumps(message))
+class GraphEdgeModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    from_node: int
+    to: int
+    weight: Optional[float] = 1.0
+    directed: Optional[bool] = False
 
-manager = ConnectionManager()
+class GraphRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    nodes: List[GraphNodeModel]
+    edges: List[GraphEdgeModel]
+    start_node: Optional[int] = 0
+    end_node: Optional[int] = None
 
-@app.get("/")
-async def root():
-    return {"message": "Algorithm Visualizer API", "status": "running"}
-
+# Health check
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy",
-        "cpp_module": algorithm_engine is not None,
-        "services": {
-            "sorting": True,
-            "graph": True,
-            "string": True,
-            "dp": True
-        }
-    }
+    return {"status": "healthy", "message": "Algorithm Visualizer API is running"}
 
 # Sorting endpoints
 @app.post("/api/sorting/{algorithm}")
 async def run_sorting_algorithm(algorithm: str, request: SortingRequest):
     try:
-        steps = await sorting_service.execute_algorithm(algorithm, request.array)
-        return {"steps": steps, "algorithm": algorithm}
+        sorting_service = get_sorting_service()
+        result = await sorting_service.execute_algorithm(algorithm, request.array)
+        return result
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return {"error": str(e), "steps": []}
 
 # Graph endpoints
 @app.post("/api/graph/{algorithm}")
 async def run_graph_algorithm(algorithm: str, request: GraphRequest):
     try:
-        steps = await graph_service.execute_algorithm(algorithm, request)
-        return {"steps": steps, "algorithm": algorithm}
+        graph_service = get_graph_service()
+        
+        # Convert Pydantic models to simple objects
+        class SimpleNode:
+            def __init__(self, id, label="", x=0.0, y=0.0):
+                self.id = id
+                self.label = label
+                self.x = x
+                self.y = y
+        
+        class SimpleEdge:
+            def __init__(self, from_node, to, weight=1.0, directed=False):
+                self.from_node = from_node
+                self.to = to
+                self.weight = weight
+                self.directed = directed
+        
+        class SimpleRequest:
+            def __init__(self, nodes, edges, start_node=None, end_node=None):
+                self.nodes = nodes
+                self.edges = edges
+                self.start_node = start_node
+                self.end_node = end_node
+        
+        # Convert nodes and edges
+        converted_nodes = [
+            SimpleNode(node.id, node.label or "", node.x or 0.0, node.y or 0.0)
+            for node in request.nodes
+        ]
+        
+        converted_edges = [
+            SimpleEdge(edge.from_node, edge.to, edge.weight or 1.0, edge.directed or False)
+            for edge in request.edges
+        ]
+        
+        simple_request = SimpleRequest(
+            nodes=converted_nodes,
+            edges=converted_edges,
+            start_node=request.start_node,
+            end_node=request.end_node
+        )
+        
+        steps = await graph_service.execute_algorithm(algorithm, simple_request)
+        return {"steps": steps}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return {"error": str(e), "steps": []}
 
-# String endpoints
+# String algorithms placeholder
 @app.post("/api/string/{algorithm}")
-async def run_string_algorithm(algorithm: str, request: StringRequest):
-    try:
-        steps = await string_service.execute_algorithm(algorithm, request)
-        return {"steps": steps, "algorithm": algorithm}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+async def run_string_algorithm(algorithm: str, request: dict):
+    return {"steps": [], "message": "String algorithms coming soon"}
 
-# Dynamic Programming endpoints
+# DP algorithms placeholder
 @app.post("/api/dp/{algorithm}")
-async def run_dp_algorithm(algorithm: str, request: DPRequest):
-    try:
-        steps = await dp_service.execute_algorithm(algorithm, request)
-        return {"steps": steps, "algorithm": algorithm}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-# WebSocket endpoint for real-time algorithm execution
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            message = json.loads(data)
-            
-            algorithm_type = message.get("type")
-            algorithm_name = message.get("algorithm")
-            params = message.get("params", {})
-            
-            # Execute algorithm based on type
-            if algorithm_type == "sorting":
-                steps = await sorting_service.execute_algorithm(algorithm_name, params.get("array", []))
-                
-                # Stream steps with delay for visualization
-                for i, step in enumerate(steps):
-                    await manager.send_personal_message({
-                        "type": "step",
-                        "step_number": i,
-                        "total_steps": len(steps),
-                        "data": step
-                    }, websocket)
-                    await asyncio.sleep(0.1)  # Adjust delay as needed
-                    
-            elif algorithm_type == "graph":
-                # Convert params to GraphRequest object
-                graph_request = GraphRequest(**params)
-                steps = await graph_service.execute_algorithm(algorithm_name, graph_request)
-                
-                for i, step in enumerate(steps):
-                    await manager.send_personal_message({
-                        "type": "step",
-                        "step_number": i,
-                        "total_steps": len(steps),
-                        "data": step
-                    }, websocket)
-                    await asyncio.sleep(0.2)
-                    
-            # Send completion message
-            await manager.send_personal_message({
-                "type": "complete",
-                "algorithm": algorithm_name
-            }, websocket)
-            
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-    except Exception as e:
-        await manager.send_personal_message({
-            "type": "error",
-            "message": str(e)
-        }, websocket)
+async def run_dp_algorithm(algorithm: str, request: dict):
+    return {"steps": [], "message": "DP algorithms coming soon"}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
