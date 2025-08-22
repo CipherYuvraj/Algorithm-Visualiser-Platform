@@ -1,6 +1,18 @@
 from typing import List, Dict, Any
 import asyncio
 
+# Prefer absolute import when running from repo root; fallback when running inside backend/
+try:
+    from backend.utils.engine_loader import get_engine  # type: ignore
+except Exception:
+    try:
+        from utils.engine_loader import get_engine  # type: ignore
+    except Exception:
+        def get_engine():  # type: ignore
+            return None
+
+algorithm_engine = get_engine()
+
 class SortingService:
     async def _fallback_quick_sort(self, array: List[int]) -> List[Dict[str, Any]]:
         steps = []
@@ -234,3 +246,63 @@ class SortingService:
         })
         
         return steps
+
+    async def _bubble_sort(self, array: List[int]):
+        if algorithm_engine:
+            # Use the C++ engine for sorting
+            pass
+        else:
+            # Fallback to Python implementation
+            steps = []
+            arr = array.copy()
+            n = len(arr)
+            operations = [0]
+            
+            steps.append({
+                'array': arr.copy(),
+                'highlighted': [],
+                'comparing': [],
+                'operation': 'Starting Bubble Sort',
+                'operations_count': operations[0],
+                'time_complexity': 'O(n^2)',
+                'space_complexity': 'O(1)'
+            })
+            
+            for i in range(n):
+                for j in range(0, n-i-1):
+                    operations[0] += 1
+                    steps.append({
+                        'array': arr.copy(),
+                        'highlighted': [],
+                        'comparing': [j, j+1],
+                        'operation': f'Comparing {arr[j]} and {arr[j+1]}',
+                        'operations_count': operations[0],
+                        'time_complexity': 'O(n^2)',
+                        'space_complexity': 'O(1)'
+                    })
+                    
+                    if arr[j] > arr[j+1]:
+                        arr[j], arr[j+1] = arr[j+1], arr[j]
+                        steps.append({
+                            'array': arr.copy(),
+                            'highlighted': [j, j+1],
+                            'comparing': [],
+                            'operation': f'Swapped {arr[j]} and {arr[j+1]}',
+                            'operations_count': operations[0],
+                            'time_complexity': 'O(n^2)',
+                            'space_complexity': 'O(1)'
+                        })
+                    
+                    await asyncio.sleep(0)
+            
+            steps.append({
+                'array': arr.copy(),
+                'highlighted': [],
+                'comparing': [],
+                'operation': 'Bubble Sort Complete!',
+                'operations_count': operations[0],
+                'time_complexity': 'O(n^2)',
+                'space_complexity': 'O(1)'
+            })
+            
+            return steps

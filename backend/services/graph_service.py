@@ -1,14 +1,19 @@
 import sys
-import os
 from typing import List, Dict, Any
 from models.api_models import GraphRequest, GraphNode, GraphEdge
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'cpp', 'build'))
-
+# Prefer absolute import when running from repo root (uvicorn backend.main:app)
+# Fallback to relative when running inside backend dir (uvicorn main:app)
 try:
-    import algorithm_engine # type: ignore
-except ImportError:
-    algorithm_engine = None
+    from backend.utils.engine_loader import get_engine  # type: ignore
+except Exception:
+    try:
+        from utils.engine_loader import get_engine  # type: ignore
+    except Exception:
+        def get_engine():  # type: ignore
+            return None
+
+algorithm_engine = get_engine()
 
 class GraphService:
     def __init__(self):
