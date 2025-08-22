@@ -81,7 +81,7 @@ class DPService:
             'currentCell': [m, n],
             'lcs': ''.join(lcs),
             'backtrackPath': backtrack_steps,
-            'operation': f'LCS found: "{\'".join(lcs)}" (length: {dp[m][n]})'
+            'operation': f'LCS found: "{"".join(lcs)}" (length: {dp[m][n]})'
         })
         
         return steps

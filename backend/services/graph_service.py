@@ -6,7 +6,7 @@ from models.api_models import GraphRequest, GraphNode, GraphEdge
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'cpp', 'build'))
 
 try:
-    import algorithm_engine
+    import algorithm_engine # type: ignore
 except ImportError:
     algorithm_engine = None
 

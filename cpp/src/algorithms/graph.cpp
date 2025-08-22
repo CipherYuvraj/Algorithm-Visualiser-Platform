@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <functional>
 
 void Graph::addNode(const GraphNode& node) {
     nodes.push_back(node);

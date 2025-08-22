@@ -11,7 +11,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'cpp', 'build'))
 
 try:
-    import algorithm_engine
+    import algorithm_engine # pyright: ignore[reportMissingImports]
 except ImportError as e:
     print(f"Warning: Could not import algorithm_engine: {e}")
     print("Please build the C++ module first using: cd cpp && mkdir build && cd build && cmake .. && make")
