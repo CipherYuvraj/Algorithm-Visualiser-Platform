@@ -38,7 +38,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCES
     src/algorithms/sorting.cpp
     src/algorithms/graph.cpp
-    src/models/graph_models.cpp
     src/bindings/python_bindings.cpp
 )
 
@@ -73,4 +72,5 @@ install(TARGETS algorithm_engine
 message(STATUS "Python version: ${Python3_VERSION}")
 message(STATUS "Python executable: ${Python3_EXECUTABLE}")
 message(STATUS "Python include dirs: ${Python3_INCLUDE_DIRS}")
+message(STATUS "pybind11 version: ${pybind11_VERSION}")
 message(STATUS "pybind11 version: ${pybind11_VERSION}")

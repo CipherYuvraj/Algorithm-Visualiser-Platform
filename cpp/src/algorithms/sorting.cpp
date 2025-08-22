@@ -14,7 +14,7 @@ SortingStep::SortingStep(const std::vector<int>& array,
       operation(operation), operations_count(operations_count),
       time_complexity(time_complexity), space_complexity(space_complexity) {}
 
-std::vector<SortingStep> SortingAlgorithms::bubbleSort(std::vector<int> arr) {
+std::vector<SortingStep> bubbleSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
     int n = static_cast<int>(arr.size());
     int operations = 0;
@@ -43,7 +43,7 @@ std::vector<SortingStep> SortingAlgorithms::bubbleSort(std::vector<int> arr) {
     return steps;
 }
 
-std::vector<SortingStep> SortingAlgorithms::mergeSort(std::vector<int> arr) {
+std::vector<SortingStep> mergeSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
     int operations = 0;
     
@@ -95,7 +95,7 @@ std::vector<SortingStep> SortingAlgorithms::mergeSort(std::vector<int> arr) {
     return steps;
 }
 
-std::vector<SortingStep> SortingAlgorithms::quickSort(std::vector<int> arr) {
+std::vector<SortingStep> quickSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
     int operations = 0;
     
@@ -114,7 +114,7 @@ std::vector<SortingStep> SortingAlgorithms::quickSort(std::vector<int> arr) {
     return steps;
 }
 
-int SortingAlgorithms::partition(std::vector<int>& arr, int low, int high, std::vector<SortingStep>& steps, int& operations) {
+int partition(std::vector<int>& arr, int low, int high, std::vector<SortingStep>& steps, int& operations) {
     int pivot = arr[high];
     int i = low - 1;
     
@@ -147,7 +147,7 @@ int SortingAlgorithms::partition(std::vector<int>& arr, int low, int high, std::
     return i + 1;
 }
 
-std::vector<SortingStep> SortingAlgorithms::heapSort(std::vector<int> arr) {
+std::vector<SortingStep> heapSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
     int n = static_cast<int>(arr.size());
     int operations = 0;
@@ -176,7 +176,7 @@ std::vector<SortingStep> SortingAlgorithms::heapSort(std::vector<int> arr) {
     return steps;
 }
 
-void SortingAlgorithms::heapify(std::vector<int>& arr, int n, int i, std::vector<SortingStep>& steps, int& operations) {
+void heapify(std::vector<int>& arr, int n, int i, std::vector<SortingStep>& steps, int& operations) {
     int largest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
@@ -199,7 +199,7 @@ void SortingAlgorithms::heapify(std::vector<int>& arr, int n, int i, std::vector
     }
 }
 
-std::vector<SortingStep> SortingAlgorithms::countingSort(std::vector<int> arr) {
+std::vector<SortingStep> countingSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
     int operations = 0;
     

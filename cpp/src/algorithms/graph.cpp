@@ -6,6 +6,16 @@
 #include <cmath>
 #include <functional>
 
+// Constructor implementations
+GraphNode::GraphNode(int id, const std::string& label, double x, double y)
+    : id(id), label(label), x(x), y(y) {}
+
+GraphEdge::GraphEdge(int from, int to, double weight, bool directed)
+    : from(from), to(to), weight(weight), directed(directed) {}
+
+GraphStep::GraphStep(const std::string& operation)
+    : operation(operation) {}
+
 void Graph::addNode(const GraphNode& node) {
     nodes.push_back(node);
 }

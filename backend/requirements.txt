@@ -1,18 +1,17 @@
-fastapi==0.104.1
+fastapi==0.111.0
+starlette==0.37.2
 uvicorn==0.24.0
 websockets==12.0
-pydantic==2.4.2
-python-multipart==0.0.6
+pydantic==2.8.2
+python-multipart==0.0.9
 pybind11==2.11.1
 numpy>=1.24.0
 python-socketio==5.10.0
 aiofiles==23.2.1
 pytest==7.4.3
 pytest-asyncio==0.21.1
-typing-extensions==4.8.0
+typing-extensions==4.12.2
 python-json-logger==2.0.7
 httpx==0.25.2
-starlette==0.27.0
 watchfiles==0.21.0
-httpx==0.25.2
 
