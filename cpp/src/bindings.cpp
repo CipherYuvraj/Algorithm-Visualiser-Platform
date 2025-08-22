@@ -3,6 +3,7 @@
 #include <pybind11/numpy.h>
 #include "algorithms/sorting.h"
 #include "algorithms/graph.h"
+#include "algorithms/step.h"
 
 namespace py = pybind11;
 

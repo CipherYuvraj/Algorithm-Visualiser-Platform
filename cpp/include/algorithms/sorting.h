@@ -3,31 +3,31 @@
 #include <string>
 #include <functional>
 
-struct SortStep {
+struct SortingStep {
     std::vector<int> array;
     std::vector<int> highlighted;
     std::vector<int> comparing;
     std::string operation;
-    int time_complexity_ops;
+    int operations_count;
+    std::string time_complexity;
+    std::string space_complexity;
     
-    SortStep(const std::vector<int>& arr, const std::vector<int>& high = {}, 
-             const std::vector<int>& comp = {}, const std::string& op = "", int ops = 0)
-        : array(arr), highlighted(high), comparing(comp), operation(op), time_complexity_ops(ops) {}
+    SortingStep(const std::vector<int>& array = {},
+                const std::vector<int>& highlighted = {},
+                const std::vector<int>& comparing = {},
+                const std::string& operation = "",
+                int operations_count = 0,
+                const std::string& time_complexity = "",
+                const std::string& space_complexity = "");
 };
 
-class SortingAlgorithms {
-public:
-    using StepCallback = std::function<void(const SortStep&)>;
-    
-    static std::vector<SortStep> bubbleSort(std::vector<int> arr);
-    static std::vector<SortStep> mergeSort(std::vector<int> arr);
-    static std::vector<SortStep> quickSort(std::vector<int> arr);
-    static std::vector<SortStep> heapSort(std::vector<int> arr);
-    static std::vector<SortStep> countingSort(std::vector<int> arr);
+// Sorting algorithm declarations
+std::vector<SortingStep> bubbleSort(std::vector<int> arr);
+std::vector<SortingStep> mergeSort(std::vector<int> arr);
+std::vector<SortingStep> quickSort(std::vector<int> arr);
+std::vector<SortingStep> heapSort(std::vector<int> arr);
+std::vector<SortingStep> countingSort(std::vector<int> arr);
 
-private:
-    static std::vector<SortStep> mergeSortHelper(std::vector<int>& arr, int left, int right, std::vector<SortStep>& steps);
-    static int partition(std::vector<int>& arr, int low, int high, std::vector<SortStep>& steps);
-    static void quickSortHelper(std::vector<int>& arr, int low, int high, std::vector<SortStep>& steps);
-    static void heapify(std::vector<int>& arr, int n, int i, std::vector<SortStep>& steps);
-};
+// Helper functions
+int partition(std::vector<int>& arr, int low, int high, std::vector<SortingStep>& steps, int& operations);
+void heapify(std::vector<int>& arr, int n, int i, std::vector<SortingStep>& steps, int& operations);

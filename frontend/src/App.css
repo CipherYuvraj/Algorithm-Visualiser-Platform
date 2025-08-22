@@ -1,0 +1,99 @@
+.App {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Button animations */
+.btn-primary {
+  @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Algorithm visualization specific styles */
+.algorithm-bar {
+  transition: all 0.3s ease-in-out;
+}
+
+.algorithm-bar.comparing {
+  background-color: #ef4444;
+  transform: scale(1.05);
+}
+
+.algorithm-bar.highlighted {
+  background-color: #10b981;
+  transform: scale(1.05);
+}
+
+.algorithm-bar.sorted {
+  background-color: #8b5cf6;
+}
+
+/* Graph node styles */
+.graph-node {
+  transition: all 0.3s ease-in-out;
+}
+
+.graph-node.visited {
+  fill: #10b981;
+  stroke: #059669;
+  stroke-width: 2;
+}
+
+.graph-node.current {
+  fill: #ef4444;
+  stroke: #dc2626;
+  stroke-width: 3;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Code editor styles */
+.monaco-editor-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}

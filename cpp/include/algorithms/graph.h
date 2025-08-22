@@ -2,15 +2,14 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <queue>
 
+// Forward declarations to avoid circular dependencies
 struct GraphNode {
     int id;
     std::string label;
     double x, y;
     
-    GraphNode(int i, const std::string& l = "", double px = 0, double py = 0)
-        : id(i), label(l), x(px), y(py) {}
+    GraphNode(int id = 0, const std::string& label = "", double x = 0.0, double y = 0.0);
 };
 
 struct GraphEdge {
@@ -18,20 +17,19 @@ struct GraphEdge {
     double weight;
     bool directed;
     
-    GraphEdge(int f, int t, double w = 1.0, bool d = false)
-        : from(f), to(t), weight(w), directed(d) {}
+    GraphEdge(int from = 0, int to = 0, double weight = 1.0, bool directed = false);
 };
 
 struct GraphStep {
     std::vector<int> visitedNodes;
     std::vector<int> currentNodes;
-    std::vector<std::pair<int,int>> visitedEdges;
-    std::vector<std::pair<int,int>> currentEdges;
+    std::vector<std::pair<int, int>> visitedEdges;
+    std::vector<std::pair<int, int>> currentEdges;
     std::unordered_map<int, double> distances;
     std::unordered_map<int, int> parents;
     std::string operation;
     
-    GraphStep(const std::string& op = "") : operation(op) {}
+    GraphStep(const std::string& operation = "");
 };
 
 class Graph {
@@ -40,7 +38,7 @@ private:
     std::vector<GraphEdge> edges;
     std::vector<std::vector<int>> adjList;
     std::vector<std::vector<std::pair<int, double>>> weightedAdjList;
-    
+
 public:
     void addNode(const GraphNode& node);
     void addEdge(const GraphEdge& edge);
@@ -52,7 +50,5 @@ public:
     std::vector<GraphStep> aStar(int start, int end);
     std::vector<GraphStep> kruskal();
     std::vector<GraphStep> prim();
-    
-    const std::vector<GraphNode>& getNodes() const { return nodes; }
-    const std::vector<GraphEdge>& getEdges() const { return edges; }
 };
+   

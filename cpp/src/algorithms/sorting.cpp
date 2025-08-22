@@ -1,175 +1,185 @@
 #include "algorithms/sorting.h"
 #include <algorithm>
+#include <functional>
 
-std::vector<SortStep> SortingAlgorithms::bubbleSort(std::vector<int> arr) {
-    std::vector<SortStep> steps;
-    int n = arr.size();
+// SortingStep constructor implementation
+SortingStep::SortingStep(const std::vector<int>& array,
+                        const std::vector<int>& highlighted,
+                        const std::vector<int>& comparing,
+                        const std::string& operation,
+                        int operations_count,
+                        const std::string& time_complexity,
+                        const std::string& space_complexity)
+    : array(array), highlighted(highlighted), comparing(comparing),
+      operation(operation), operations_count(operations_count),
+      time_complexity(time_complexity), space_complexity(space_complexity) {}
+
+std::vector<SortingStep> SortingAlgorithms::bubbleSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
+    int n = static_cast<int>(arr.size());
     int operations = 0;
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Starting Bubble Sort", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Bubble Sort", operations, "O(n²)", "O(1)"));
     
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             operations++;
-            steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{j, j+1}, 
-                             "Comparing elements at positions " + std::to_string(j) + " and " + std::to_string(j+1), operations);
+            std::vector<int> comparing = {j, j+1};
+            steps.push_back(SortingStep(arr, {}, comparing, 
+                           "Comparing " + std::to_string(arr[j]) + " and " + std::to_string(arr[j+1]), 
+                           operations, "O(n²)", "O(1)"));
             
             if (arr[j] > arr[j + 1]) {
                 std::swap(arr[j], arr[j + 1]);
-                steps.emplace_back(arr, std::vector<int>{j, j+1}, std::vector<int>{}, 
-                                 "Swapped elements", operations);
+                std::vector<int> highlighted = {j, j+1};
+                steps.push_back(SortingStep(arr, highlighted, {}, 
+                               "Swapped " + std::to_string(arr[j+1]) + " and " + std::to_string(arr[j]), 
+                               operations, "O(n²)", "O(1)"));
             }
         }
-        steps.emplace_back(arr, std::vector<int>{n-i-1}, std::vector<int>{}, 
-                         "Element " + std::to_string(arr[n-i-1]) + " is in final position", operations);
     }
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Bubble Sort Complete!", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Bubble Sort Complete", operations, "O(n²)", "O(1)"));
     return steps;
 }
 
-std::vector<SortStep> SortingAlgorithms::mergeSort(std::vector<int> arr) {
-    std::vector<SortStep> steps;
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Starting Merge Sort", 0);
+std::vector<SortingStep> SortingAlgorithms::mergeSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
+    int operations = 0;
     
-    mergeSortHelper(arr, 0, arr.size() - 1, steps);
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Merge Sort", operations, "O(n log n)", "O(n)"));
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Merge Sort Complete!", steps.back().time_complexity_ops);
-    return steps;
-}
-
-std::vector<SortStep> SortingAlgorithms::mergeSortHelper(std::vector<int>& arr, int left, int right, std::vector<SortStep>& steps) {
-    if (left >= right) return steps;
-    
-    int mid = left + (right - left) / 2;
-    
-    // Divide
-    std::vector<int> leftRange, rightRange;
-    for (int i = left; i <= mid; i++) leftRange.push_back(i);
-    for (int i = mid + 1; i <= right; i++) rightRange.push_back(i);
-    
-    steps.emplace_back(arr, leftRange, rightRange, 
-                      "Dividing array: left[" + std::to_string(left) + "..." + std::to_string(mid) + 
-                      "] right[" + std::to_string(mid+1) + "..." + std::to_string(right) + "]", 
-                      steps.empty() ? 0 : steps.back().time_complexity_ops);
-    
-    mergeSortHelper(arr, left, mid, steps);
-    mergeSortHelper(arr, mid + 1, right, steps);
-    
-    // Merge
-    std::vector<int> temp(right - left + 1);
-    int i = left, j = mid + 1, k = 0;
-    int operations = steps.empty() ? 0 : steps.back().time_complexity_ops;
-    
-    while (i <= mid && j <= right) {
-        operations++;
-        if (arr[i] <= arr[j]) {
-            temp[k++] = arr[i++];
-        } else {
-            temp[k++] = arr[j++];
+    std::function<void(int, int)> mergeSortHelper = [&](int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            
+            std::vector<int> highlighted = {left, mid, right};
+            steps.push_back(SortingStep(arr, highlighted, {}, 
+                           "Dividing array from " + std::to_string(left) + " to " + std::to_string(right), 
+                           operations, "O(n log n)", "O(n)"));
+            
+            mergeSortHelper(left, mid);
+            mergeSortHelper(mid + 1, right);
+            
+            // Merge process
+            std::vector<int> temp(right - left + 1);
+            int i = left, j = mid + 1, k = 0;
+            
+            while (i <= mid && j <= right) {
+                operations++;
+                if (arr[i] <= arr[j]) {
+                    temp[k++] = arr[i++];
+                } else {
+                    temp[k++] = arr[j++];
+                }
+            }
+            
+            while (i <= mid) temp[k++] = arr[i++];
+            while (j <= right) temp[k++] = arr[j++];
+            
+            for (int idx = 0; idx < k; idx++) {
+                arr[left + idx] = temp[idx];
+            }
+            
+            std::vector<int> merged;
+            for (int idx = left; idx <= right; idx++) {
+                merged.push_back(idx);
+            }
+            steps.push_back(SortingStep(arr, merged, {}, 
+                           "Merged subarrays", operations, "O(n log n)", "O(n)"));
         }
-    }
+    };
     
-    while (i <= mid) temp[k++] = arr[i++];
-    while (j <= right) temp[k++] = arr[j++];
-    
-    for (i = left, k = 0; i <= right; i++, k++) {
-        arr[i] = temp[k];
-    }
-    
-    std::vector<int> merged;
-    for (int i = left; i <= right; i++) merged.push_back(i);
-    
-    steps.emplace_back(arr, merged, std::vector<int>{}, 
-                      "Merged subarrays [" + std::to_string(left) + "..." + std::to_string(right) + "]", operations);
-    
+    mergeSortHelper(0, static_cast<int>(arr.size()) - 1);
+    steps.push_back(SortingStep(arr, {}, {}, "Merge Sort Complete", operations, "O(n log n)", "O(n)"));
     return steps;
 }
 
-std::vector<SortStep> SortingAlgorithms::quickSort(std::vector<int> arr) {
-    std::vector<SortStep> steps;
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Starting Quick Sort", 0);
+std::vector<SortingStep> SortingAlgorithms::quickSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
+    int operations = 0;
     
-    quickSortHelper(arr, 0, arr.size() - 1, steps);
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Quick Sort", operations, "O(n log n)", "O(log n)"));
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Quick Sort Complete!", steps.back().time_complexity_ops);
+    std::function<void(int, int)> quickSortHelper = [&](int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high, steps, operations);
+            quickSortHelper(low, pi - 1);
+            quickSortHelper(pi + 1, high);
+        }
+    };
+    
+    quickSortHelper(0, static_cast<int>(arr.size()) - 1);
+    steps.push_back(SortingStep(arr, {}, {}, "Quick Sort Complete", operations, "O(n log n)", "O(log n)"));
     return steps;
 }
 
-void SortingAlgorithms::quickSortHelper(std::vector<int>& arr, int low, int high, std::vector<SortStep>& steps) {
-    if (low < high) {
-        int pi = partition(arr, low, high, steps);
-        
-        steps.emplace_back(arr, std::vector<int>{pi}, std::vector<int>{}, 
-                          "Pivot " + std::to_string(arr[pi]) + " is in correct position", 
-                          steps.empty() ? 0 : steps.back().time_complexity_ops);
-        
-        quickSortHelper(arr, low, pi - 1, steps);
-        quickSortHelper(arr, pi + 1, high, steps);
-    }
-}
-
-int SortingAlgorithms::partition(std::vector<int>& arr, int low, int high, std::vector<SortStep>& steps) {
+int SortingAlgorithms::partition(std::vector<int>& arr, int low, int high, std::vector<SortingStep>& steps, int& operations) {
     int pivot = arr[high];
     int i = low - 1;
-    int operations = steps.empty() ? 0 : steps.back().time_complexity_ops;
     
-    steps.emplace_back(arr, std::vector<int>{high}, std::vector<int>{}, 
-                      "Choosing pivot: " + std::to_string(pivot), operations);
+    std::vector<int> pivotHighlight = {high};
+    steps.push_back(SortingStep(arr, pivotHighlight, {}, "Choosing pivot: " + std::to_string(pivot), 
+                    operations, "O(n log n)", "O(log n)"));
     
     for (int j = low; j < high; j++) {
         operations++;
-        steps.emplace_back(arr, std::vector<int>{high}, std::vector<int>{j}, 
-                          "Comparing " + std::to_string(arr[j]) + " with pivot " + std::to_string(pivot), operations);
+        std::vector<int> comparing = {j};
+        steps.push_back(SortingStep(arr, {}, comparing, 
+                        "Comparing " + std::to_string(arr[j]) + " with pivot " + std::to_string(pivot), 
+                        operations, "O(n log n)", "O(log n)"));
         
         if (arr[j] < pivot) {
             i++;
             std::swap(arr[i], arr[j]);
-            steps.emplace_back(arr, std::vector<int>{i, j}, std::vector<int>{}, 
-                              "Swapped " + std::to_string(arr[i]) + " and " + std::to_string(arr[j]), operations);
+            std::vector<int> swapped = {i, j};
+            steps.push_back(SortingStep(arr, swapped, {}, 
+                            "Swapped " + std::to_string(arr[i]) + " and " + std::to_string(arr[j]), 
+                            operations, "O(n log n)", "O(log n)"));
         }
     }
     
     std::swap(arr[i + 1], arr[high]);
-    steps.emplace_back(arr, std::vector<int>{i + 1, high}, std::vector<int>{}, 
-                      "Placed pivot in correct position", operations);
+    std::vector<int> finalPos = {i + 1};
+    steps.push_back(SortingStep(arr, finalPos, {}, "Placed pivot in correct position", 
+                    operations, "O(n log n)", "O(log n)"));
     
     return i + 1;
 }
 
-std::vector<SortStep> SortingAlgorithms::heapSort(std::vector<int> arr) {
-    std::vector<SortStep> steps;
-    int n = arr.size();
+std::vector<SortingStep> SortingAlgorithms::heapSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
+    int n = static_cast<int>(arr.size());
     int operations = 0;
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Starting Heap Sort", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Heap Sort", operations, "O(n log n)", "O(1)"));
     
     // Build max heap
     for (int i = n / 2 - 1; i >= 0; i--) {
-        heapify(arr, n, i, steps);
+        heapify(arr, n, i, steps, operations);
     }
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Max heap built", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Max heap built", operations, "O(n log n)", "O(1)"));
     
-    // Extract elements one by one
+    // Extract elements from heap
     for (int i = n - 1; i > 0; i--) {
         std::swap(arr[0], arr[i]);
         operations++;
-        steps.emplace_back(arr, std::vector<int>{0, i}, std::vector<int>{}, 
-                          "Moved max element to position " + std::to_string(i), operations);
+        std::vector<int> swapped = {0, i};
+        steps.push_back(SortingStep(arr, swapped, {}, "Moved max element to position " + std::to_string(i), 
+                        operations, "O(n log n)", "O(1)"));
         
-        heapify(arr, i, 0, steps);
+        heapify(arr, i, 0, steps, operations);
     }
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Heap Sort Complete!", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Heap Sort Complete", operations, "O(n log n)", "O(1)"));
     return steps;
 }
 
-void SortingAlgorithms::heapify(std::vector<int>& arr, int n, int i, std::vector<SortStep>& steps) {
+void SortingAlgorithms::heapify(std::vector<int>& arr, int n, int i, std::vector<SortingStep>& steps, int& operations) {
     int largest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
-    int operations = steps.empty() ? 0 : steps.back().time_complexity_ops;
     
     if (left < n && arr[left] > arr[largest]) {
         largest = left;
@@ -182,48 +192,50 @@ void SortingAlgorithms::heapify(std::vector<int>& arr, int n, int i, std::vector
     if (largest != i) {
         std::swap(arr[i], arr[largest]);
         operations++;
-        steps.emplace_back(arr, std::vector<int>{i, largest}, std::vector<int>{}, 
-                          "Heapifying: swapped " + std::to_string(arr[i]) + " and " + std::to_string(arr[largest]), operations);
-        
-        heapify(arr, n, largest, steps);
+        std::vector<int> heapified = {i, largest};
+        steps.push_back(SortingStep(arr, heapified, {}, "Heapifying: swapped elements", 
+                        operations, "O(n log n)", "O(1)"));
+        heapify(arr, n, largest, steps, operations);
     }
 }
 
-std::vector<SortStep> SortingAlgorithms::countingSort(std::vector<int> arr) {
-    std::vector<SortStep> steps;
+std::vector<SortingStep> SortingAlgorithms::countingSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
     int operations = 0;
     
     if (arr.empty()) {
-        steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Array is empty", operations);
+        steps.push_back(SortingStep(arr, {}, {}, "Array is empty", operations, "O(n + k)", "O(k)"));
         return steps;
     }
     
-    int max_val = *std::max_element(arr.begin(), arr.end());
-    int min_val = *std::min_element(arr.begin(), arr.end());
-    int range = max_val - min_val + 1;
+    int maxVal = *std::max_element(arr.begin(), arr.end());
+    int minVal = *std::min_element(arr.begin(), arr.end());
+    int range = maxVal - minVal + 1;
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, 
-                      "Starting Counting Sort. Range: " + std::to_string(range), operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Counting Sort, range: " + std::to_string(range), 
+                    operations, "O(n + k)", "O(k)"));
     
     std::vector<int> count(range, 0);
     
-    // Count occurrences
-    for (int i = 0; i < arr.size(); i++) {
-        count[arr[i] - min_val]++;
+    // Count frequencies
+    for (size_t i = 0; i < arr.size(); i++) {
+        count[arr[i] - minVal]++;
         operations++;
     }
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Counted element frequencies", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Counted element frequencies", operations, "O(n + k)", "O(k)"));
     
     // Reconstruct array
     int index = 0;
     for (int i = 0; i < range; i++) {
-        while (count[i]-- > 0) {
-            arr[index++] = i + min_val;
+        while (count[i] > 0) {
+            arr[index] = i + minVal;
+            index++;
+            count[i]--;
             operations++;
         }
     }
     
-    steps.emplace_back(arr, std::vector<int>{}, std::vector<int>{}, "Counting Sort Complete!", operations);
+    steps.push_back(SortingStep(arr, {}, {}, "Counting Sort Complete", operations, "O(n + k)", "O(k)"));
     return steps;
 }
