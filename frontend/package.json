@@ -1,0 +1,58 @@
+{
+  "name": "algorithm-visualizer-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1",
+    "d3": "^7.8.2",
+    "@types/d3": "^7.4.0",
+    "tailwindcss": "^3.2.7",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "chart.js": "^4.2.1",
+    "react-chartjs-2": "^5.2.0",
+    "monaco-editor": "^0.36.1",
+    "@monaco-editor/react": "^4.4.6",
+    "axios": "^1.3.4",
+    "lucide-react": "^0.323.0",
+    "framer-motion": "^10.0.1",
+    "react-hot-toast": "^2.4.0",
+    "use-sound": "^4.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "typescript": "^4.9.5"
+  },
+  "proxy": "http://localhost:8000"
+}

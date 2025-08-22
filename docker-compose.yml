@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=development
+    volumes:
+      - ./backend:/app/backend
+      - ./cpp:/app/cpp
+    working_dir: /app
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - cpp-builder
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm start
+
+  cpp-builder:
+    build:
+      context: ./cpp
+      dockerfile: Dockerfile
+    volumes:
+      - ./cpp:/workspace
+    working_dir: /workspace
+    command: >
+      sh -c "
+        mkdir -p build &&
+        cd build &&
+        cmake .. &&
+        make -j4
+      "
+
+volumes:
+  node_modules:
