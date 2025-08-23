@@ -23,14 +23,10 @@ const Layout = ({ children }) => {
   }, [darkMode]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode 
-        ? 'bg-gray-900 text-white' 
-        : 'bg-gray-50 text-gray-900'
-    }`}>
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-      <main className="relative">
-        {React.cloneElement(children, { darkMode, setDarkMode })}
+      <main className="pt-16">
+        {children}
       </main>
     </div>
   );

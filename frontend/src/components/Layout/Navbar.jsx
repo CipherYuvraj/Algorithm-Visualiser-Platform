@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronDown, User, Settings, LogOut, Moon, Sun, Zap, BarChart3, Network, Code, BookOpen } from 'lucide-react';
+import { Menu, X, ChevronDown, User, Settings, LogOut, Moon, Sun, Zap, BarChart3, Network, Code, BookOpen, Type, Layers } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = ({ darkMode, setDarkMode }) => {

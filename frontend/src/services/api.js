@@ -1,61 +1,87 @@
 import axios from 'axios';
 
-// Smart API URL detection
+// Smart API URL detection with better fallbacks
 const getApiBaseUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // In production, try same origin first, then fallback
+  // Check if we're in development
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  }
+  
+  // Production: try various methods to detect API URL
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Same origin (for full-stack deployments)
+  if (window.location.origin) {
     return window.location.origin;
   }
-  // Development
-  return process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  
+  // Fallback to common production patterns
+  const host = window.location.hostname;
+  if (host.includes('vercel.app') || host.includes('netlify.app')) {
+    // For frontend-only deployments, API might not be available
+    return null;
+  }
+  
+  return window.location.origin;
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
-const api = axios.create({
+// Create axios instance only if we have a valid API URL
+const api = API_BASE_URL ? axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 seconds
+  timeout: 8000, // 8 seconds
   headers: {
     'Content-Type': 'application/json',
   },
-});
+}) : null;
 
-// Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
-    return config;
-  },
-  (error) => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
-  }
-);
+// Enhanced request interceptor
+if (api) {
+  api.interceptors.request.use(
+    (config) => {
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+      }
+      return config;
+    },
+    (error) => {
+      console.error('Request error:', error);
+      return Promise.reject(error);
+    }
+  );
 
-// Response interceptor
-api.interceptors.response.use(
-  (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`);
-    return response;
-  },
-  (error) => {
-    console.error('Response error:', error.response?.data || error.message);
-    
-    // Handle timeout specifically
-    if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out');
-      return Promise.reject(new Error('Request timed out. Backend may not be running.'));
+  // Enhanced response interceptor
+  api.interceptors.response.use(
+    (response) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`API Response: ${response.status} ${response.config.url}`);
+      }
+      return response;
+    },
+    (error) => {
+      // Don't spam console in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Response error:', error.response?.data || error.message);
+      }
+      
+      // Handle timeout specifically
+      if (error.code === 'ECONNABORTED') {
+        return Promise.reject(new Error('Request timed out. Backend may not be running.'));
+      }
+      
+      // Handle network errors
+      if (error.code === 'ERR_NETWORK') {
+        return Promise.reject(new Error('Cannot connect to backend. Server may not be running.'));
+      }
+      
+      return Promise.reject(error);
     }
-    
-    // Handle network errors
-    if (error.code === 'ERR_NETWORK') {
-      console.error('Network error - backend may not be running');
-      return Promise.reject(new Error('Cannot connect to backend. Server may not be running.'));
-    }
-    
-    return Promise.reject(error);
-  }
-);
+  );
+}
 
 // Sorting API with fallback
 export const sortingService = {
@@ -130,8 +156,16 @@ function generateSortingFallback(algorithm, array) {
 // Graph API with better error handling
 export const graphService = {
   runAlgorithm: async (algorithm, graphData) => {
+    // Always use fallback if no API available
+    if (!api || !API_BASE_URL) {
+      console.log('No API available, using fallback visualization');
+      return generateFallbackSteps(algorithm, graphData);
+    }
+
     try {
-      console.log('Sending graph request:', { algorithm, graphData });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Sending graph request:', { algorithm, graphData });
+      }
       
       // Validate input data
       if (!graphData.nodes || graphData.nodes.length === 0) {
@@ -139,7 +173,10 @@ export const graphService = {
       }
       
       const response = await api.post(`/api/graph/${algorithm}`, graphData);
-      console.log('Graph response:', response.data);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Graph response:', response.data);
+      }
       
       if (!response.data.steps || response.data.steps.length === 0) {
         return generateFallbackSteps(algorithm, graphData);
@@ -147,18 +184,35 @@ export const graphService = {
       
       return response.data;
     } catch (error) {
-      console.error('Graph API error:', error);
-      console.warn('Backend not responding, using fallback visualization');
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Graph API error:', error);
+      }
+      console.log('Backend not responding, using fallback visualization');
       return generateFallbackSteps(algorithm, graphData);
     }
   },
 };
 
-// Fallback function when backend is not available
+// Enhanced fallback with more realistic algorithm simulation
 function generateFallbackSteps(algorithm, graphData) {
   const steps = [];
   const startNode = graphData.start_node || 0;
+  const nodes = graphData.nodes || [];
+  const edges = graphData.edges || [];
   
+  // Validate inputs
+  if (nodes.length === 0) {
+    return { steps: [{ 
+      visitedNodes: [], 
+      currentNodes: [], 
+      operation: 'No nodes to process',
+      visitedEdges: [],
+      currentEdges: [],
+      distances: {},
+      parents: {}
+    }] };
+  }
+
   // Add starting step
   steps.push({
     visitedNodes: [],
@@ -167,117 +221,108 @@ function generateFallbackSteps(algorithm, graphData) {
     currentEdges: [],
     distances: { [startNode]: 0 },
     parents: {},
-    operation: `Starting ${algorithm.toUpperCase()} from node ${startNode}`
+    operation: `Starting ${algorithm.toUpperCase()} from node ${nodes.find(n => n.id === startNode)?.label || startNode}`
   });
   
-  // Simulate visiting each node
-  graphData.nodes.forEach((node, index) => {
-    if (node.id !== startNode && index < 4) { // Limit steps to prevent performance issues
-      steps.push({
-        visitedNodes: [startNode, ...graphData.nodes.slice(0, index).map(n => n.id).filter(id => id !== startNode)],
-        currentNodes: [node.id],
-        visitedEdges: [],
-        currentEdges: index > 0 ? [[startNode, node.id]] : [],
-        distances: { [startNode]: 0, [node.id]: index },
-        parents: { [node.id]: startNode },
-        operation: `Visiting node ${node.label || node.id}`
+  // Simulate algorithm-specific behavior
+  if (algorithm === 'bfs') {
+    // BFS: level by level
+    const queue = [startNode];
+    const visited = new Set([startNode]);
+    let level = 0;
+    
+    while (queue.length > 0 && level < 3) { // Limit iterations
+      const current = queue.shift();
+      const neighbors = edges
+        .filter(e => e.from_node === current || e.to === current)
+        .map(e => e.from_node === current ? e.to : e.from_node)
+        .filter(n => !visited.has(n));
+      
+      neighbors.forEach(neighbor => {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push(neighbor);
+          
+          steps.push({
+            visitedNodes: Array.from(visited),
+            currentNodes: [neighbor],
+            visitedEdges: [],
+            currentEdges: [[current, neighbor]],
+            distances: { [startNode]: 0, [neighbor]: level + 1 },
+            parents: { [neighbor]: current },
+            operation: `BFS: Visiting ${nodes.find(n => n.id === neighbor)?.label || neighbor} at level ${level + 1}`
+          });
+        }
       });
+      level++;
     }
-  });
-  
-  // Add completion step
+  } else if (algorithm === 'dijkstra') {
+    // Dijkstra: shortest path simulation
+    const distances = { [startNode]: 0 };
+    const visited = new Set();
+
+    for (let i = 0; i < Math.min(nodes.length, 4); i++) {
+      let current = null;
+      let minDist = Infinity;
+
+      // Find unvisited node with minimum distance
+      for (const node of nodes) {
+        if (!visited.has(node.id) && (distances[node.id] || Infinity) < minDist) {
+          current = node.id;
+          minDist = distances[node.id] || Infinity;
+        }
+      }
+
+      // If no reachable unvisited node remains, stop
+      if (current === null || minDist === Infinity) {
+        break;
+      }
+
+      // Mark current as visited
+      visited.add(current);
+
+      // Ensure parents map exists for steps tracking
+      const parents = {};
+
+      // Relax edges from current
+      for (const edge of edges) {
+        const neighbor = edge.from_node === current ? edge.to : (edge.to === current ? edge.from_node : null);
+        if (neighbor === null) continue;
+        const weight = edge.weight != null ? edge.weight : 1;
+        const newDist = (distances[current] || Infinity) + weight;
+        if (newDist < (distances[neighbor] || Infinity)) {
+          distances[neighbor] = newDist;
+          parents[neighbor] = current;
+
+          steps.push({
+            visitedNodes: Array.from(visited),
+            currentNodes: [neighbor],
+            visitedEdges: [],
+            currentEdges: [[current, neighbor]],
+            distances: { ...distances },
+            parents: { ...parents },
+            operation: `Dijkstra: Updated distance for ${nodes.find(n => n.id === neighbor)?.label || neighbor} to ${newDist}`
+          });
+        }
+      }
+    }
+  }
+
+  // Final summary step for fallback simulation
   steps.push({
-    visitedNodes: graphData.nodes.map(n => n.id),
+    visitedNodes: Array.from(new Set(steps.flatMap(s => s.visitedNodes || []))),
     currentNodes: [],
     visitedEdges: [],
     currentEdges: [],
-    distances: {},
-    parents: {},
-    operation: `${algorithm.toUpperCase()} algorithm completed`
+    distances: steps.length ? (steps[steps.length - 1].distances || {}) : {},
+    parents: steps.length ? (steps[steps.length - 1].parents || {}) : {},
+    operation: `${algorithm.toUpperCase()} simulation completed`
   });
-  
+
   return { steps };
 }
-
-// String API
-export const stringService = {
-  runAlgorithm: async (algorithm, text, pattern) => {
-    const response = await api.post(`/api/string/${algorithm}`, { text, pattern });
-    return response.data;
-  },
-};
-
-// Dynamic Programming API
-export const dpService = {
-  runAlgorithm: async (algorithm, params) => {
-    const response = await api.post(`/api/dp/${algorithm}`, { 
-      problem_type: algorithm,
-      params 
-    });
-    return response.data;
-  },
-};
-
-// WebSocket connection
-export class AlgorithmWebSocket {
-  constructor(onMessage, onError) {
-    this.ws = null;
-    this.onMessage = onMessage;
-    this.onError = onError;
-  }
-
-  connect() {
-    const wsUrl = `ws://localhost:8000/ws`;
-    this.ws = new WebSocket(wsUrl);
-    
-    this.ws.onopen = () => {
-      console.log('WebSocket connected');
-    };
-    
-    this.ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.onMessage(data);
-      } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
-      }
-    };
-    
-    this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      this.onError(error);
-    };
-    
-    this.ws.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
-  }
-
-  send(message) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message));
-    }
-  }
-
-  disconnect() {
-    if (this.ws) {
-      this.ws.close();
-    }
-  }
-}
-
-// Health check
-export const healthCheck = async () => {
-  try {
-    const response = await api.get('/health');
-    return response.data;
-  } catch (error) {
-    throw new Error('Backend is not responding');
-  }
-};
 
 console.log(`🔗 API Base URL: ${API_BASE_URL}`);
 console.log(`🏗️ Environment: ${process.env.NODE_ENV}`);
 
 export default api;
-export { sortingService, graphService };

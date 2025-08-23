@@ -1,31 +1,31 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+  app:
+    build: .
     ports:
       - "8000:8000"
     environment:
-      - PYTHONPATH=/app
-      - ENVIRONMENT=development
-    volumes:
-      - ./backend:/app/backend
-      - ./cpp:/app/cpp
-    working_dir: /app
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
-    depends_on:
-      - cpp-builder
+      - ENVIRONMENT=production
+      - PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000
+  # Optional: Add Redis for caching (if needed later)
+  # redis:
+  #   image: redis:7-alpine
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+
+networks:
+  default:
+    name: algorithm-visualizer-network
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app

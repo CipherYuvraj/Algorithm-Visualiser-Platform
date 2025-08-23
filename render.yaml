@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: algorithm-visualizer
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 10000

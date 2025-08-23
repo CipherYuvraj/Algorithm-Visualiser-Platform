@@ -62,7 +62,7 @@ const Header = () => {
               <Settings className="h-5 w-5" />
             </button>
             <a 
-              href="https://github.com" 
+              href="https://github.com/CipherYuvraj" 
               target="_blank" 
               rel="noopener noreferrer"
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
