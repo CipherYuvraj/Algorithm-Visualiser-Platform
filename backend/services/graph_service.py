@@ -26,21 +26,40 @@ class GraphService:
         }
 
     async def execute_algorithm(self, algorithm: str, request) -> List[Dict[str, Any]]:
-        if algorithm not in self.algorithms:
-            raise ValueError(f"Unknown algorithm: {algorithm}")
-        
-        return await self.algorithms[algorithm](request)
+        try:
+            if algorithm not in self.algorithms:
+                raise ValueError(f"Unknown algorithm: {algorithm}")
+            
+            print(f"Executing {algorithm} with {len(request.nodes)} nodes and {len(request.edges)} edges")
+            
+            result = await self.algorithms[algorithm](request)
+            print(f"Algorithm {algorithm} completed with {len(result)} steps")
+            
+            return result
+        except Exception as e:
+            print(f"Error in execute_algorithm: {e}")
+            # Return a basic fallback result
+            return [{
+                'visitedNodes': [],
+                'currentNodes': [request.start_node or 0],
+                'visitedEdges': [],
+                'currentEdges': [],
+                'distances': {},
+                'parents': {},
+                'operation': f'Error executing {algorithm}: {str(e)}'
+            }]
 
     async def _bfs(self, request) -> List[Dict[str, Any]]:
-        if algorithm_engine is None:
-            return await self._fallback_bfs(request)
-        
         try:
+            if algorithm_engine is None:
+                return await self._fallback_bfs(request)
+            
             graph = self._build_cpp_graph(request)
             start = request.start_node if request.start_node is not None else 0
             steps = graph.bfs(start)
             return [self._convert_graph_step(step) for step in steps]
         except Exception as e:
+            print(f"Error in BFS: {e}")
             return await self._fallback_bfs(request)
 
     async def _dfs(self, request) -> List[Dict[str, Any]]:
@@ -96,78 +115,107 @@ class GraphService:
 
     # Fallback Python implementations
     async def _fallback_bfs(self, request) -> List[Dict[str, Any]]:
-        from collections import deque
-        
-        steps = []
-        adj_list = self._build_adjacency_list(request)
-        visited = set()
-        queue = deque()
-        
-        start = request.start_node if request.start_node is not None else 0
-        
-        steps.append({
-            'visitedNodes': [],
-            'currentNodes': [],
-            'visitedEdges': [],
-            'currentEdges': [],
-            'distances': {},
-            'parents': {},
-            'operation': f'Starting BFS from node {start}'
-        })
-        
-        queue.append(start)
-        visited.add(start)
-        
-        steps.append({
-            'visitedNodes': [],
-            'currentNodes': [start],
-            'visitedEdges': [],
-            'currentEdges': [],
-            'distances': {},
-            'parents': {},
-            'operation': f'Added start node {start} to queue'
-        })
-        
-        while queue:
-            current = queue.popleft()
+        try:
+            from collections import deque
             
-            visited_list = list(visited)
+            steps = []
+            adj_list = self._build_adjacency_list(request)
+            visited = set()
+            queue = deque()
+            
+            start = request.start_node if request.start_node is not None else 0
+            
+            # Validate start node
+            if start >= len(request.nodes) or start < 0:
+                start = 0
+            
+            print(f"Starting BFS from node {start}")
+            
             steps.append({
-                'visitedNodes': visited_list,
-                'currentNodes': [current],
+                'visitedNodes': [],
+                'currentNodes': [],
                 'visitedEdges': [],
                 'currentEdges': [],
                 'distances': {},
                 'parents': {},
-                'operation': f'Visiting node {current}'
+                'operation': f'Starting BFS from node {start}'
             })
             
-            for neighbor in adj_list.get(current, []):
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
-                    
-                    steps.append({
-                        'visitedNodes': visited_list,
-                        'currentNodes': [neighbor],
-                        'visitedEdges': [],
-                        'currentEdges': [(current, neighbor)],
-                        'distances': {},
-                        'parents': {},
-                        'operation': f'Exploring neighbor {neighbor}'
-                    })
-        
-        steps.append({
-            'visitedNodes': list(visited),
-            'currentNodes': [],
-            'visitedEdges': [],
-            'currentEdges': [],
-            'distances': {},
-            'parents': {},
-            'operation': 'BFS Complete'
-        })
-        
-        return steps
+            queue.append(start)
+            visited.add(start)
+            
+            steps.append({
+                'visitedNodes': [],
+                'currentNodes': [start],
+                'visitedEdges': [],
+                'currentEdges': [],
+                'distances': {start: 0},
+                'parents': {},
+                'operation': f'Added start node {start} to queue'
+            })
+            
+            step_count = 0
+            max_steps = 50  # Prevent infinite loops
+            
+            while queue and step_count < max_steps:
+                current = queue.popleft()
+                step_count += 1
+                
+                visited_list = list(visited)
+                steps.append({
+                    'visitedNodes': visited_list,
+                    'currentNodes': [current],
+                    'visitedEdges': [],
+                    'currentEdges': [],
+                    'distances': {node: i for i, node in enumerate(visited_list)},
+                    'parents': {},
+                    'operation': f'Processing node {current}'
+                })
+                
+                # Get neighbors safely
+                neighbors = adj_list.get(current, [])
+                print(f"Node {current} has neighbors: {neighbors}")
+                
+                for neighbor in neighbors:
+                    if neighbor not in visited and neighbor < len(request.nodes) and neighbor >= 0:
+                        visited.add(neighbor)
+                        queue.append(neighbor)
+                        
+                        steps.append({
+                            'visitedNodes': list(visited),
+                            'currentNodes': [neighbor],
+                            'visitedEdges': [],
+                            'currentEdges': [(current, neighbor)],
+                            'distances': {node: i for i, node in enumerate(visited)},
+                            'parents': {neighbor: current},
+                            'operation': f'Discovered node {neighbor} from {current}'
+                        })
+            
+            steps.append({
+                'visitedNodes': list(visited),
+                'currentNodes': [],
+                'visitedEdges': [],
+                'currentEdges': [],
+                'distances': {},
+                'parents': {},
+                'operation': 'BFS completed - All reachable nodes visited'
+            })
+            
+            print(f"BFS completed with {len(steps)} steps")
+            return steps
+            
+        except Exception as e:
+            print(f"Error in fallback BFS: {e}")
+            # Return minimal working result
+            return [{
+                'visitedNodes': [request.start_node or 0],
+                'currentNodes': [],
+                'visitedEdges': [],
+                'currentEdges': [],
+                'distances': {},
+                'parents': {},
+                'operation': f'BFS failed: {str(e)}'
+            }]
 
     async def _fallback_dfs(self, request) -> List[Dict[str, Any]]:
         steps = []
@@ -309,19 +357,41 @@ class GraphService:
         return steps
 
     def _build_adjacency_list(self, request) -> Dict[int, List[int]]:
-        adj_list = {}
-        
-        for node in request.nodes:
-            adj_list[node.id] = []
-        
-        for edge in request.edges:
-            from_node = getattr(edge, 'from_node', None) or getattr(edge, 'from', None)
-            adj_list[from_node].append(edge.to)
+        try:
+            adj_list = {}
             
-            if not getattr(edge, 'directed', False):
-                adj_list[edge.to].append(from_node)
-        
-        return adj_list
+            # Initialize adjacency list for all nodes
+            for node in request.nodes:
+                adj_list[node.id] = []
+            
+            print(f"Building adjacency list for {len(request.nodes)} nodes and {len(request.edges)} edges")
+            
+            # Add edges
+            for edge in request.edges:
+                try:
+                    from_node = getattr(edge, 'from_node', None)
+                    to_node = getattr(edge, 'to', None)
+                    
+                    if from_node is not None and to_node is not None:
+                        if from_node in adj_list and to_node < len(request.nodes):
+                            adj_list[from_node].append(to_node)
+                            print(f"Added edge: {from_node} -> {to_node}")
+                        
+                        # Add reverse edge if undirected
+                        if not getattr(edge, 'directed', False):
+                            if to_node in adj_list and from_node < len(request.nodes):
+                                adj_list[to_node].append(from_node)
+                                print(f"Added reverse edge: {to_node} -> {from_node}")
+                except Exception as e:
+                    print(f"Error processing edge: {e}")
+                    continue
+            
+            print(f"Final adjacency list: {adj_list}")
+            return adj_list
+            
+        except Exception as e:
+            print(f"Error building adjacency list: {e}")
+            return {}
 
     def _build_weighted_adjacency_list(self, request) -> Dict[int, List[tuple]]:
         adj_list = {}

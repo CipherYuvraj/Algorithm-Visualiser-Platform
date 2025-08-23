@@ -19,8 +19,11 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
   const [showParticles] = useState(true);
   const [typewriterText, setTypewriterText] = useState('');
   const [showDetailedLog, setShowDetailedLog] = useState(false);
+  const [timeoutDetected, setTimeoutDetected] = useState(false);
   const canvasRef = useRef(null);
   const particleCanvasRef = useRef(null);
+  const timeoutCountRef = useRef(0);
+  const lastTimeoutCheck = useRef(Date.now());
 
   const algorithms = [
     { 
@@ -123,48 +126,85 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
     return () => clearInterval(timer);
   }, [currentStep, steps, selectedAlgorithm, currentStepData]); // Add currentStepData as dependency
 
-  // Particle system
+  // Monitor for timeout loops
   useEffect(() => {
-    if (!showParticles || !particleCanvasRef.current) return;
-
-    const canvas = particleCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles = [];
-    for (let i = 0; i < 50; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 1,
-        opacity: Math.random() * 0.5 + 0.2
-      });
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(particle => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(animate);
+    const checkTimeouts = () => {
+      const now = Date.now();
+      if (now - lastTimeoutCheck.current < 1000) {
+        timeoutCountRef.current++;
+        if (timeoutCountRef.current > 5) {
+          setTimeoutDetected(true);
+          console.warn('Timeout loop detected, disabling problematic features');
+        }
+      } else {
+        timeoutCountRef.current = 0;
+        lastTimeoutCheck.current = now;
+      }
     };
 
-    animate();
-  }, [showParticles]);
+    const interval = setInterval(checkTimeouts, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Disable particle system if timeouts detected
+  const shouldShowParticles = showParticles && !timeoutDetected;
+
+  // Particle system
+  useEffect(() => {
+    if (!shouldShowParticles || !particleCanvasRef.current) return;
+
+    let animationId;
+    const canvas = particleCanvasRef.current;
+    
+    try {
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      for (let i = 0; i < 30; i++) { // Reduced particles
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 1.5 + 0.5,
+          opacity: Math.random() * 0.3 + 0.1
+        });
+      }
+
+      const animate = () => {
+        if (!shouldShowParticles) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+          if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+          ctx.fill();
+        });
+
+        animationId = requestAnimationFrame(animate);
+      };
+
+      animate();
+    } catch (error) {
+      console.error('Particle system error:', error);
+    }
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [shouldShowParticles]);
 
   // Dynamic array size change
   useEffect(() => {
@@ -330,13 +370,20 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
         ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
         : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
     }`}>
-      {/* Particle Background */}
-      {showParticles && (
+      {/* Conditional Particle Background */}
+      {shouldShowParticles && (
         <canvas
           ref={particleCanvasRef}
           className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: darkMode ? 0.6 : 0.3 }}
+          style={{ opacity: darkMode ? 0.4 : 0.2 }}
         />
+      )}
+
+      {/* Timeout Warning */}
+      {timeoutDetected && (
+        <div className="fixed top-20 right-4 z-50 bg-yellow-500 text-black p-3 rounded-lg shadow-lg">
+          ⚠️ Performance issue detected. Some visual effects disabled.
+        </div>
       )}
 
       <div className="relative z-10 max-w-7xl mx-auto p-4">
@@ -671,22 +718,24 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
       </div>
 
       {/* Custom CSS for animations */}
-      <style jsx>{`
-        @keyframes blink {
-          0%, 50% { opacity: 1; }
-          51%, 100% { opacity: 0; }
-        }
-        .animate-blink {
-          animation: blink 1s infinite;
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+          }
+          .animate-blink {
+            animation: blink 1s infinite;
+          }
+          .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `
+      }} />
     </div>
   );
 };

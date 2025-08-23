@@ -1,8 +1,12 @@
+import os
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional, Dict, Any
-import asyncio
+import uvicorn
 
 app = FastAPI(
     title="Algorithm Visualizer API",
@@ -10,10 +14,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Environment detection
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+IS_PRODUCTION = ENVIRONMENT == "production"
+
 # Configure CORS
+origins = ["*"] if not IS_PRODUCTION else [
+    "https://yourdomain.com",
+    "https://www.yourdomain.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify actual origins
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -153,6 +166,62 @@ async def run_string_algorithm(algorithm: str, request: dict):
 async def run_dp_algorithm(algorithm: str, request: dict):
     return {"steps": [], "message": "DP algorithms coming soon"}
 
+# Conditional static file serving for production
+if IS_PRODUCTION:
+    # Check if build directory exists
+    frontend_build_path = Path("../frontend/build")
+    static_path = frontend_build_path / "static"
+    
+    if frontend_build_path.exists() and static_path.exists():
+        print(f"✅ Serving static files from: {static_path}")
+        app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+        
+        @app.get("/{full_path:path}")
+        async def serve_react_app(full_path: str):
+            # Don't serve API routes through React
+            if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi"):
+                raise HTTPException(status_code=404, detail="Not found")
+            
+            # Try to serve specific file
+            file_path = frontend_build_path / full_path
+            if file_path.exists() and file_path.is_file():
+                return FileResponse(str(file_path))
+            
+            # Fall back to index.html for client-side routing
+            index_path = frontend_build_path / "index.html"
+            if index_path.exists():
+                return FileResponse(str(index_path))
+            
+            raise HTTPException(status_code=404, detail="Frontend not built")
+    else:
+        print(f"⚠️  Frontend build directory not found at: {frontend_build_path}")
+        print("   Run 'npm run build' in the frontend directory first")
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Algorithm Visualizer API",
+        "version": "1.0.0",
+        "environment": ENVIRONMENT,
+        "frontend_available": IS_PRODUCTION and Path("../frontend/build/index.html").exists()
+    }
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "environment": ENVIRONMENT}
+
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    host = "0.0.0.0" if IS_PRODUCTION else "127.0.0.1"
+    
+    print(f"🚀 Starting server on {host}:{port}")
+    print(f"📝 Environment: {ENVIRONMENT}")
+    print(f"📋 API docs: http://{host}:{port}/docs")
+    
+    uvicorn.run(
+        "main:app" if IS_PRODUCTION else app,
+        host=host,
+        port=port,
+        reload=not IS_PRODUCTION,
+        log_level="info"
+    )

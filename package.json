@@ -1,0 +1,25 @@
+{
+  "name": "algorithm-visualizer-platform",
+  "version": "1.0.0",
+  "description": "Interactive Algorithm Visualization Platform",
+  "scripts": {
+    "install-all": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && python main.py",
+    "dev": "concurrently \"cd backend && python main.py\" \"cd frontend && npm start\"",
+    "dev:backend": "cd backend && python main.py",
+    "dev:frontend": "cd frontend && npm start",
+    "deploy:build": "npm run build && echo Build completed successfully",
+    "deploy:vercel": "cd frontend && npx vercel --prod",
+    "deploy:netlify": "cd frontend && npm run build && npx netlify deploy --prod --dir=build"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": ["algorithm", "visualizer", "education", "react", "fastapi"],
+  "license": "MIT"
+}

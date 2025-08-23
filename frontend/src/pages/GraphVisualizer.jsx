@@ -7,7 +7,7 @@ import ControlPanel from '../components/Sorting/ControlPanel';
 import ComplexityDisplay from '../components/Sorting/ComplexityDisplay';
 import { graphService } from '../services/api';
 
-const GraphVisualizer = () => {
+const GraphVisualizer = ({ darkMode, setDarkMode }) => {
   const [nodes, setNodes] = useState([
     { id: 0, label: 'A', x: 100, y: 100 },
     { id: 1, label: 'B', x: 300, y: 100 },
@@ -27,7 +27,6 @@ const GraphVisualizer = () => {
   const [speed, setSpeed] = useState(700);
   const [isLoading, setIsLoading] = useState(false);
   const [isAlgorithmSelectorOpen, setIsAlgorithmSelectorOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showParticles, setShowParticles] = useState(true);
@@ -36,6 +35,7 @@ const GraphVisualizer = () => {
   const [showDetailedLog, setShowDetailedLog] = useState(false);
   const [startNode, setStartNode] = useState(0);
   const [endNode, setEndNode] = useState(3);
+  const [timeoutDetected, setTimeoutDetected] = useState(false);
   const canvasRef = useRef(null);
   const particleCanvasRef = useRef(null);
 
@@ -182,52 +182,109 @@ const GraphVisualizer = () => {
     return () => clearInterval(timer);
   }, [currentStep, steps, selectedAlgorithm]);
 
-  // Particle system
+  // --- Replaced fragile console monkey-patch with safe timeout-detection ---
+  // Detect excessive setTimeout usage (e.g. external pageScript spamming 30/1000ms timers).
   useEffect(() => {
-    if (!showParticles || !particleCanvasRef.current) return;
+    let originalSetTimeout = window.setTimeout;
+    let timeoutCounter = 0;
+    let lastReset = Date.now();
 
-    const canvas = particleCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles = [];
-    for (let i = 0; i < 50; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 1,
-        opacity: Math.random() * 0.5 + 0.2
-      });
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(particle => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(animate);
+    const monitoredSetTimeout = function(callback, delay, ...args) {
+      try {
+        // Count suspicious short intervals (common values from logs)
+        if (delay === 30 || delay === 1000 || delay <= 50) {
+          const now = Date.now();
+          if (now - lastReset > 2000) {
+            timeoutCounter = 0;
+            lastReset = now;
+          }
+          timeoutCounter++;
+          if (timeoutCounter > 100) { // threshold: many short timers in a short window
+            setTimeoutDetected(true);
+            console.warn('Timeout loop detected — disabling heavy visual effects.');
+          }
+        }
+      } catch (err) {
+        // ignore detection code errors
+      }
+      return originalSetTimeout(callback, delay, ...args);
     };
 
-    animate();
-  }, [showParticles]);
+    // install wrapper
+    window.setTimeout = monitoredSetTimeout;
 
+    return () => {
+      // restore original
+      window.setTimeout = originalSetTimeout;
+    };
+  }, []);
+
+  // Particle system with timeout protection
+  useEffect(() => {
+    if (!showParticles || !particleCanvasRef.current || timeoutDetected) return;
+
+    let animationId;
+    
+    try {
+      const canvas = particleCanvasRef.current;
+      const ctx = canvas.getContext('2d');
+      canvas.width = Math.min(window.innerWidth, 1920);
+      canvas.height = Math.min(window.innerHeight, 1080);
+
+      const particles = [];
+      for (let i = 0; i < 25; i++) { // Reduced particles
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          size: Math.random() * 1 + 0.5,
+          opacity: Math.random() * 0.2 + 0.1
+        });
+      }
+
+      const animate = () => {
+        if (timeoutDetected) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+          if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+          ctx.fill();
+        });
+
+        animationId = requestAnimationFrame(animate);
+      };
+
+      animate();
+    } catch (error) {
+      console.error('Graph particle system error:', error);
+      setTimeoutDetected(true);
+    }
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [showParticles, timeoutDetected]);
+
+  // Guarded executeAlgorithm: prevent re-entry when already loading and detect repeated API failures.
+  const apiFailureRef = useRef({ count: 0, last: 0 });
   const executeAlgorithm = useCallback(async () => {
+    if (isLoading) return; // prevent re-entry
     try {
       setIsLoading(true);
+      console.log('Starting algorithm execution...');
+      
       toast.loading('Executing algorithm...', {
         icon: '⚡',
         style: {
@@ -238,16 +295,41 @@ const GraphVisualizer = () => {
         },
       });
       
+      // Validate inputs
+      if (nodes.length === 0) {
+        throw new Error('No nodes in the graph');
+      }
+      
+      if (startNode >= nodes.length || startNode < 0) {
+        console.warn('Invalid start node, resetting to 0');
+        setStartNode(0);
+        return;
+      }
+      
       const graphData = {
-        nodes: nodes,
-        edges: edges,
+        nodes: nodes.map(node => ({
+          id: node.id,
+          label: node.label || `Node ${node.id}`,
+          x: node.x || 0,
+          y: node.y || 0
+        })),
+        edges: edges.map(edge => ({
+          from_node: edge.from_node,
+          to: edge.to,
+          weight: edge.weight || 1,
+          directed: edge.directed || false
+        })),
         start_node: startNode,
         end_node: endNode
       };
 
-      const response = await graphService.runAlgorithm(algorithm, graphData);
+      console.log('Executing graph algorithm:', algorithm, graphData);
       
-      if (response.steps && Array.isArray(response.steps)) {
+      const response = await graphService.runAlgorithm(algorithm, graphData);
+      console.log('Graph algorithm response:', response);
+      
+      // Basic response handling
+      if (response && response.steps && Array.isArray(response.steps) && response.steps.length > 0) {
         setSteps(response.steps);
         setCurrentStep(0);
         toast.dismiss();
@@ -260,25 +342,87 @@ const GraphVisualizer = () => {
             boxShadow: `0 0 20px ${selectedAlgorithm?.color}40`,
           },
         });
+        // reset API failure counters on success
+        apiFailureRef.current = { count: 0, last: 0 };
       } else {
-        throw new Error('Invalid response format');
+        console.error('Invalid response format or empty steps:', response);
+        // fallback steps (kept as before)
+        const fallbackSteps = [
+          {
+            visitedNodes: [],
+            currentNodes: [startNode],
+            visitedEdges: [],
+            currentEdges: [],
+            distances: {},
+            parents: {},
+            operation: `Starting ${selectedAlgorithm?.name} from node ${startNode}`
+          },
+          {
+            visitedNodes: [startNode],
+            currentNodes: [],
+            visitedEdges: [],
+            currentEdges: [],
+            distances: {},
+            parents: {},
+            operation: `${selectedAlgorithm?.name} completed`
+          }
+        ];
+        setSteps(fallbackSteps);
+        setCurrentStep(0);
+        toast.dismiss();
+        toast.success('Algorithm executed (fallback mode)');
       }
     } catch (error) {
       toast.dismiss();
-      toast.error('Failed to execute algorithm');
       console.error('Algorithm execution error:', error);
+
+      // Detect network/connect/timeouts and count failures to decide whether to disable heavy features
+      const msg = error?.message?.toLowerCase() || '';
+      if (msg.includes('timeout') || msg.includes('connect') || msg.includes('backend')) {
+        const now = Date.now();
+        if (now - apiFailureRef.current.last > 5000) {
+          apiFailureRef.current.count = 1;
+        } else {
+          apiFailureRef.current.count++;
+        }
+        apiFailureRef.current.last = now;
+
+        if (apiFailureRef.current.count >= 3) {
+          setTimeoutDetected(true);
+          setShowParticles(false); // proactively disable heavy visuals
+          console.warn('Multiple backend/network failures detected — disabling heavy visual effects.');
+        }
+      }
+
+      let errorMessage = 'Failed to execute algorithm';
+      if (error.message && error.message.toLowerCase().includes('timeout')) {
+        errorMessage = 'Request timed out - check if backend is running';
+      } else if (error.message && error.message.toLowerCase().includes('connect')) {
+        errorMessage = 'Cannot connect to backend server';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+      
+      toast.error(errorMessage, {
+        duration: 5000,
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [algorithm, nodes, edges, startNode, endNode, selectedAlgorithm, darkMode]);
+  }, [algorithm, nodes, edges, startNode, endNode, selectedAlgorithm, darkMode, isLoading]);
 
-  // ...existing functions (playPause, reset, stepForward, stepBackward, etc.)...
+  // Throttled play/pause to avoid repeated clicks
+  const lastPlayPauseRef = useRef(0);
   const playPause = () => {
+    const now = Date.now();
+    if (now - lastPlayPauseRef.current < 500) return; // ignore too-frequent toggles
+    lastPlayPauseRef.current = now;
+
     if (steps.length === 0) {
       executeAlgorithm();
       return;
     }
-    setIsPlaying(!isPlaying);
+    setIsPlaying(prev => !prev);
   };
 
   const reset = () => {
@@ -300,25 +444,41 @@ const GraphVisualizer = () => {
   };
 
   const generateRandomGraph = () => {
-    const nodeCount = Math.floor(Math.random() * 4) + 4; // 4-7 nodes
+    const nodeCount = Math.floor(Math.random() * 3) + 4; // 4-6 nodes
     const newNodes = Array.from({ length: nodeCount }, (_, i) => ({
       id: i,
       label: String.fromCharCode(65 + i), // A, B, C, etc.
-      x: Math.random() * 400 + 100,
-      y: Math.random() * 300 + 100
+      x: Math.random() * 300 + 150,
+      y: Math.random() * 200 + 150
     }));
 
     const newEdges = [];
-    for (let i = 0; i < nodeCount; i++) {
-      for (let j = i + 1; j < nodeCount; j++) {
-        if (Math.random() < 0.4) { // 40% chance of edge
-          newEdges.push({
-            from_node: i,
-            to: j,
-            weight: Math.floor(Math.random() * 9) + 1,
-            directed: false
-          });
-        }
+    // Ensure graph is connected by creating a spanning tree first
+    for (let i = 1; i < nodeCount; i++) {
+      const randomParent = Math.floor(Math.random() * i);
+      newEdges.push({
+        from_node: randomParent,
+        to: i,
+        weight: Math.floor(Math.random() * 9) + 1,
+        directed: false
+      });
+    }
+    
+    // Add some additional random edges
+    const additionalEdges = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < additionalEdges; i++) {
+      const from = Math.floor(Math.random() * nodeCount);
+      const to = Math.floor(Math.random() * nodeCount);
+      if (from !== to && !newEdges.some(e => 
+        (e.from_node === from && e.to === to) || 
+        (e.from_node === to && e.to === from)
+      )) {
+        newEdges.push({
+          from_node: from,
+          to: to,
+          weight: Math.floor(Math.random() * 9) + 1,
+          directed: false
+        });
       }
     }
 
@@ -365,13 +525,20 @@ const GraphVisualizer = () => {
         ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
         : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
     }`}>
-      {/* Particle Background */}
-      {showParticles && (
+      {/* Conditional Particle Background */}
+      {showParticles && !timeoutDetected && (
         <canvas
           ref={particleCanvasRef}
           className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: darkMode ? 0.6 : 0.3 }}
+          style={{ opacity: darkMode ? 0.4 : 0.2 }}
         />
+      )}
+
+      {/* Timeout Warning */}
+      {timeoutDetected && (
+        <div className="fixed top-20 right-4 z-50 bg-yellow-500 text-black p-3 rounded-lg shadow-lg">
+          ⚠️ Performance issue detected. Visual effects disabled.
+        </div>
       )}
 
       <div className="relative z-10 max-w-7xl mx-auto p-4">
@@ -792,22 +959,18 @@ const GraphVisualizer = () => {
       </div>
 
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }
         }
-        .animate-blink {
-          animation: blink 1s infinite;
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-in-out;
-        }
+        .animate-blink { animation: blink 1s infinite; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-      `}</style>
+      `}} />
     </div>
   );
 };

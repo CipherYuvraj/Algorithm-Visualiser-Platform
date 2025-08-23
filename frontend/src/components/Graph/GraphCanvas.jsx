@@ -13,7 +13,7 @@ const GraphCanvas = forwardRef(({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !nodes || nodes.length === 0) return;
 
     const ctx = canvas.getContext('2d');
     const { width, height } = canvas;
@@ -22,71 +22,85 @@ const GraphCanvas = forwardRef(({
     ctx.fillStyle = darkMode ? '#1f2937' : '#f8fafc';
     ctx.fillRect(0, 0, width, height);
     
-    // Draw edges
-    edges.forEach(edge => {
-      const fromNode = nodes.find(n => n.id === edge.from_node);
-      const toNode = nodes.find(n => n.id === edge.to);
-      
-      if (!fromNode || !toNode) return;
-      
-      // Determine edge color
-      let edgeColor = darkMode ? '#6b7280' : '#9ca3af';
-      let lineWidth = 2;
-      
-      if (stepData.visitedEdges?.some(([from, to]) => 
-        (from === edge.from_node && to === edge.to) || 
-        (!edge.directed && from === edge.to && to === edge.from_node)
-      )) {
-        edgeColor = '#10b981'; // Green for visited
-        lineWidth = 3;
-      } else if (stepData.currentEdges?.some(([from, to]) => 
-        (from === edge.from_node && to === edge.to) || 
-        (!edge.directed && from === edge.to && to === edge.from_node)
-      )) {
-        edgeColor = '#f59e0b'; // Orange for current
-        lineWidth = 4;
-      }
-      
-      // Draw edge
-      ctx.beginPath();
-      ctx.moveTo(fromNode.x, fromNode.y);
-      ctx.lineTo(toNode.x, toNode.y);
-      ctx.strokeStyle = edgeColor;
-      ctx.lineWidth = lineWidth;
-      ctx.stroke();
-      
-      // Draw weight
-      const midX = (fromNode.x + toNode.x) / 2;
-      const midY = (fromNode.y + toNode.y) / 2;
-      
-      ctx.fillStyle = darkMode ? '#ffffff' : '#000000';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(edge.weight.toString(), midX, midY - 5);
-      
-      // Draw arrow for directed edges
-      if (edge.directed) {
-        const angle = Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x);
-        const arrowLength = 15;
-        const arrowX = toNode.x - Math.cos(angle) * 25;
-        const arrowY = toNode.y - Math.sin(angle) * 25;
+    // Safely access stepData
+    const safeStepData = stepData || {
+      visitedNodes: [],
+      currentNodes: [],
+      visitedEdges: [],
+      currentEdges: [],
+      distances: {},
+      parents: {}
+    };
+    
+    // Draw edges first
+    if (edges && edges.length > 0) {
+      edges.forEach(edge => {
+        const fromNode = nodes.find(n => n.id === edge.from_node);
+        const toNode = nodes.find(n => n.id === edge.to);
         
+        if (!fromNode || !toNode) return;
+        
+        // Determine edge color
+        let edgeColor = darkMode ? '#6b7280' : '#9ca3af';
+        let lineWidth = 2;
+        
+        if (safeStepData.visitedEdges?.some(([from, to]) => 
+          (from === edge.from_node && to === edge.to) || 
+          (!edge.directed && from === edge.to && to === edge.from_node)
+        )) {
+          edgeColor = '#10b981'; // Green for visited
+          lineWidth = 3;
+        } else if (safeStepData.currentEdges?.some(([from, to]) => 
+          (from === edge.from_node && to === edge.to) || 
+          (!edge.directed && from === edge.to && to === edge.from_node)
+        )) {
+          edgeColor = '#f59e0b'; // Orange for current
+          lineWidth = 4;
+        }
+        
+        // Draw edge line
         ctx.beginPath();
-        ctx.moveTo(arrowX, arrowY);
-        ctx.lineTo(
-          arrowX - arrowLength * Math.cos(angle - Math.PI / 6),
-          arrowY - arrowLength * Math.sin(angle - Math.PI / 6)
-        );
-        ctx.moveTo(arrowX, arrowY);
-        ctx.lineTo(
-          arrowX - arrowLength * Math.cos(angle + Math.PI / 6),
-          arrowY - arrowLength * Math.sin(angle + Math.PI / 6)
-        );
+        ctx.moveTo(fromNode.x, fromNode.y);
+        ctx.lineTo(toNode.x, toNode.y);
         ctx.strokeStyle = edgeColor;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = lineWidth;
         ctx.stroke();
-      }
-    });
+        
+        // Draw weight label
+        const midX = (fromNode.x + toNode.x) / 2;
+        const midY = (fromNode.y + toNode.y) / 2;
+        
+        ctx.fillStyle = darkMode ? '#ffffff' : '#000000';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillRect(midX - 10, midY - 8, 20, 16);
+        ctx.fillStyle = edgeColor;
+        ctx.fillText(edge.weight.toString(), midX, midY + 4);
+        
+        // Draw arrow for directed edges
+        if (edge.directed) {
+          const angle = Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x);
+          const arrowLength = 15;
+          const arrowX = toNode.x - Math.cos(angle) * 25;
+          const arrowY = toNode.y - Math.sin(angle) * 25;
+          
+          ctx.beginPath();
+          ctx.moveTo(arrowX, arrowY);
+          ctx.lineTo(
+            arrowX - arrowLength * Math.cos(angle - Math.PI / 6),
+            arrowY - arrowLength * Math.sin(angle - Math.PI / 6)
+          );
+          ctx.moveTo(arrowX, arrowY);
+          ctx.lineTo(
+            arrowX - arrowLength * Math.cos(angle + Math.PI / 6),
+            arrowY - arrowLength * Math.sin(angle + Math.PI / 6)
+          );
+          ctx.strokeStyle = edgeColor;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+    }
     
     // Draw nodes
     nodes.forEach(node => {
@@ -104,18 +118,18 @@ const GraphCanvas = forwardRef(({
         nodeColor = '#ef4444'; // Red for end
         borderColor = '#dc2626';
         textColor = '#ffffff';
-      } else if (stepData.visitedNodes?.includes(node.id)) {
+      } else if (safeStepData.visitedNodes?.includes(node.id)) {
         nodeColor = '#10b981'; // Green for visited
         borderColor = '#059669';
         textColor = '#ffffff';
-      } else if (stepData.currentNodes?.includes(node.id)) {
+      } else if (safeStepData.currentNodes?.includes(node.id)) {
         nodeColor = '#f59e0b'; // Orange for current
         borderColor = '#d97706';
         textColor = '#ffffff';
         radius = 25; // Larger for current
       }
       
-      // Draw node
+      // Draw node circle
       ctx.beginPath();
       ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = nodeColor;
@@ -128,12 +142,12 @@ const GraphCanvas = forwardRef(({
       ctx.fillStyle = textColor;
       ctx.font = 'bold 14px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(node.label, node.x, node.y + 5);
+      ctx.fillText(node.label || node.id.toString(), node.x, node.y + 5);
       
       // Draw distance (for shortest path algorithms)
-      if (stepData.distances && stepData.distances[node.id] !== undefined) {
-        const distance = stepData.distances[node.id];
-        if (distance !== Infinity) {
+      if (safeStepData.distances && safeStepData.distances[node.id] !== undefined) {
+        const distance = safeStepData.distances[node.id];
+        if (distance !== Infinity && distance !== undefined) {
           ctx.fillStyle = darkMode ? '#fbbf24' : '#f59e0b';
           ctx.font = '10px Arial';
           ctx.fillText(`d:${distance}`, node.x, node.y - radius - 5);

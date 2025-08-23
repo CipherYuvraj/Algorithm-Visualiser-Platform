@@ -18,34 +18,67 @@ const GraphInput = ({
     const newNode = {
       id: nodes.length,
       label: String.fromCharCode(65 + nodes.length),
-      x: Math.random() * 400 + 100,
-      y: Math.random() * 200 + 100
+      x: Math.random() * 300 + 150,
+      y: Math.random() * 200 + 150
     };
     onNodesChange([...nodes, newNode]);
   };
 
   const removeNode = (nodeId) => {
-    const newNodes = nodes.filter(n => n.id !== nodeId).map((n, i) => ({ ...n, id: i }));
+    if (nodes.length <= 2) return; // Keep minimum 2 nodes
+    
+    const newNodes = nodes.filter(n => n.id !== nodeId).map((n, i) => ({ 
+      ...n, 
+      id: i,
+      label: String.fromCharCode(65 + i)
+    }));
+    
     const newEdges = edges.filter(e => e.from_node !== nodeId && e.to !== nodeId)
                          .map(e => ({
                            ...e,
                            from_node: e.from_node > nodeId ? e.from_node - 1 : e.from_node,
                            to: e.to > nodeId ? e.to - 1 : e.to
                          }));
+    
     onNodesChange(newNodes);
     onEdgesChange(newEdges);
+    
+    // Update start/end nodes if necessary
+    if (startNode === nodeId) {
+      onStartNodeChange(0);
+    } else if (startNode > nodeId) {
+      onStartNodeChange(startNode - 1);
+    }
+    
+    if (endNode === nodeId) {
+      onEndNodeChange(newNodes.length - 1);
+    } else if (endNode > nodeId) {
+      onEndNodeChange(endNode - 1);
+    }
   };
 
   const addEdge = () => {
     if (nodes.length < 2) return;
     
-    const newEdge = {
-      from_node: 0,
-      to: nodes.length > 1 ? 1 : 0,
-      weight: 1,
-      directed: false
-    };
-    onEdgesChange([...edges, newEdge]);
+    // Find a valid edge that doesn't already exist
+    let from_node = 0;
+    let to_node = 1;
+    
+    // Check if edge already exists
+    const edgeExists = edges.some(e => 
+      (e.from_node === from_node && e.to === to_node) ||
+      (!e.directed && e.from_node === to_node && e.to === from_node)
+    );
+    
+    if (!edgeExists) {
+      const newEdge = {
+        from_node,
+        to: to_node,
+        weight: Math.floor(Math.random() * 9) + 1,
+        directed: false
+      };
+      onEdgesChange([...edges, newEdge]);
+    }
   };
 
   const updateEdge = (index, field, value) => {
