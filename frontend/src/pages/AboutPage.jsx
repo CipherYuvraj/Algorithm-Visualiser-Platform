@@ -6,14 +6,14 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
     {
       name: "Yuvraj Udaywal",
       role: "Full Stack Developer & Algorithm Enthusiast",
-      image: "https://via.placeholder.com/150", // You can replace this with your actual photo URL
+      image: "https://media.licdn.com/dms/image/v2/D5603AQFLCUEgIl_LeQ/profile-displayphoto-shrink_400_400/B56ZORqIfpGkAk-/0/1733315563362?e=1758758400&v=beta&t=9ChWV-bbcGmN1z59_MA3-Stt6TM4xOaTlIX-fTIm7Lk", // You can replace this with your actual photo URL
       description: "Passionate about creating innovative web applications and making complex algorithms accessible through interactive visualizations",
       education: "Bachelor of Technology in Computer Science",
       location: "India",
       experience: "Full Stack Development | React.js | Node.js | Python",
-      github: "https://github.com/yuvrajudaywal", // Update with your actual GitHub
-      linkedin: "https://linkedin.com/in/yuvraj-udaywal", // Update with your actual LinkedIn
-      email: "yuvraj.udaywal@example.com" // Update with your actual email
+      github: "https://github.com/CipherYuvraj",
+      linkedin: "https://www.linkedin.com/in/yuvraj-udaywal-7a5ba9275/", 
+      email: "yuvraj.udaywal45@gmail.com"
     }
   ];
 
