@@ -7,6 +7,8 @@ import GraphVisualizer from './pages/GraphVisualizer';
 import StringVisualizer from './pages/StringVisualizer';
 import DPVisualizer from './pages/DPVisualizer';
 import HomePage from './pages/Home';
+import AboutPage from './pages/AboutPage';
+import DocumentationPage from './pages/DocumentationPage';
 import './App.css';
 
 function App() {
@@ -63,6 +65,14 @@ function App() {
             <Route 
               path="/dp" 
               element={<DPVisualizer darkMode={darkMode} setDarkMode={setDarkMode} />} 
+            />
+            <Route 
+              path="/about" 
+              element={<AboutPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+            />
+            <Route 
+              path="/docs" 
+              element={<DocumentationPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
             />
           </Routes>
         </Layout>

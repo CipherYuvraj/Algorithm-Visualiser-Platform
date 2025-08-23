@@ -166,36 +166,52 @@ async def run_string_algorithm(algorithm: str, request: dict):
 async def run_dp_algorithm(algorithm: str, request: dict):
     return {"steps": [], "message": "DP algorithms coming soon"}
 
-# Conditional static file serving for production
-if IS_PRODUCTION:
-    # Check if build directory exists
-    frontend_build_path = Path("../frontend/build")
-    static_path = frontend_build_path / "static"
+# Function to check if frontend is built
+def check_frontend_availability():
+    possible_paths = [
+        Path("../frontend/build"),  # Development
+        Path("./frontend/build"),   # Docker/Production
+        Path("frontend/build"),     # Alternative
+        Path("build"),              # If moved to root
+    ]
     
-    if frontend_build_path.exists() and static_path.exists():
-        print(f"✅ Serving static files from: {static_path}")
+    for path in possible_paths:
+        index_path = path / "index.html"
+        if index_path.exists():
+            print(f"✅ Frontend found at: {path}")
+            return path, True
+    
+    print("❌ Frontend build not found. Available paths checked:")
+    for path in possible_paths:
+        print(f"   - {path.absolute()} (exists: {path.exists()})")
+    return None, False
+
+# Check frontend and setup static serving
+frontend_path, frontend_available = check_frontend_availability()
+
+if IS_PRODUCTION and frontend_available:
+    static_path = frontend_path / "static"
+    if static_path.exists():
         app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+        print(f"✅ Static files mounted from: {static_path}")
+    
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        # Skip API routes
+        if full_path.startswith(("api/", "docs", "openapi", "health")):
+            raise HTTPException(status_code=404, detail="Not found")
         
-        @app.get("/{full_path:path}")
-        async def serve_react_app(full_path: str):
-            # Don't serve API routes through React
-            if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi"):
-                raise HTTPException(status_code=404, detail="Not found")
-            
-            # Try to serve specific file
-            file_path = frontend_build_path / full_path
-            if file_path.exists() and file_path.is_file():
-                return FileResponse(str(file_path))
-            
-            # Fall back to index.html for client-side routing
-            index_path = frontend_build_path / "index.html"
-            if index_path.exists():
-                return FileResponse(str(index_path))
-            
-            raise HTTPException(status_code=404, detail="Frontend not built")
-    else:
-        print(f"⚠️  Frontend build directory not found at: {frontend_build_path}")
-        print("   Run 'npm run build' in the frontend directory first")
+        # Try to serve specific file
+        file_path = frontend_path / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(str(file_path))
+        
+        # Fall back to index.html for client-side routing
+        index_path = frontend_path / "index.html"
+        if index_path.exists():
+            return FileResponse(str(index_path))
+        
+        raise HTTPException(status_code=404, detail="Frontend not built")
 
 @app.get("/")
 async def root():
@@ -203,12 +219,9 @@ async def root():
         "message": "Algorithm Visualizer API",
         "version": "1.0.0",
         "environment": ENVIRONMENT,
-        "frontend_available": IS_PRODUCTION and Path("../frontend/build/index.html").exists()
+        "frontend_available": frontend_available,
+        "frontend_path": str(frontend_path) if frontend_path else "Not found"
     }
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "environment": ENVIRONMENT}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
