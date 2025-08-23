@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/200x200/4F46E5/FFFFFF?text=AVP" alt="Algorithm Visualizer Pro Logo" width="200"/>
+  <img src="image.png" alt="Algorithm Visualizer Pro Logo" width="200"/>
   
   # 🎯 Algorithm Visualizer Pro
   
@@ -11,7 +11,7 @@
   [![License](https://img.shields.io/badge/License-MIT-purple)](LICENSE)
   [![Deployment](https://img.shields.io/badge/Deploy-Ready-success)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform)
   
-  [🚀 Live Demo](https://algorithm-visualizer-pro.vercel.app) · [📖 Documentation](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/wiki) · [🐛 Report Bug](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues) · [💡 Request Feature](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues)
+  [🚀 Live Demo](https://algorithm-visualiser-yuvraj.onrender.com/) · [📖 Documentation](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/) · [🐛 Report Bug](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues) · [💡 Request Feature](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
 </div>
 
 ---
@@ -114,7 +114,7 @@ To bridge the gap between theoretical computer science and practical understandi
 |------------|---------|
 | **Docker** | Containerization and consistent environments |
 | **Docker Compose** | Multi-container orchestration |
-| **Vercel** | Frontend deployment and CDN |
+| **Render** | Frontend deployment and CDN |
 | **Render/Railway** | Backend API deployment |
 | **GitHub Actions** | CI/CD pipeline automation |
 
@@ -171,16 +171,13 @@ To bridge the gap between theoretical computer science and practical understandi
 <div align="center">
   
 ### 🏠 Home Page
-![Home Page](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Modern+Landing+Page+with+Hero+Section)
+![Home Page](![alt text](image-1.png))
 
 ### 🎮 Algorithm Visualization
-![Sorting Algorithm](https://via.placeholder.com/800x400/059669/FFFFFF?text=Interactive+Sorting+Algorithm+Visualization)
-
-### 📊 Performance Dashboard
-![Performance](https://via.placeholder.com/800x400/DC2626/FFFFFF?text=Real-time+Performance+Analytics)
+![Sorting Algorithm](![alt text](image-2.png))
 
 ### 🌙 Dark Mode Experience
-![Dark Mode](https://via.placeholder.com/800x400/1F2937/FFFFFF?text=Beautiful+Dark+Mode+Interface)
+![Dark Mode](![alt text](image-3.png))
 
 </div>
 
@@ -335,21 +332,8 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ---
 
-## ☁️ Deployment
 
-### 🌐 Vercel (Frontend)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
-```
-
-### 🚀 Render (Backend)
+### 🚀 Render
 
 1. **Create new Web Service** on [Render](https://render.com)
 2. **Connect GitHub repository**
