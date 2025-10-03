@@ -9,6 +9,7 @@ import DPVisualizer from './pages/DPVisualizer';
 import HomePage from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import DocumentationPage from './pages/DocumentationPage';
+import ContributorsPage from './pages/ContributorsPage';
 import './App.css';
 
 function App() {
@@ -73,6 +74,10 @@ function App() {
             <Route 
               path="/docs" 
               element={<DocumentationPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+            />
+            <Route 
+              path="/contributors" 
+              element={<ContributorsPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
             />
           </Routes>
         </Layout>
