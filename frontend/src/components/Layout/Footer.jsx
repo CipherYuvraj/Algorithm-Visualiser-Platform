@@ -1,6 +1,7 @@
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 
-const Footer = ({ darkMode }) => {
+const Footer = ({ theme }) => {
+  const isDark = theme === 'dark';
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
@@ -35,7 +36,7 @@ const Footer = ({ darkMode }) => {
   return (
     <footer
       className={`py-12 transition-all duration-500 ${
-        darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-800"
+        isDark ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-800"
       }`}
     >
       {/* Top Row: Social & Quick Links */}
@@ -70,7 +71,7 @@ const Footer = ({ darkMode }) => {
         <div className="flex-1">
           <h3
             className={`text-lg font-semibold mb-4 ${
-              darkMode ? "text-white" : "text-gray-900"
+              isDark ? "text-white" : "text-gray-900"
             }`}
           >
             Quick Links
@@ -92,7 +93,7 @@ const Footer = ({ darkMode }) => {
       {/* Divider */}
       <div
         className={`mt-10 border-t ${
-          darkMode ? "border-gray-700" : "border-gray-300"
+          isDark ? "border-gray-700" : "border-gray-300"
         }`}
       ></div>
 
