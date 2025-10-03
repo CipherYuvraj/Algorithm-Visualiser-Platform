@@ -44,6 +44,8 @@ logs/
 htmlcov/
 .coverage
 coverage.xml
+# Documentation file
+ISSUES_FOR_CONTRIBUTORS.md
 
 # React build
 frontend/build/
