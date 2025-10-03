@@ -10,6 +10,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f9fafb;
+  color: #111827;
+}
+
+.dark body {
+  background-color: #111827; /* gray-900 */
+  color: #e5e7eb; /* gray-200 */
 }
 
 code {
