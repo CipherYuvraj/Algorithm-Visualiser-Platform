@@ -11,6 +11,7 @@ import HomePage from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import DocumentationPage from './pages/DocumentationPage';
 import ContributorsPage from './pages/ContributorsPage';
+import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
 function App() {
@@ -96,6 +97,10 @@ function App() {
             <Route 
               path="/contributors" 
               element={<ContributorsPage theme={theme} />} 
+            />
+            <Route 
+              path="*" 
+              element={<NotFoundPage theme={theme} />} 
             />
           </Routes>
         </Layout>
