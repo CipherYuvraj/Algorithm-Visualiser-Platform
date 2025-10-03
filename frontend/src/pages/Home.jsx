@@ -72,17 +72,17 @@ const Home = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl md:mx-auto mx-4">
       {/* Hero Section */}
       <div className="text-center py-12">
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+        <h1 className="text-3xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
           Algorithm <span className="text-primary-600">Visualizer</span>
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+        <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 md:max-w-3xl max-w-80 mx-auto">
           An interactive platform to learn, visualize, and analyze data structures and algorithms. 
           Built with C++ performance and modern web technologies.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center md:mx-0 mx-4">
           <Link
             to="/sorting"
             className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors shadow-medium"
@@ -169,13 +169,13 @@ const Home = () => {
 
       {/* Quick Start Section */}
       <section className="py-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl text-white text-center">
-        <h2 className="text-3xl font-bold mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">
           Ready to Start Learning?
         </h2>
-        <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
+        <p className="md:text-xl text-lg text-primary-100 mb-8 max-w-2xl md:mx-auto mx-6">
           Choose an algorithm category and start visualizing. No setup required - just click and learn!
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center md:mx-0 mx-4">
           <Link
             to="/sorting"
             className="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition-colors"
