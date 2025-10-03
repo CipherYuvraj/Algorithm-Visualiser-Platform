@@ -84,16 +84,8 @@ const Navbar = ({ theme, onThemeChange }) => {
       <nav className={`
         fixed top-0 left-0 right-0 z-50 transition-all duration-200
         ${isScrolled 
-          ? `backdrop-blur-xl border-b ${
-              isDark 
-                ? 'bg-gray-900/80 border-gray-800' 
-                : 'bg-white/80 border-gray-200'
-            }` 
-          : `backdrop-blur-sm ${
-              isDark 
-                ? 'bg-gray-900/40 border-gray-800/40' 
-                : 'bg-white/40 border-gray-200/40'
-            } border-b`
+          ? `backdrop-blur-xl border-b ${isDark ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'}` 
+          : `backdrop-blur-sm ${isDark ? 'bg-gray-900/40 border-gray-800/40' : 'bg-white/40 border-gray-200/40'} border-b`
         }
       `}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,10 +100,7 @@ const Navbar = ({ theme, onThemeChange }) => {
                   transition-colors duration-200 focus-visible:outline-none 
                   focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
                   rounded-lg px-2 py-1
-                  ${isDark 
-                    ? 'text-white hover:text-blue-400 focus-visible:ring-offset-gray-900' 
-                    : 'text-gray-900 hover:text-blue-600 focus-visible:ring-offset-white'
-                  }
+                  ${isDark ? 'text-white hover:text-blue-400 focus-visible:ring-offset-gray-900' : 'text-gray-900 hover:text-blue-600 focus-visible:ring-offset-white'}
                 `}
               >
                 <div className={`
@@ -137,10 +126,7 @@ const Navbar = ({ theme, onThemeChange }) => {
                       focus-visible:ring-blue-500 focus-visible:ring-offset-2
                       ${isActive(path)
                         ? 'bg-blue-600 text-white'
-                        : (isDark 
-                            ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                          )
+                        : (isDark ? 'text-gray-300 hover:text-white hover:bg-gray-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100')
                       }
                     `}
                   >
@@ -165,10 +151,7 @@ const Navbar = ({ theme, onThemeChange }) => {
                   p-2 rounded-lg transition-colors duration-200
                   focus-visible:outline-none focus-visible:ring-2 
                   focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                  ${isDark 
-                    ? 'hover:bg-gray-800 text-gray-300 hover:text-white focus-visible:ring-offset-gray-900' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900 focus-visible:ring-offset-white'
-                  }
+                  ${isDark ? 'hover:bg-gray-800 text-gray-300 hover:text-white focus-visible:ring-offset-gray-900' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900 focus-visible:ring-offset-white'}
                 `}
               >
                 {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -179,10 +162,7 @@ const Navbar = ({ theme, onThemeChange }) => {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className={`
-            md:hidden border-t backdrop-blur-xl
-            ${isDark ? 'bg-gray-900/95 border-gray-800' : 'bg-white/95 border-gray-200'}
-          `}>
+          <div className={`md:hidden border-t backdrop-blur-xl ${isDark ? 'bg-gray-900/95 border-gray-800' : 'bg-white/95 border-gray-200'}`}>
             <div className="px-4 py-3 space-y-1">
               {navItems.map(({ path, label, icon: Icon }) => (
                 <Link
@@ -194,10 +174,8 @@ const Navbar = ({ theme, onThemeChange }) => {
                     focus-visible:outline-none focus-visible:ring-2 
                     focus-visible:ring-blue-500 focus-visible:ring-offset-2
                     ${isDark 
-                      ? `hover:bg-gray-800 focus-visible:ring-offset-gray-900
-                         ${isActive(path) ? 'bg-gray-800 text-white' : 'text-gray-300'}`
-                      : `hover:bg-gray-100 focus-visible:ring-offset-white
-                         ${isActive(path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600'}`
+                      ? `hover:bg-gray-800 focus-visible:ring-offset-gray-900 ${isActive(path) ? 'bg-gray-800 text-white' : 'text-gray-300'}`
+                      : `hover:bg-gray-100 focus-visible:ring-offset-white ${isActive(path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600'}`
                     }
                   `}
                 >
@@ -205,7 +183,12 @@ const Navbar = ({ theme, onThemeChange }) => {
                   <span className="text-sm font-medium">{label}</span>
                 </Link>
               ))}
-              
+
+              {/* Theme toggle for mobile */}
+              <div className="px-3 py-2">
+                <ThemeToggle theme={theme} onToggle={onThemeChange} />
+              </div>
+
               {/* Mobile CTA */}
               <div className="pt-3 mt-3 border-t border-gray-700">
                 <Link
