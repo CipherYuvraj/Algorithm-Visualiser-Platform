@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Code, AlertCircle, Cpu, ArrowLeft } from "lucide-react";
+import { AlertCircle, Cpu, ArrowLeft } from "lucide-react";
 
 const NotFoundPage = ({ theme }) => {
   const isDark = theme === "dark";
@@ -14,18 +14,13 @@ const NotFoundPage = ({ theme }) => {
     >
       {/* Floating icons for tech vibe */}
       <div className="absolute top-20 left-10 opacity-40 animate-bounce-slow">
-        <Code
-          className={`${isDark ? "text-white" : "text-gray-600"} w-16 h-16`}
-        />
-      </div>
-      <div className="absolute bottom-24 right-16 opacity-40 animate-spin-slow">
-        <Cpu
-          className={`${isDark ? "text-white" : "text-gray-600"} w-20 h-20`}
-        />
-      </div>
-      <div className="absolute top-40 right-20 opacity-40 animate-pulse-slow">
         <AlertCircle
           className={`${isDark ? "text-white" : "text-gray-600"} w-12 h-12`}
+        />
+      </div>
+      <div className="absolute bottom-20 right-32 opacity-40 animate-spin-slow">
+        <Cpu
+          className={`${isDark ? "text-white" : "text-gray-600"} w-20 h-20`}
         />
       </div>
 
