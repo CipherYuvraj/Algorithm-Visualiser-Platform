@@ -7,17 +7,21 @@ struct GraphNode {
     int id;
     std::string label;
     double x, y;
-    
-    GraphNode(int id, const std::string& label = "", double x = 0.0, double y = 0.0);
+    std::string color;
+
+    GraphNode(int id, const std::string& label = "", double x = 0.0, double y = 0.0, const std::string& color = "white");
 };
+
 
 struct GraphEdge {
     int from, to;
     double weight;
     bool directed;
-    
-    GraphEdge(int from, int to, double weight = 1.0, bool directed = false);
+    std::string color;
+
+    GraphEdge(int from, int to, double weight = 1.0, bool directed = false, const std::string& color = "black");
 };
+
 
 struct GraphStep {
     std::vector<int> visitedNodes;
