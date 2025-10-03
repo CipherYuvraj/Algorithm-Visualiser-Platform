@@ -1,6 +1,43 @@
+:root {
+  /* Light theme variables */
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #60a5fa;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Animation durations */
+  --transition-duration: 300ms;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[class~="dark"] {
+  /* Dark theme variables */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --accent-primary: #60a5fa;
+  --accent-secondary: #93c5fd;
+  --border-color: #374151;
+  --shadow-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Apply transitions to theme changes */
+*, *::before, *::after {
+  transition: background-color var(--transition-duration) var(--transition-timing),
+              border-color var(--transition-duration) var(--transition-timing),
+              color var(--transition-duration) var(--transition-timing),
+              box-shadow var(--transition-duration) var(--transition-timing);
+}
+
 .App {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Loading spinner */

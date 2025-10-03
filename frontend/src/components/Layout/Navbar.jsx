@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronDown, User, Settings, LogOut, Moon, Sun, Zap, BarChart3, Network, Code, BookOpen, Type, Layers, Info } from 'lucide-react';
+import { Menu, X, ChevronDown, User, Settings, LogOut, Zap, BarChart3, Network, Code, BookOpen, Type, Layers, Info } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
-const Navbar = ({ darkMode, setDarkMode }) => {
+const Navbar = ({ theme, onThemeChange }) => {
+  const isDark = theme === 'dark';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -83,12 +85,12 @@ const Navbar = ({ darkMode, setDarkMode }) => {
         fixed top-0 left-0 right-0 z-50 transition-all duration-200
         ${isScrolled 
           ? `backdrop-blur-xl border-b ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-900/80 border-gray-800' 
                 : 'bg-white/80 border-gray-200'
             }` 
           : `backdrop-blur-sm ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-900/40 border-gray-800/40' 
                 : 'bg-white/40 border-gray-200/40'
             } border-b`
@@ -106,7 +108,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                   transition-colors duration-200 focus-visible:outline-none 
                   focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
                   rounded-lg px-2 py-1
-                  ${darkMode 
+                  ${isDark 
                     ? 'text-white hover:text-blue-400 focus-visible:ring-offset-gray-900' 
                     : 'text-gray-900 hover:text-blue-600 focus-visible:ring-offset-white'
                   }
@@ -134,8 +136,8 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                       focus-visible:outline-none focus-visible:ring-2 
                       focus-visible:ring-blue-500 focus-visible:ring-offset-2
                       ${isActive(path)
-                        ? (darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white')
-                        : (darkMode 
+                        ? 'bg-blue-600 text-white'
+                        : (isDark 
                             ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                             : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                           )
@@ -152,19 +154,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             {/* Right side items */}
             <div className="hidden md:flex items-center space-x-3">
               {/* Theme Toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`
-                  p-2 rounded-lg transition-all
-                  ${darkMode 
-                    ? 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30' 
-                    : 'bg-gray-800/20 text-gray-600 hover:bg-gray-800/30'
-                  }
-                `}
-                aria-label="Toggle theme"
-              >
-                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
+              <ThemeToggle theme={theme} onToggle={onThemeChange} />
             </div>
 
             {/* Mobile menu button */}
@@ -175,7 +165,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                   p-2 rounded-lg transition-colors duration-200
                   focus-visible:outline-none focus-visible:ring-2 
                   focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                  ${darkMode 
+                  ${isDark 
                     ? 'hover:bg-gray-800 text-gray-300 hover:text-white focus-visible:ring-offset-gray-900' 
                     : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900 focus-visible:ring-offset-white'
                   }
@@ -191,7 +181,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
         {isMenuOpen && (
           <div className={`
             md:hidden border-t backdrop-blur-xl
-            ${darkMode ? 'bg-gray-900/95 border-gray-800' : 'bg-white/95 border-gray-200'}
+            ${isDark ? 'bg-gray-900/95 border-gray-800' : 'bg-white/95 border-gray-200'}
           `}>
             <div className="px-4 py-3 space-y-1">
               {navItems.map(({ path, label, icon: Icon }) => (
@@ -203,7 +193,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                     transition-colors duration-200
                     focus-visible:outline-none focus-visible:ring-2 
                     focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                    ${darkMode 
+                    ${isDark 
                       ? `hover:bg-gray-800 focus-visible:ring-offset-gray-900
                          ${isActive(path) ? 'bg-gray-800 text-white' : 'text-gray-300'}`
                       : `hover:bg-gray-100 focus-visible:ring-offset-white
@@ -227,7 +217,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                     transition-all duration-200
                     focus-visible:outline-none focus-visible:ring-2 
                     focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                    ${darkMode ? 'focus-visible:ring-offset-gray-900' : 'focus-visible:ring-offset-white'}
+                    ${isDark ? 'focus-visible:ring-offset-gray-900' : 'focus-visible:ring-offset-white'}
                   `}
                 >
                   Get Started

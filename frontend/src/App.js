@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout/Layout';
+import { getUserPreferences, setUserPreferences } from './services/userPreferences';
 import SortingVisualizer from './pages/SortingVisualizer';
 import GraphVisualizer from './pages/GraphVisualizer';
 import StringVisualizer from './pages/StringVisualizer';
@@ -13,71 +14,88 @@ import ContributorsPage from './pages/ContributorsPage';
 import './App.css';
 
 function App() {
-  // Dark mode state with persistence
-  const [darkMode, setDarkMode] = useState(() => {
+  // Theme state with persistence
+  const [theme, setTheme] = useState(() => {
+    // Check system preference first
+    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     try {
-      const saved = localStorage.getItem('darkMode');
-      return saved ? JSON.parse(saved) : false;
+      const { theme: savedTheme } = getUserPreferences();
+      return savedTheme || systemPreference;
     } catch (error) {
-      console.error('Error loading dark mode preference:', error);
-      return false;
+      console.error('Error loading theme preference:', error);
+      return systemPreference;
     }
   });
 
-  // Save dark mode preference
-  useEffect(() => {
-    try {
-      localStorage.setItem('darkMode', JSON.stringify(darkMode));
-      
-      // Update document class for global styling
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } catch (error) {
-      console.error('Error saving dark mode preference:', error);
+  // Update theme and save preference
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    
+    // Save to localStorage
+    const preferences = getUserPreferences();
+    setUserPreferences({ ...preferences, theme: newTheme });
+    
+    // Update document class for global styling
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, [darkMode]);
+  };
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      const systemTheme = e.matches ? 'dark' : 'light';
+      handleThemeChange(systemTheme);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Apply theme on mount and changes
+  useEffect(() => {
+    handleThemeChange(theme);
+  }, [theme]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'dark bg-gray-900' : 'bg-white'
-    }`}>
+    <div className="App">
       <Router>
-        <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
+        <Layout theme={theme} onThemeChange={handleThemeChange}>
           <Routes>
             <Route 
               path="/" 
-              element={<HomePage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<HomePage theme={theme} />} 
             />
             <Route 
               path="/sorting" 
-              element={<SortingVisualizer darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<SortingVisualizer theme={theme} />} 
             />
             <Route 
               path="/graph" 
-              element={<GraphVisualizer darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<GraphVisualizer theme={theme} />} 
             />
             <Route 
               path="/string" 
-              element={<StringVisualizer darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<StringVisualizer theme={theme} />} 
             />
             <Route 
               path="/dp" 
-              element={<DPVisualizer darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<DPVisualizer theme={theme} />} 
             />
             <Route 
               path="/about" 
-              element={<AboutPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<AboutPage theme={theme} />} 
             />
             <Route 
               path="/docs" 
-              element={<DocumentationPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<DocumentationPage theme={theme} />} 
             />
             <Route 
               path="/contributors" 
-              element={<ContributorsPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+              element={<ContributorsPage theme={theme} />} 
             />
           </Routes>
         </Layout>
@@ -89,9 +107,9 @@ function App() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000',
-            border: `1px solid ${darkMode ? '#4B5563' : '#E5E7EB'}`,
+            background: theme === 'dark' ? '#374151' : '#ffffff',
+            color: theme === 'dark' ? '#ffffff' : '#000000',
+            border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
           },
         }}
       />
