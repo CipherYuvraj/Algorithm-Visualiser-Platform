@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="image.png" alt="Algorithm Visualizer Pro Logo" width="200"/>
+  <img src="image.png" alt="Algorithm Visualiser Pro Logo" width="200"/>
   
-  # 🎯 Algorithm Visualizer Pro
+  # 🎯 Algorithm Visualiser Pro
   
   **Transform Complex Algorithms into Interactive Visual Experiences**
   
@@ -9,7 +9,7 @@
   [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green?logo=fastapi)](https://fastapi.tiangolo.com/)
   [![Python](https://img.shields.io/badge/Python-3.11+-yellow?logo=python)](https://python.org/)
   [![License](https://img.shields.io/badge/License-MIT-purple)](LICENSE)
-  [![Deployment](https://img.shields.io/badge/Deploy-Ready-success)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform)
+  [![Deployment](https://img.shields.io/badge/Deploy-Ready-success)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform)
   
   [🚀 Live Demo](https://algorithm-visualiser-yuvraj.onrender.com/) · [📖 Documentation](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/) · [🐛 Report Bug](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues) · [💡 Request Feature](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
 </div>
@@ -21,7 +21,7 @@
 - [🌟 Overview](#-overview)
 - [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#️-tech-stack)
-- [🎯 Why Choose Algorithm Visualizer Pro?](#-why-choose-algorithm-visualizer-pro)
+- [🎯 Why Choose Algorithm Visualiser Pro?](#-why-choose-algorithm-Visualiser-pro)
 - [📸 Screenshots](#-screenshots)
 - [🚀 Quick Start](#-quick-start)
 - [⚙️ Installation](#️-installation)
@@ -39,7 +39,7 @@
 
 ## 🌟 Overview
 
-**Algorithm Visualizer Pro** is a cutting-edge educational platform that transforms abstract algorithmic concepts into engaging, interactive visual experiences. Built with modern web technologies, it serves as a comprehensive learning tool for students, educators, and algorithm enthusiasts worldwide.
+**Algorithm Visualiser Pro** is a cutting-edge educational platform that transforms abstract algorithmic concepts into engaging, interactive visual experiences. Built with modern web technologies, it serves as a comprehensive learning tool for students, educators, and algorithm enthusiasts worldwide.
 
 ### 🎯 Mission
 To bridge the gap between theoretical computer science and practical understanding by providing intuitive, step-by-step algorithm visualizations that make complex concepts accessible to learners at all levels.
@@ -122,13 +122,13 @@ To bridge the gap between theoretical computer science and practical understandi
 
 ---
 
-## 🎯 Why Choose Algorithm Visualizer Pro?
+## 🎯 Why Choose Algorithm Visualiser Pro?
 
 <div align="center">
   <table>
     <tr>
       <th>🆚 Feature</th>
-      <th>✅ Algorithm Visualizer Pro</th>
+      <th>✅ Algorithm Visualiser Pro</th>
       <th>❌ Traditional Learning</th>
     </tr>
     <tr>
@@ -189,8 +189,8 @@ Get up and running in under 5 minutes!
 
 ```bash
 # 1️⃣ Clone the repository
-git clone https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform.git
-cd Algorithm-Visualizer-Platform
+git clone https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform.git
+cd Algorithm-Visualiser-Platform
 
 # 2️⃣ Install dependencies
 npm install
@@ -220,7 +220,7 @@ npm run dev:api    # Backend (http://localhost:8000)
 
 ```bash
 # Navigate to project root
-cd Algorithm-Visualizer-Platform/frontend
+cd Algorithm-Visualiser-Platform/frontend
 
 # Install dependencies
 npm install
@@ -236,7 +236,7 @@ npm run lint:fix     # Fix ESLint issues
 **Environment Variables** (`.env`):
 ```env
 VITE_API_BASE_URL=http://localhost:8000
-VITE_APP_TITLE="Algorithm Visualizer Pro"
+VITE_APP_TITLE="Algorithm Visualiser Pro"
 VITE_ENABLE_ANALYTICS=false
 ```
 
@@ -247,7 +247,7 @@ VITE_ENABLE_ANALYTICS=false
 
 ```bash
 # Navigate to backend directory
-cd Algorithm-Visualizer-Platform/backend
+cd Algorithm-Visualiser-Platform/backend
 
 # Create virtual environment
 python -m venv venv
@@ -346,11 +346,11 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ```bash
 # Build and push images
-docker build -t yourusername/algo-visualizer-frontend ./frontend
-docker build -t yourusername/algo-visualizer-backend ./backend
+docker build -t yourusername/algo-Visualiser-frontend ./frontend
+docker build -t yourusername/algo-Visualiser-backend ./backend
 
-docker push yourusername/algo-visualizer-frontend
-docker push yourusername/algo-visualizer-backend
+docker push yourusername/algo-Visualiser-frontend
+docker push yourusername/algo-Visualiser-backend
 ```
 
 ### ☁️ Cloud Platforms
@@ -363,9 +363,9 @@ docker push yourusername/algo-visualizer-backend
 # Build and tag for ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin your-account.dkr.ecr.us-east-1.amazonaws.com
 
-docker build -t algo-visualizer .
-docker tag algo-visualizer:latest your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
-docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
+docker build -t algo-Visualiser .
+docker tag algo-Visualiser:latest your-account.dkr.ecr.us-east-1.amazonaws.com/algo-Visualiser:latest
+docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-Visualiser:latest
 ```
 
 </details>
@@ -376,8 +376,8 @@ docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
 **Using Cloud Run:**
 ```bash
 # Build and deploy
-gcloud builds submit --tag gcr.io/PROJECT-ID/algo-visualizer
-gcloud run deploy --image gcr.io/PROJECT-ID/algo-visualizer --platform managed
+gcloud builds submit --tag gcr.io/PROJECT-ID/algo-Visualiser
+gcloud run deploy --image gcr.io/PROJECT-ID/algo-Visualiser --platform managed
 ```
 
 </details>
@@ -485,7 +485,7 @@ export default defineConfig({
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
-    app_name: str = "Algorithm Visualizer API"
+    app_name: str = "Algorithm Visualiser API"
     debug: bool = False
     cors_origins: list = ["http://localhost:3000"]
     
@@ -559,11 +559,11 @@ We welcome contributions from the community! Here's how you can help:
 
 ### 🐛 Bug Reports
 
-Use the [issue template](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues/new?template=bug_report.md) to report bugs.
+Use the [issue template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues/new?template=bug_report.md) to report bugs.
 
 ### 💡 Feature Requests
 
-Use the [feature request template](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues/new?template=feature_request.md) to suggest new features.
+Use the [feature request template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues/new?template=feature_request.md) to suggest new features.
 
 ---
 
@@ -626,9 +626,9 @@ Passionate about creating innovative web applications and making complex algorit
   
   **Need Help?**
   
-  [![Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/wiki)
-  [![Issues](https://img.shields.io/badge/🐛-Report%20Bug-red)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues)
-  [![Discussions](https://img.shields.io/badge/💬-Discussions-green)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/discussions)
+  [![Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/wiki)
+  [![Issues](https://img.shields.io/badge/🐛-Report%20Bug-red)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
+  [![Discussions](https://img.shields.io/badge/💬-Discussions-green)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/discussions)
   [![Email](https://img.shields.io/badge/📧-Contact-purple)](mailto:yuvraj.udaywal45@gmail.com)
   
   ---
@@ -637,6 +637,6 @@ Passionate about creating innovative web applications and making complex algorit
   
   **🔗 Share with friends and colleagues who might benefit from visual algorithm learning**
   
-  <sub>Made with ❤️ by [Yuvraj Udaywal](https://github.com/CipherYuvraj) | © 2024 Algorithm Visualizer Pro</sub>
+  <sub>Made with ❤️ by [Yuvraj Udaywal](https://github.com/CipherYuvraj) | © 2024 Algorithm Visualiser Pro</sub>
   
 </div>
