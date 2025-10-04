@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional, Dict, Any
+from services.tutorial_service import TutorialService
+from models.tutorial_models import Tutorial
 import uvicorn
 
 app = FastAPI(
@@ -13,6 +15,31 @@ app = FastAPI(
     description="Backend API for Algorithm Visualizer Platform",
     version="1.0.0"
 )
+
+# Tutorial routes
+@app.get("/api/tutorials", response_model=List[Tutorial])
+async def get_tutorials(
+    difficulty: Optional[str] = Query(None, description="Filter tutorials by difficulty level"),
+    category: Optional[str] = Query(None, description="Filter tutorials by category")
+):
+    """
+    Get all tutorials with optional filtering by difficulty or category.
+    """
+    if difficulty:
+        return TutorialService.get_tutorials_by_difficulty(difficulty)
+    elif category:
+        return TutorialService.get_tutorials_by_category(category)
+    return TutorialService.get_all_tutorials()
+
+@app.get("/api/tutorials/{tutorial_id}", response_model=Tutorial)
+async def get_tutorial(tutorial_id: str):
+    """
+    Get a specific tutorial by ID.
+    """
+    tutorial = TutorialService.get_tutorial_by_id(tutorial_id)
+    if not tutorial:
+        raise HTTPException(status_code=404, detail="Tutorial not found")
+    return tutorial
 
 # Environment detection
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
