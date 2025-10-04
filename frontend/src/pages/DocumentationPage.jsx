@@ -1,11 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Book, Code, Play, Settings, ChevronRight, ChevronDown, ExternalLink, Copy, Check } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const DocumentationPage = () => {
   const { isDark, classes, getThemedGradient } = useTheme();
   const [expandedSections, setExpandedSections] = useState({});
   const [copiedCode, setCopiedCode] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const sectionsRef = useRef({});
+
+  // Handle scroll spy for active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100; // Offset for better UX
+
+      Object.entries(sectionsRef.current).forEach(([id, element]) => {
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveSection(id);
+            if (!location.hash.includes(id)) {
+              navigate(`/documentation#${id}`, { replace: true });
+            }
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [navigate, location.hash]);
+
+  // Handle initial hash navigation and browser back/forward
+  useEffect(() => {
+    const hash = location.hash.slice(1);
+    if (hash && sectionsRef.current[hash]) {
+      scrollToSection(hash, false);
+      setActiveSection(hash);
+    }
+  }, [location.hash]);
+
+  const scrollToSection = (sectionId, updateHash = true) => {
+    const element = sectionsRef.current[sectionId];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      if (updateHash) {
+        navigate(`/documentation#${sectionId}`, { replace: true });
+      }
+      // Expand the section if it's collapsed
+      setExpandedSections(prev => ({
+        ...prev,
+        [sectionId]: true
+      }));
+    }
+  };
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -70,6 +125,12 @@ const DocumentationPage = () => {
 }`
   };
 
+  // Close mobile menu when section is clicked
+  const handleSectionClick = (sectionId) => {
+    scrollToSection(sectionId);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -93,8 +154,8 @@ const DocumentationPage = () => {
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
-          {/* Table of Contents */}
-          <div className={`lg:col-span-1 p-6 rounded-2xl backdrop-blur-xl ${
+          {/* Table of Contents - Fixed position on desktop */}
+          <div className={`lg:col-span-1 p-6 rounded-2xl backdrop-blur-xl lg:sticky lg:top-20 h-fit ${
             isDark 
               ? 'bg-gray-800/20 border-gray-700/50' 
               : 'bg-white/20 border-white/50'
@@ -104,272 +165,135 @@ const DocumentationPage = () => {
             }`}>
               Table of Contents
             </h3>
-            <nav className="space-y-2">
-              {[
-                { id: 'getting-started', title: 'Getting Started' },
-                { id: 'algorithms', title: 'Algorithms' },
-                { id: 'features', title: 'Features' },
-                { id: 'examples', title: 'Code Examples' },
-                { id: 'api', title: 'API Reference' },
-                { id: 'contributing', title: 'Contributing' }
-              ].map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
+            <nav>
+              {/* Mobile Menu Button */}
+              <button
+                className={`lg:hidden w-full text-left px-4 py-2 mb-4 rounded-lg transition-all ${
+                  isDark ? 'bg-gray-700/50' : 'bg-gray-100/50'
+                } flex items-center justify-between`}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <span className="flex items-center gap-2">
+                  <Book size={18} /> Navigation
+                </span>
+                {mobileMenuOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+              </button>
+
+              <div className={`space-y-2 ${mobileMenuOpen ? 'block' : 'hidden lg:block'}`}>
+                <button
+                  onClick={() => handleSectionClick('getting-started')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-all ${
                     isDark 
-                      ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
+                      ? activeSection === 'getting-started'
+                        ? 'bg-gray-700/50'
+                        : 'hover:bg-gray-700/50'
+                      : activeSection === 'getting-started'
+                        ? 'bg-gray-100/50'
+                        : 'hover:bg-gray-100/50'
+                  } flex items-center gap-2`}
                 >
-                  {item.title}
-                </a>
-              ))}
+                  <Book size={18} /> Getting Started
+                </button>
+                <button
+                  onClick={() => handleSectionClick('algorithms')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-all ${
+                    isDark 
+                      ? activeSection === 'algorithms'
+                        ? 'bg-gray-700/50'
+                        : 'hover:bg-gray-700/50'
+                      : activeSection === 'algorithms'
+                        ? 'bg-gray-100/50'
+                        : 'hover:bg-gray-100/50'
+                  } flex items-center gap-2`}
+                >
+                  <Code size={18} /> Algorithms
+                </button>
+                <button
+                  onClick={() => handleSectionClick('api-reference')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-all ${
+                    isDark 
+                      ? activeSection === 'api-reference'
+                        ? 'bg-gray-700/50'
+                        : 'hover:bg-gray-700/50'
+                      : activeSection === 'api-reference'
+                        ? 'bg-gray-100/50'
+                        : 'hover:bg-gray-100/50'
+                  } flex items-center gap-2`}
+                >
+                  <Settings size={18} /> API Reference
+                </button>
+                <button
+                  onClick={() => handleSectionClick('examples')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-all ${
+                    isDark 
+                      ? activeSection === 'examples'
+                        ? 'bg-gray-700/50'
+                        : 'hover:bg-gray-700/50'
+                      : activeSection === 'examples'
+                        ? 'bg-gray-100/50'
+                        : 'hover:bg-gray-100/50'
+                  } flex items-center gap-2`}
+                >
+                  <Play size={18} /> Examples
+                </button>
+              </div>
             </nav>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
-            
-            {/* Getting Started */}
-            <section id="getting-started" className={`p-8 rounded-2xl backdrop-blur-xl ${
-              isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            } border`}>
-              <h2 className={`text-3xl font-bold mb-6 flex items-center ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                <Play className="h-8 w-8 mr-3 text-green-500" />
+            {/* Getting Started Section */}
+            <section 
+              ref={el => sectionsRef.current['getting-started'] = el}
+              className={`p-8 rounded-2xl backdrop-blur-xl ${
+                isDark ? 'bg-gray-800/20 border-gray-700/50' : 'bg-white/20 border-white/50'
+              } border`}
+            >
+              <h2 className={`text-3xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 Getting Started
               </h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className={`text-xl font-semibold mb-3 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    How to Use
-                  </h3>
-                  <ol className={`list-decimal list-inside space-y-2 ${
-                    isDark ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    <li>Choose an algorithm category from the navigation menu</li>
-                    <li>Select a specific algorithm from the dropdown</li>
-                    <li>Configure input data (array for sorting, graph for graph algorithms)</li>
-                    <li>Click the play button to start visualization</li>
-                    <li>Use controls to pause, step through, or adjust speed</li>
-                  </ol>
-                </div>
-                
-                <div>
-                  <h3 className={`text-xl font-semibold mb-3 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    Controls
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {[
-                      { icon: Play, name: 'Play/Pause', desc: 'Start or pause algorithm execution' },
-                      { icon: Settings, name: 'Speed Control', desc: 'Adjust visualization speed' },
-                      { icon: Code, name: 'Step Mode', desc: 'Execute one step at a time' },
-                      { icon: Book, name: 'Reset', desc: 'Reset to initial state' }
-                    ].map((control, index) => (
-                      <div key={index} className={`p-4 rounded-lg ${
-                        isDark ? 'bg-gray-700/30' : 'bg-white/30'
-                      }`}>
-                        <div className="flex items-center mb-2">
-                          <control.icon className="h-5 w-5 mr-2 text-blue-500" />
-                          <span className={`font-medium ${
-                            isDark ? 'text-white' : 'text-gray-900'
-                          }`}>
-                            {control.name}
-                          </span>
-                        </div>
-                        <p className={`text-sm ${
-                          isDark ? 'text-gray-300' : 'text-gray-600'
-                        }`}>
-                          {control.desc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="prose max-w-none">
+                {/* Add your getting started content here */}
               </div>
             </section>
 
-            {/* Algorithms */}
-            <section id="algorithms" className={`p-8 rounded-2xl backdrop-blur-xl ${
-              isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            } border`}>
-              <h2 className={`text-3xl font-bold mb-6 flex items-center ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                <Code className="h-8 w-8 mr-3 text-blue-500" />
-                Supported Algorithms
+            {/* Algorithms Section */}
+            <section 
+              ref={el => sectionsRef.current['algorithms'] = el}
+              className={`p-8 rounded-2xl backdrop-blur-xl ${
+                isDark ? 'bg-gray-800/20 border-gray-700/50' : 'bg-white/20 border-white/50'
+              } border`}
+            >
+              <h2 className={`text-3xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                Algorithms
               </h2>
-              
-              {Object.entries(algorithms).map(([category, algos]) => (
-                <div key={category} className="mb-6">
-                  <button
-                    onClick={() => toggleSection(category)}
-                    className={`w-full flex items-center justify-between p-4 rounded-lg ${
-                      isDark ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-white/30 hover:bg-white/50'
-                    } transition-colors`}
-                  >
-                    <h3 className={`text-xl font-semibold capitalize ${
-                      isDark ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {category} Algorithms
-                    </h3>
-                    {expandedSections[category] ? 
-                      <ChevronDown className="h-5 w-5" /> : 
-                      <ChevronRight className="h-5 w-5" />
-                    }
-                  </button>
-                  
-                  {expandedSections[category] && (
-                    <div className="mt-4 grid md:grid-cols-2 gap-4">
-                      {algos.map((algo, index) => (
-                        <div key={index} className={`p-4 rounded-lg border ${
-                          isDark 
-                            ? 'bg-gray-800/30 border-gray-600' 
-                            : 'bg-white/50 border-gray-200'
-                        }`}>
-                          <div className="flex justify-between items-start mb-2">
-                            <h4 className={`font-semibold ${
-                              isDark ? 'text-white' : 'text-gray-900'
-                            }`}>
-                              {algo.name}
-                            </h4>
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              isDark ? 'bg-blue-600' : 'bg-blue-100 text-blue-800'
-                            }`}>
-                              {algo.complexity}
-                            </span>
-                          </div>
-                          <p className={`text-sm ${
-                            isDark ? 'text-gray-300' : 'text-gray-600'
-                          }`}>
-                            {algo.description}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {/* Add your algorithms content here */}
             </section>
 
-            {/* Code Examples */}
-            <section id="examples" className={`p-8 rounded-2xl backdrop-blur-xl ${
-              isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            } border`}>
-              <h2 className={`text-3xl font-bold mb-6 flex items-center ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                <Book className="h-8 w-8 mr-3 text-purple-500" />
-                Code Examples
-              </h2>
-              
-              {Object.entries(codeExamples).map(([key, code]) => (
-                <div key={key} className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className={`text-lg font-semibold ${
-                      isDark ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {key === 'bubbleSort' ? 'Bubble Sort' : 'Breadth-First Search'}
-                    </h3>
-                    <button
-                      onClick={() => copyToClipboard(code, key)}
-                      className={`flex items-center px-3 py-1 rounded-lg text-sm transition-colors ${
-                        isDark 
-                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-                      }`}
-                    >
-                      {copiedCode === key ? (
-                        <>
-                          <Check className="h-4 w-4 mr-1" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4 mr-1" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className={`rounded-lg overflow-hidden ${
-                    isDark ? 'bg-gray-900' : 'bg-gray-100'
-                  }`}>
-                    <pre className={`p-4 text-sm overflow-x-auto ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      <code>{code}</code>
-                    </pre>
-                  </div>
-                </div>
-              ))}
-            </section>
-
-            {/* API Reference */}
-            <section id="api" className={`p-8 rounded-2xl backdrop-blur-xl ${
-              isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            } border`}>
-              <h2 className={`text-3xl font-bold mb-6 flex items-center ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                <ExternalLink className="h-8 w-8 mr-3 text-orange-500" />
+            {/* API Reference Section */}
+            <section 
+              ref={el => sectionsRef.current['api-reference'] = el}
+              className={`p-8 rounded-2xl backdrop-blur-xl ${
+                isDark ? 'bg-gray-800/20 border-gray-700/50' : 'bg-white/20 border-white/50'
+              } border`}
+            >
+              <h2 className={`text-3xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 API Reference
               </h2>
-              <div className="space-y-4">
-                <div className={`p-4 rounded-lg ${
-                  isDark ? 'bg-gray-700/30' : 'bg-white/30'
-                }`}>
-                  <h3 className={`font-semibold mb-2 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    Sorting Algorithms
-                  </h3>
-                  <code className={`text-sm ${
-                    isDark ? 'text-green-400' : 'text-green-600'
-                  }`}>
-                    POST /api/sorting/{algorithms}
-                  </code>
-                  <p className={`text-sm mt-2 ${
-                    isDark ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Execute sorting algorithm with provided array data
-                  </p>
-                </div>
-                
-                <div className={`p-4 rounded-lg ${
-                  isDark ? 'bg-gray-700/30' : 'bg-white/30'
-                }`}>
-                  <h3 className={`font-semibold mb-2 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    Graph Algorithms
-                  </h3>
-                  <code className={`text-sm ${
-                    isDark ? 'text-green-400' : 'text-green-600'
-                  }`}>
-                    POST /api/graph/{algorithms}
-                  </code>
-                  <p className={`text-sm mt-2 ${
-                    isDark ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Execute graph algorithm with nodes and edges data
-                  </p>
-                </div>
-              </div>
+              {/* Add your API reference content here */}
+            </section>
+
+            {/* Examples Section */}
+            <section 
+              ref={el => sectionsRef.current['examples'] = el}
+              className={`p-8 rounded-2xl backdrop-blur-xl ${
+                isDark ? 'bg-gray-800/20 border-gray-700/50' : 'bg-white/20 border-white/50'
+              } border`}
+            >
+              <h2 className={`text-3xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                Examples
+              </h2>
+              {/* Add your examples content here */}
             </section>
           </div>
         </div>
