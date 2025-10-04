@@ -11,28 +11,13 @@ const TutorialLayout = ({ tutorialId }) => {
   useEffect(() => {
     // Load tutorial data
     const loadTutorial = async () => {
-      // TODO: Fetch tutorial data from backend
-      // For now using mock data
-      const mockTutorial = {
-        id: "sorting-tutorial",
-        title: "Sorting Algorithms Mastery",
-        steps: [
-          {
-            id: "intro",
-            type: "explanation",
-            content: "Sorting is fundamental...",
-            interactive: true,
-            quiz: {
-              question: "What is the time complexity of bubble sort?",
-              options: ["O(n)", "O(n²)", "O(n log n)", "O(1)"],
-              correct: 1
-            }
-          }
-        ],
-        prerequisites: ["basic-arrays"],
-        estimatedTime: "30 minutes"
-      };
-      setCurrentTutorial(mockTutorial);
+      try {
+        const tutorialData = await getTutorialById(tutorialId);
+        setCurrentTutorial(tutorialData);
+      } catch (error) {
+        console.error('Error loading tutorial:', error);
+        // Handle error appropriately
+      }
     };
 
     loadTutorial();

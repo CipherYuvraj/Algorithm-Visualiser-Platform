@@ -322,6 +322,43 @@ function generateFallbackSteps(algorithm, graphData) {
   return { steps };
 }
 
+// Tutorial API endpoints
+export const getTutorials = async (filters = {}) => {
+  const { difficulty, category } = filters;
+  const params = new URLSearchParams();
+  if (difficulty) params.append('difficulty', difficulty);
+  if (category) params.append('category', category);
+  
+  try {
+    const response = await axios.get(`${getApiBaseUrl()}/api/tutorials?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tutorials:', error);
+    throw error;
+  }
+};
+
+export const getTutorialById = async (tutorialId) => {
+  try {
+    const response = await axios.get(`${getApiBaseUrl()}/api/tutorials/${tutorialId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching tutorial ${tutorialId}:`, error);
+    throw error;
+  }
+};
+
+// Update the tutorial service to use the API
+export const updateTutorialProgress = async (tutorialId, progress) => {
+  // Store progress locally for now
+  // In a real application, this would be an API call
+  const existingProgress = localStorage.getItem('tutorialProgress');
+  const allProgress = existingProgress ? JSON.parse(existingProgress) : {};
+  allProgress[tutorialId] = progress;
+  localStorage.setItem('tutorialProgress', JSON.stringify(allProgress));
+  return progress;
+};
+
 console.log(`🔗 API Base URL: ${API_BASE_URL}`);
 console.log(`🏗️ Environment: ${process.env.NODE_ENV}`);
 

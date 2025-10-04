@@ -3,41 +3,25 @@ import { useNavigate } from 'react-router-dom';
 
 const TutorialsPage = ({ darkMode }) => {
   const navigate = useNavigate();
+  const [tutorials, setTutorials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const tutorials = [
-    {
-      id: 'sorting',
-      title: 'Sorting Algorithms',
-      description: 'Learn about different sorting algorithms and their implementations',
-      difficulty: 'Beginner',
-      duration: '30 minutes',
-      icon: '🔄'
-    },
-    {
-      id: 'graph',
-      title: 'Graph Algorithms',
-      description: 'Master graph traversal and pathfinding algorithms',
-      difficulty: 'Intermediate',
-      duration: '45 minutes',
-      icon: '🕸️'
-    },
-    {
-      id: 'string',
-      title: 'String Algorithms',
-      description: 'Explore pattern matching and string manipulation',
-      difficulty: 'Intermediate',
-      duration: '40 minutes',
-      icon: '📝'
-    },
-    {
-      id: 'dp',
-      title: 'Dynamic Programming',
-      description: 'Learn optimization through dynamic programming',
-      difficulty: 'Advanced',
-      duration: '60 minutes',
-      icon: '🧮'
-    }
-  ];
+  useEffect(() => {
+    const fetchTutorials = async () => {
+      try {
+        const data = await getTutorials();
+        setTutorials(data);
+      } catch (err) {
+        setError('Failed to load tutorials');
+        console.error('Error fetching tutorials:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTutorials();
+  }, []);
 
   const difficultyColors = {
     Beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
