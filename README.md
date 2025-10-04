@@ -96,7 +96,7 @@ To bridge the gap between theoretical computer science and practical understandi
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **React** | 18.2.0 | Core UI framework with hooks and context |
-| **Vite** | 5.0.0 | Lightning-fast build tool and dev server |
+| **Create React App** | 5.0.1 | Build tool and development server |
 | **TailwindCSS** | 3.3.0 | Utility-first styling framework |
 | **Lucide React** | 0.294.0 | Beautiful icon library |
 | **Framer Motion** | 10.16.0 | Smooth animations and transitions |
@@ -185,24 +185,40 @@ To bridge the gap between theoretical computer science and practical understandi
 
 ## 🚀 Quick Start
 
-Get up and running in under 5 minutes!
+Get up and running with these steps.
 
 ```bash
-
-# 1️⃣ Fork the repository
-
-# 2️⃣ Clone the repository
+# 1. Fork and Clone the repository
 git clone https://github.com/<your-username>/Algorithm-Visualiser-Platform.git
 cd Algorithm-Visualiser-Platform
 
-# 3️⃣ Install dependencies
+# 2. Install Frontend Dependencies
+# (This command installs for the entire monorepo, including the frontend)
 npm install
-cd backend && pip install -r requirements.txt
-cd backend && pip install -r requirements.txt
 
-# 4️⃣ Start development servers
-npm run dev        # Frontend (http://localhost:3000)
-npm run dev:api    # Backend (http://localhost:8000)
+# 3. Setup and Install Backend Dependencies
+# Create a virtual environment with Python 3.11
+py -3.11 -m venv venv
+
+# Activate the virtual environment
+.\venv\Scripts\Activate.ps1
+# On macOS/Linux, use: source venv/bin/activate
+
+# Install Python packages
+cd backend
+pip install -r requirements.txt
+cd ..
+
+# 4. Run the Development Servers (in two separate terminals)
+
+# In your FIRST terminal, run the backend:
+# (Make sure your venv is active)
+cd backend
+uvicorn main:app --reload
+
+# In your SECOND terminal, run the frontend:
+cd frontend
+npm start
 
 # 🎉 Open your browser and start exploring!
 ```
@@ -214,7 +230,7 @@ npm run dev:api    # Backend (http://localhost:8000)
 ### 📋 Prerequisites
 
 - **Node.js** 18.0+ ([Download](https://nodejs.org/))
-- **Python** 3.11+ ([Download](https://python.org/))
+ - **Python** 3.11.x ([Download](https://www.python.org/downloads/release/python-3119/)) - *Note: Versions 3.12 and newer are not compatible with the project's dependencies.*
 - **Git** ([Download](https://git-scm.com/))
 
 ### 🔧 Detailed Setup
