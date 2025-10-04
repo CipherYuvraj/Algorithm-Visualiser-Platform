@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import ConsentBanner from './components/ConsentBanner';
+import { usePageTracking } from './hooks/usePageTracking';
 import Layout from './components/Layout/Layout';
 import { getUserPreferences, setUserPreferences } from './services/userPreferences';
+import AnalyticsErrorBoundary from './components/AnalyticsErrorBoundary';
+import EnvCheck from './components/EnvCheck';
+import { AnalyticsProvider, useAnalytics } from './contexts/AnalyticsContext';
 import SortingVisualizer from './pages/SortingVisualizer';
 import GraphVisualizer from './pages/GraphVisualizer';
 import StringVisualizer from './pages/StringVisualizer';
@@ -14,7 +19,11 @@ import ContributorsPage from './pages/ContributorsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
-function App() {
+// Main App component with routing and theme management
+function AppContent() {
+  const location = useLocation();
+  usePageTracking();
+  
   // Theme state with persistence
   const [theme, setTheme] = useState(() => {
     // Check system preference first
@@ -62,51 +71,7 @@ function App() {
   }, [theme]);
 
   return (
-    <div className="App">
-      <Router>
-        <Layout theme={theme} onThemeChange={handleThemeChange}>
-          <Routes>
-            <Route 
-              path="/" 
-              element={<HomePage theme={theme} />} 
-            />
-            <Route 
-              path="/sorting" 
-              element={<SortingVisualizer theme={theme} />} 
-            />
-            <Route 
-              path="/graph" 
-              element={<GraphVisualizer theme={theme} />} 
-            />
-            <Route 
-              path="/string" 
-              element={<StringVisualizer theme={theme} />} 
-            />
-            <Route 
-              path="/dp" 
-              element={<DPVisualizer theme={theme} />} 
-            />
-            <Route 
-              path="/about" 
-              element={<AboutPage theme={theme} />} 
-            />
-            <Route 
-              path="/docs" 
-              element={<DocumentationPage theme={theme} />} 
-            />
-            <Route 
-              path="/contributors" 
-              element={<ContributorsPage theme={theme} />} 
-            />
-            <Route 
-              path="*" 
-              element={<NotFoundPage theme={theme} />} 
-            />
-          </Routes>
-        </Layout>
-      </Router>
-
-      {/* Toast notifications */}
+    <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -118,7 +83,54 @@ function App() {
           },
         }}
       />
+      <Layout theme={theme} onThemeChange={handleThemeChange}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<HomePage theme={theme} />} />
+          <Route path="/sorting" element={<SortingVisualizer theme={theme} />} />
+          <Route path="/graph" element={<GraphVisualizer theme={theme} />} />
+          <Route path="/string" element={<StringVisualizer theme={theme} />} />
+          <Route path="/dp" element={<DPVisualizer theme={theme} />} />
+          <Route path="/about" element={<AboutPage theme={theme} />} />
+          <Route path="/docs" element={<DocumentationPage theme={theme} />} />
+          <Route path="/contributors" element={<ContributorsPage theme={theme} />} />
+          <Route path="*" element={<NotFoundPage theme={theme} />} />
+        </Routes>
+      </Layout>
+      <ConsentBanner />
     </div>
+  );
+}
+
+// Component to handle analytics integration
+const AnalyticsIntegration = ({ children }) => {
+  const { showConsentBanner, giveConsent } = useAnalytics();
+  usePageTracking();
+
+  return (
+    <>
+      {children}
+      {showConsentBanner && (
+        <ConsentBanner
+          onConsent={giveConsent}
+          onDismiss={() => giveConsent(false, false)}
+        />
+      )}
+      <Toaster position="bottom-right" />
+      <EnvCheck />
+    </>
+  );
+};
+
+// Main App component
+function App() {
+  return (
+    <AnalyticsErrorBoundary>
+      <AnalyticsProvider>
+        <AnalyticsIntegration>
+          <AppContent />
+        </AnalyticsIntegration>
+      </AnalyticsProvider>
+    </AnalyticsErrorBoundary>
   );
 }
 

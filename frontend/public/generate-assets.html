@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Assets</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    canvas {
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      display: block;
+    }
+    button {
+      background: #4F46E5;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px 0;
+    }
+    button:hover {
+      background: #4338CA;
+    }
+    .instructions {
+      background: #EFF6FF;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Asset Generator</h1>
+  
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click each button below to generate the corresponding asset</li>
+      <li>Right-click on each canvas and select "Save image as..."</li>
+      <li>Save the files to the <code>public</code> folder of your project</li>
+    </ol>
+  </div>
+
+  <div class="container">
+    <h2>1. favicon.ico (64x64)</h2>
+    <canvas id="favicon" width="64" height="64"></canvas>
+    <button onclick="generateFavicon()">Generate Favicon</button>
+  </div>
+
+  <div class="container">
+    <h2>2. logo192.png (192x192)</h2>
+    <canvas id="logo192" width="192" height="192"></canvas>
+    <button onclick="generateLogo192()">Generate Logo 192x192</button>
+  </div>
+
+  <div class="container">
+    <h2>3. logo512.png (512x512)</h2>
+    <canvas id="logo512" width="512" height="512"></canvas>
+    <button onclick="generateLogo512()">Generate Logo 512x512</button>
+  </div>
+
+  <script>
+    // Common function to create a canvas with text
+    function createCanvasWithText(canvasId, text, bgColor, textColor) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Draw background
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw text
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Calculate font size based on canvas dimensions
+      const fontSize = Math.min(width, height) * 0.15;
+      ctx.font = `bold ${fontSize}px Arial`;
+      
+      // Split text into multiple lines if needed
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      const maxWidth = width * 0.9;
+      
+      for (const word of words) {
+        const testLine = line ? `${line} ${word}` : word;
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) lines.push(line);
+      
+      // Draw each line of text
+      const lineHeight = fontSize * 1.2;
+      const startY = (height - (lines.length - 1) * lineHeight) / 2;
+      
+      lines.forEach((lineText, i) => {
+        ctx.fillText(lineText, width / 2, startY + (i * lineHeight));
+      });
+      
+      return canvas;
+    }
+
+    function generateFavicon() {
+      createCanvasWithText('favicon', 'AV', '#4F46E5', '#FFFFFF');
+    }
+
+    function generateLogo192() {
+      createCanvasWithText('logo192', 'Algorithm Visualizer', '#4F46E5', '#FFFFFF');
+    }
+
+    function generateLogo512() {
+      createCanvasWithText('logo512', 'Algorithm Visualizer Pro', '#4F46E5', '#FFFFFF');
+    }
+
+    // Generate all by default
+    window.onload = function() {
+      generateFavicon();
+      generateLogo192();
+      generateLogo512();
+    };
+  </script>
+</body>
+</html>
