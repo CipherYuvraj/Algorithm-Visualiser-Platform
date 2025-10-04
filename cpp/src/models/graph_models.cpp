@@ -1,10 +1,10 @@
 #include "models/graph_models.h"
 
-GraphNode::GraphNode(int id, const std::string& label, double x, double y)
-    : id(id), label(label), x(x), y(y) {}
+GraphNode::GraphNode(int id, const std::string& label, double x, double y, const std::string& color)
+    : id(id), label(label), x(x), y(y), color(color) {}
 
-GraphEdge::GraphEdge(int from, int to, double weight, bool directed)
-    : from(from), to(to), weight(weight), directed(directed) {}
+GraphEdge::GraphEdge(int from, int to, double weight, bool directed, const std::string& color)
+    : from(from), to(to), weight(weight), directed(directed), color(color) {}
 
 GraphStep::GraphStep(const std::string& operation)
     : operation(operation) {}

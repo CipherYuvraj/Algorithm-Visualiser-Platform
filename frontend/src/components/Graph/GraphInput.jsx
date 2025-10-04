@@ -11,7 +11,7 @@ const GraphInput = ({
   onStartNodeChange, 
   onEndNodeChange, 
   onRandomize,
-  darkMode 
+  isDark 
 }) => {
   
   const addNode = () => {
@@ -97,14 +97,14 @@ const GraphInput = ({
       {/* Node Selection */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
             Start Node
           </label>
           <select
             value={startNode}
             onChange={(e) => onStartNodeChange(parseInt(e.target.value))}
             className={`w-full p-2 rounded border ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-700 border-gray-600 text-white' 
                 : 'bg-white border-gray-300 text-gray-800'
             }`}
@@ -118,14 +118,14 @@ const GraphInput = ({
         </div>
         
         <div>
-          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
             End Node
           </label>
           <select
             value={endNode}
             onChange={(e) => onEndNodeChange(parseInt(e.target.value))}
             className={`w-full p-2 rounded border ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-700 border-gray-600 text-white' 
                 : 'bg-white border-gray-300 text-gray-800'
             }`}
@@ -142,13 +142,13 @@ const GraphInput = ({
       {/* Nodes Management */}
       <div>
         <div className="flex justify-between items-center mb-3">
-          <h5 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+          <h5 className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
             Nodes ({nodes.length})
           </h5>
           <button
             onClick={addNode}
             className={`px-3 py-1 rounded text-sm flex items-center space-x-1 ${
-              darkMode 
+              isDark 
                 ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                 : 'bg-blue-500 hover:bg-blue-600 text-white'
             }`}
@@ -161,9 +161,9 @@ const GraphInput = ({
         <div className="space-y-2 max-h-32 overflow-y-auto">
           {nodes.map(node => (
             <div key={node.id} className={`flex items-center justify-between p-2 rounded ${
-              darkMode ? 'bg-gray-700' : 'bg-gray-50'
+              isDark ? 'bg-gray-700' : 'bg-gray-50'
             }`}>
-              <span className={`text-sm ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              <span className={`text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 {node.label} (ID: {node.id})
               </span>
               {nodes.length > 2 && (
@@ -182,14 +182,14 @@ const GraphInput = ({
       {/* Edges Management */}
       <div>
         <div className="flex justify-between items-center mb-3">
-          <h5 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+          <h5 className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
             Edges ({edges.length})
           </h5>
           <button
             onClick={addEdge}
             disabled={nodes.length < 2}
             className={`px-3 py-1 rounded text-sm flex items-center space-x-1 disabled:opacity-50 ${
-              darkMode 
+              isDark 
                 ? 'bg-green-600 hover:bg-green-700 text-white' 
                 : 'bg-green-500 hover:bg-green-600 text-white'
             }`}
@@ -202,14 +202,14 @@ const GraphInput = ({
         <div className="space-y-2 max-h-40 overflow-y-auto">
           {edges.map((edge, index) => (
             <div key={index} className={`p-3 rounded border ${
-              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+              isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
             }`}>
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <select
                   value={edge.from_node}
                   onChange={(e) => updateEdge(index, 'from_node', parseInt(e.target.value))}
                   className={`p-1 rounded text-xs ${
-                    darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
+                    isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
                   }`}
                 >
                   {nodes.map(node => (
@@ -221,7 +221,7 @@ const GraphInput = ({
                   value={edge.to}
                   onChange={(e) => updateEdge(index, 'to', parseInt(e.target.value))}
                   className={`p-1 rounded text-xs ${
-                    darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
+                    isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
                   }`}
                 >
                   {nodes.map(node => (
@@ -236,7 +236,7 @@ const GraphInput = ({
                   value={edge.weight}
                   onChange={(e) => updateEdge(index, 'weight', parseInt(e.target.value) || 1)}
                   className={`p-1 rounded text-xs ${
-                    darkMode ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
+                    isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-800'
                   }`}
                   placeholder="Weight"
                 />
@@ -256,7 +256,7 @@ const GraphInput = ({
                   onChange={(e) => updateEdge(index, 'directed', e.target.checked)}
                   className="text-blue-500"
                 />
-                <span className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <span className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   Directed
                 </span>
               </label>
@@ -269,7 +269,7 @@ const GraphInput = ({
       <button
         onClick={onRandomize}
         className={`w-full py-2 px-4 rounded font-medium transition-colors flex items-center justify-center space-x-2 ${
-          darkMode 
+          isDark 
             ? 'bg-purple-600 hover:bg-purple-700 text-white' 
             : 'bg-purple-500 hover:bg-purple-600 text-white'
         }`}
