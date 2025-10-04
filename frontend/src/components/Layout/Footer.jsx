@@ -1,4 +1,5 @@
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { BsTwitterX } from "react-icons/bs";
 
 const Footer = ({ theme }) => {
   const isDark = theme === 'dark';
@@ -18,7 +19,7 @@ const Footer = ({ theme }) => {
     {
       platform: "Twitter",
       url: "https://twitter.com/your_twitter_handle",
-      icon: <FaTwitter className="w-5 h-5" />,
+      icon: <BsTwitterX className="w-5 h-5" />,
     },
   ];
 

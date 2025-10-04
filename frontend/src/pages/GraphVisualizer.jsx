@@ -548,8 +548,8 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
         }`}>
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-6">
-            <div className="flex justify-between items-center">
+          <div className={`bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 md:pt-6 md:px-6  pt-6 px-6  ${showUserMenu ? "pb-20 md:pb-14" : "pb-6 md:pb-6"}`}>
+            <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="flex-1">
                 <h1 className="text-4xl font-bold mb-2 text-white">
                   Graph Algorithm Visualizer
@@ -558,81 +558,94 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                   Interactive graph algorithm visualization platform
                 </p>
               </div>
-              
-              <div className="flex items-center space-x-4">
-                {/* Search Bar */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search algorithms..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`pl-10 pr-4 py-2 rounded-lg backdrop-blur-md border transition-all ${
-                      darkMode 
-                        ? 'bg-gray-800/50 border-gray-600 text-white' 
-                        : 'bg-white/50 border-white/30 text-gray-800'
+
+              <div className="flex items-center md:flex-row flex-col md:mt-0 mt-5 w-full md:w-auto space-y-3 md:space-y-0 md:space-x-4">
+                {/* Search + Theme Toggle */}
+                <div className="flex space-x-4 w-full md:w-auto">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search algorithms..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={`pl-10 pr-4 py-2 w-full rounded-lg backdrop-blur-md border transition-all ${
+                        darkMode
+                          ? "bg-gray-800/50 border-gray-600 text-white"
+                          : "bg-white/50 border-white/30 text-gray-800"
+                      }`}
+                    />
+                  </div>
+
+                  {/* Theme Toggle */}
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`p-3 rounded-lg backdrop-blur-md transition-all hover:scale-110 ${
+                      darkMode
+                        ? "bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30"
+                        : "bg-gray-800/20 text-gray-600 hover:bg-gray-800/30"
                     }`}
-                  />
+                  >
+                    {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  </button>
                 </div>
 
-                {/* Theme Toggle */}
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className={`p-3 rounded-lg backdrop-blur-md transition-all hover:scale-110 ${
-                    darkMode 
-                      ? 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30' 
-                      : 'bg-gray-800/20 text-gray-600 hover:bg-gray-800/30'
-                  }`}
-                >
-                  {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                </button>
-
-                {/* Algorithm Selector */}
-                <button
-                  onClick={() => setIsAlgorithmSelectorOpen(!isAlgorithmSelectorOpen)}
-                  className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all flex items-center space-x-2 border border-white/30"
-                >
-                  <Network className="h-5 w-5 text-white" />
-                  <span className="text-white font-medium">{selectedAlgorithm?.name}</span>
-                  {isAlgorithmSelectorOpen ? 
-                    <ChevronUp className="h-4 w-4 text-white" /> : 
-                    <ChevronDown className="h-4 w-4 text-white" />
-                  }
-                </button>
-
-                {/* User Menu */}
-                <div className="relative">
+                {/* Algorithm Selector + User Menu */}
+                <div className="flex space-x-4 w-full md:w-auto">
+                  {/* Algorithm Selector */}
                   <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="p-3 bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all border border-white/30"
+                    onClick={() => setIsAlgorithmSelectorOpen(!isAlgorithmSelectorOpen)}
+                    className="px-4 py-2 w-full md:w-auto bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all flex items-center justify-between border border-white/30"
                   >
-                    <User className="h-5 w-5 text-white" />
+                    <Network className="h-5 w-5 text-white" />
+                    <span className="text-white text-sm md:text-md font-medium flex-1 text-center">
+                      {selectedAlgorithm?.name}
+                    </span>
+                    {isAlgorithmSelectorOpen ? (
+                      <ChevronUp className="h-4 w-4 text-white" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-white" />
+                    )}
                   </button>
-                  
-                  {showUserMenu && (
-                    <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-xl backdrop-blur-xl border z-50 ${
-                      darkMode 
-                        ? 'bg-gray-800/90 border-gray-700' 
-                        : 'bg-white/90 border-gray-200'
-                    }`}>
-                      <div className="p-2">
-                        <button 
-                          onClick={() => setShowParticles(!showParticles)}
-                          className={`w-full text-left px-3 py-2 rounded transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          <Palette className="h-4 w-4 inline mr-2" />
-                          {showParticles ? 'Hide' : 'Show'} Particles
-                        </button>
+
+                  {/* User Menu */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="p-3 bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all border border-white/30"
+                    >
+                      <User className="h-5 w-5 text-white" />
+                    </button>
+
+                    {showUserMenu && (
+                      <div
+                        className={`absolute right-0 mt-2 w-48 rounded-lg shadow-xl backdrop-blur-xl border z-50 ${
+                          darkMode
+                            ? "bg-gray-800/90 border-gray-700"
+                            : "bg-white/90 border-gray-200"
+                        }`}
+                      >
+                        <div className="p-2">
+                          <button
+                            onClick={() => setShowParticles(!showParticles)}
+                            className={`w-full text-left px-3 py-2 rounded transition-colors ${
+                              darkMode
+                                ? "hover:bg-gray-700 text-white"
+                                : "hover:bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            <Palette className="h-4 w-4 inline mr-2" />
+                            {showParticles ? "Hide" : "Show"} Particles
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
 
           {/* Algorithm Selector */}
           {isAlgorithmSelectorOpen && (
