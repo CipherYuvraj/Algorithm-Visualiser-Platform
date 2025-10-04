@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, forwardRef, useCallback } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const SortingCanvas = forwardRef(({ 
   data, 
   algorithm, 
   compact = false,
   selectedAlgorithm,
-  darkMode = false,
   enhanced = false
 }, ref) => {
+  const { isDark } = useTheme();
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
   const lastRenderTime = useRef(0);
@@ -26,7 +27,7 @@ const SortingCanvas = forwardRef(({
       const { width, height } = canvas;
       
       // Clear canvas
-      ctx.fillStyle = darkMode ? '#1f2937' : '#f8fafc';
+      ctx.fillStyle = isDark ? '#1f2937' : '#f8fafc';
       ctx.fillRect(0, 0, width, height);
       
       // Validate array data
@@ -47,7 +48,7 @@ const SortingCanvas = forwardRef(({
         const y = height - barHeight - 20;
         
         // Determine bar color
-        let barColor = darkMode ? '#6b7280' : '#e5e7eb';
+        let barColor = isDark ? '#6b7280' : '#e5e7eb';
         
         if (data.highlighted?.includes(index)) {
           barColor = '#f59e0b'; // Orange for highlighted
@@ -60,7 +61,7 @@ const SortingCanvas = forwardRef(({
         ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
         
         // Draw value label
-        ctx.fillStyle = darkMode ? '#ffffff' : '#000000';
+        ctx.fillStyle = isDark ? '#ffffff' : '#000000';
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.fillText(value.toString(), x + barWidth / 2, height - 5);
@@ -73,7 +74,7 @@ const SortingCanvas = forwardRef(({
     } catch (error) {
       console.error('Canvas drawing error:', error);
     }
-  }, [data, algorithm, darkMode, enhanced, ref]);
+  }, [data, algorithm, isDark, enhanced, ref]);
 
   useEffect(() => {
     // Cancel any pending animation frame
