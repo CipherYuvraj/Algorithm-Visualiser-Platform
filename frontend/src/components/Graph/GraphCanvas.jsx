@@ -7,7 +7,7 @@ const GraphCanvas = forwardRef(({
   startNode, 
   endNode, 
   algorithm, 
-  darkMode 
+  isDark 
 }, ref) => {
   const canvasRef = useRef(null);
 
@@ -19,7 +19,7 @@ const GraphCanvas = forwardRef(({
     const { width, height } = canvas;
     
     // Clear canvas
-    ctx.fillStyle = darkMode ? '#1f2937' : '#f8fafc';
+    ctx.fillStyle = isDark ? '#1f2937' : '#f8fafc';
     ctx.fillRect(0, 0, width, height);
     
     // Safely access stepData
@@ -41,7 +41,7 @@ const GraphCanvas = forwardRef(({
         if (!fromNode || !toNode) return;
         
         // Determine edge color
-        let edgeColor = darkMode ? '#6b7280' : '#9ca3af';
+        let edgeColor = isDark ? '#6b7280' : '#9ca3af';
         let lineWidth = 2;
         
         if (safeStepData.visitedEdges?.some(([from, to]) => 
@@ -70,7 +70,7 @@ const GraphCanvas = forwardRef(({
         const midX = (fromNode.x + toNode.x) / 2;
         const midY = (fromNode.y + toNode.y) / 2;
         
-        ctx.fillStyle = darkMode ? '#ffffff' : '#000000';
+        ctx.fillStyle = isDark ? '#ffffff' : '#000000';
         ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'center';
         ctx.fillRect(midX - 10, midY - 8, 20, 16);
@@ -105,9 +105,9 @@ const GraphCanvas = forwardRef(({
     // Draw nodes
     nodes.forEach(node => {
       // Determine node color and size
-      let nodeColor = darkMode ? '#4b5563' : '#e5e7eb';
-      let borderColor = darkMode ? '#6b7280' : '#9ca3af';
-      let textColor = darkMode ? '#ffffff' : '#000000';
+      let nodeColor = isDark ? '#4b5563' : '#e5e7eb';
+      let borderColor = isDark ? '#6b7280' : '#9ca3af';
+      let textColor = isDark ? '#ffffff' : '#000000';
       let radius = 20;
       
       if (node.id === startNode) {
@@ -148,7 +148,7 @@ const GraphCanvas = forwardRef(({
       if (safeStepData.distances && safeStepData.distances[node.id] !== undefined) {
         const distance = safeStepData.distances[node.id];
         if (distance !== Infinity && distance !== undefined) {
-          ctx.fillStyle = darkMode ? '#fbbf24' : '#f59e0b';
+          ctx.fillStyle = isDark ? '#fbbf24' : '#f59e0b';
           ctx.font = '10px Arial';
           ctx.fillText(`d:${distance}`, node.x, node.y - radius - 5);
         }
@@ -160,7 +160,7 @@ const GraphCanvas = forwardRef(({
       ref.current = canvas;
     }
     
-  }, [nodes, edges, stepData, startNode, endNode, algorithm, darkMode, ref]);
+  }, [nodes, edges, stepData, startNode, endNode, algorithm, isDark, ref]);
 
   return (
     <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100 shadow-inner">

@@ -1,13 +1,12 @@
 import ContributorCard from "./ContributorCard";
+import { useTheme } from '../../contexts/ThemeContext';
 
-const ContributorsGrid = ({ contributors, loading, error, darkMode }) => {
+const ContributorsGrid = ({ contributors, loading, error }) => {
+  const { classes } = useTheme();
+  
   if (loading)
     return (
-      <p
-        className={`text-center ${
-          darkMode ? "text-gray-300" : "text-gray-600"
-        }`}
-      >
+      <p className={`text-center ${classes.textSecondary}`}>
         Loading contributors...
       </p>
     );
@@ -16,7 +15,7 @@ const ContributorsGrid = ({ contributors, loading, error, darkMode }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
       {contributors.map((c) => (
-        <ContributorCard key={c.id} contributor={c} darkMode={darkMode} />
+        <ContributorCard key={c.id} contributor={c} />
       ))}
     </div>
   );

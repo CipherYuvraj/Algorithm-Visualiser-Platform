@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Zap, Settings, BookOpen, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../contexts/ThemeContext';
 import SortingCanvas from '../components/Sorting/SortingCanvas';
 import ArrayInput from '../components/Sorting/ArrayInput';
 import ControlPanel from '../components/Sorting/ControlPanel';
 import ComplexityDisplay from '../components/Sorting/ComplexityDisplay';
 import { sortingService } from '../services/api';
 
-const SortingVisualizer = ({ darkMode, setDarkMode }) => {
+const SortingVisualizer = () => {
+  const { isDark, classes, getThemedGradient } = useTheme();
   const [array, setArray] = useState([64, 34, 25, 12, 22, 11, 90]);
   const [algorithm, setAlgorithm] = useState('bubble');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -259,7 +261,7 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
         icon: '⚡',
         style: {
           borderRadius: '12px',
-          background: darkMode ? '#1f2937' : '#333',
+          background: isDark ? '#1f2937' : '#333',
           color: '#fff',
           backdropFilter: 'blur(10px)',
         },
@@ -290,7 +292,7 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [algorithm, array, selectedAlgorithm, darkMode]);
+  }, [algorithm, array, selectedAlgorithm, isDark]);
 
   const playPause = () => {
     if (steps.length === 0) {
@@ -365,17 +367,13 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
   }, [isPlaying, currentStep, steps.length, speed]);
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       {/* Conditional Particle Background */}
       {shouldShowParticles && (
         <canvas
           ref={particleCanvasRef}
           className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: darkMode ? 0.4 : 0.2 }}
+          style={{ opacity: isDark ? 0.4 : 0.2 }}
         />
       )}
 
@@ -391,19 +389,19 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
           {/* Left Panel - Enhanced Array & Controls */}
           <div className="space-y-6">
             <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-800/20 border-gray-700/50' 
                 : 'bg-white/20 border-white/50'
             }`}>
-              <div className={`p-6 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-                <h3 className={`text-xl font-bold flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              <div className={`p-6 border-b ${classes.border}`}>
+                <h3 className={`text-xl font-bold flex items-center ${classes.textPrimary}`}>
                   <Settings className="h-6 w-6 mr-3 text-blue-500" />
                   Configuration & Controls
                 </h3>
                 
                 {/* Add algorithm selector here */}
                 <div className="mt-4">
-                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-2 ${classes.textSecondary}`}>
                     Algorithm
                   </label>
                   <select
@@ -413,7 +411,7 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                       reset();
                     }}
                     className={`w-full p-3 rounded-lg border transition-all ${
-                      darkMode 
+                      isDark 
                         ? 'bg-gray-800 border-gray-600 text-white' 
                         : 'bg-white border-gray-300 text-gray-800'
                     }`}
@@ -430,14 +428,14 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
               <div className="p-6 space-y-8">
                 {/* Enhanced Array Section */}
                 <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${classes.textPrimary}`}>
                     <span className="w-3 h-3 bg-blue-500 rounded-full mr-3 animate-pulse"></span>
                     Array Configuration
                   </h4>
                   
                   {/* Array Size Slider */}
                   <div className="mb-6">
-                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-2 ${classes.textSecondary}`}>
                       Array Size: {arraySize}
                     </label>
                     <input
@@ -462,7 +460,7 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
 
                 {/* Enhanced Controls Section */}
                 <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${classes.textPrimary}`}>
                     <span className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
                     Playback Controls
                   </h4>
@@ -477,7 +475,6 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                     isLoading={isLoading}
                     onStepForward={stepForward}
                     onStepBackward={stepBackward}
-                    darkMode={darkMode}
                   />
                 </div>
 
@@ -485,7 +482,7 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                 <button
                   onClick={downloadVisualization}
                   className={`w-full py-3 px-4 rounded-lg font-medium transition-all hover:scale-105 flex items-center justify-center space-x-2 ${
-                    darkMode 
+                    isDark 
                       ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                       : 'bg-purple-500 hover:bg-purple-600 text-white'
                   }`}
@@ -499,19 +496,15 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
 
           {/* Right Panel - Enhanced Visualization */}
           <div className="space-y-6">
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            }`}>
+            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
               {/* Visualization Header */}
-              <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
+              <div className={`p-4 border-b ${classes.border}`}>
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <h3 className={`text-xl font-bold ${classes.textPrimary}`}>
                       {selectedAlgorithm?.name} Visualization
                     </h3>
-                    <div className={`flex items-center space-x-4 text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <div className={`flex items-center space-x-4 text-sm mt-1 ${classes.textSecondary}`}>
                       <span className="flex items-center space-x-1">
                         <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
                         <span>Step {currentStep + 1} of {steps.length || 1}</span>
@@ -542,28 +535,23 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                   algorithm={algorithm}
                   compact={true}
                   selectedAlgorithm={selectedAlgorithm}
-                  darkMode={darkMode}
                   enhanced={true}
                 />
               </div>
             </div>
 
             {/* Enhanced Step Explanation with Typewriter Effect */}
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            }`}>
-              <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
+            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
+              <div className={`p-4 border-b ${classes.border}`}>
                 <div className="flex justify-between items-center">
-                  <h4 className={`text-lg font-bold flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-bold flex items-center ${classes.textPrimary}`}>
                     <BookOpen className="h-5 w-5 mr-2 text-purple-500" />
                     Step Explanation
                   </h4>
                   <button
                     onClick={() => setShowDetailedLog(!showDetailedLog)}
                     className={`text-sm px-3 py-1 rounded transition-colors ${
-                      darkMode 
+                      isDark 
                         ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                     }`}
@@ -575,23 +563,23 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
               
               <div className="p-4 space-y-4 max-h-80 overflow-y-auto">
                 <div className={`p-4 rounded-lg border-l-4 border-blue-500 ${
-                  darkMode ? 'bg-blue-900/20' : 'bg-blue-50'
+                  isDark ? 'bg-blue-900/20' : 'bg-blue-50'
                 }`}>
-                  <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <p className={`text-sm font-medium mb-1 ${classes.textPrimary}`}>
                     Current Operation:
                   </p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-sm ${classes.textSecondary}`}>
                     {currentStepData.operation}
                   </p>
                 </div>
                 
                 <div className={`p-4 rounded-lg border-l-4 border-purple-500 ${
-                  darkMode ? 'bg-purple-900/20' : 'bg-purple-50'
+                  isDark ? 'bg-purple-900/20' : 'bg-purple-50'
                 }`}>
-                  <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <p className={`text-sm font-medium mb-2 ${classes.textPrimary}`}>
                     What's Happening:
                   </p>
-                  <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-sm leading-relaxed ${classes.textSecondary}`}>
                     {typewriterText}
                     <span className="animate-blink">|</span>
                   </p>
@@ -599,12 +587,12 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
 
                 {selectedAlgorithm && (
                   <div className={`p-4 rounded-lg border-l-4 border-green-500 ${
-                    darkMode ? 'bg-green-900/20' : 'bg-green-50'
+                    isDark ? 'bg-green-900/20' : 'bg-green-50'
                   }`}>
-                    <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <p className={`text-sm font-medium mb-2 ${classes.textPrimary}`}>
                       Algorithm Info:
                     </p>
-                    <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className={`text-sm leading-relaxed ${classes.textSecondary}`}>
                       {selectedAlgorithm.explanation}
                     </p>
                   </div>
@@ -613,17 +601,17 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                 {/* Detailed Log */}
                 {showDetailedLog && (
                   <div className={`p-4 rounded-lg ${
-                    darkMode ? 'bg-gray-800/50' : 'bg-gray-100'
+                    isDark ? 'bg-gray-800/50' : 'bg-gray-100'
                   }`}>
-                    <h5 className={`text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <h5 className={`text-sm font-bold mb-2 ${classes.textPrimary}`}>
                       Step History:
                     </h5>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {steps.slice(Math.max(0, currentStep - 5), currentStep + 1).map((step, index) => (
                         <div key={index} className={`text-xs p-2 rounded ${
                           index === 5 || index === steps.slice(Math.max(0, currentStep - 5), currentStep + 1).length - 1
-                            ? (darkMode ? 'bg-blue-800/50 text-blue-200' : 'bg-blue-100 text-blue-800')
-                            : (darkMode ? 'text-gray-400' : 'text-gray-600')
+                            ? (isDark ? 'bg-blue-800/50 text-blue-200' : 'bg-blue-100 text-blue-800')
+                            : (isDark ? 'text-gray-400' : 'text-gray-600')
                         }`}>
                           {step.operation}
                         </div>
@@ -638,13 +626,9 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
 
         {/* Enhanced Bottom Panel - Analysis & Metrics */}
         <div className="mt-8 grid md:grid-cols-2 gap-8">
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-            darkMode 
-              ? 'bg-gray-800/20 border-gray-700/50' 
-              : 'bg-white/20 border-white/50'
-          }`}>
-            <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
+            <div className={`p-4 border-b ${classes.border}`}>
+              <h3 className={`text-lg font-bold ${classes.textPrimary}`}>
                 Complexity Analysis
               </h3>
             </div>
@@ -653,61 +637,56 @@ const SortingVisualizer = ({ darkMode, setDarkMode }) => {
                 algorithm={selectedAlgorithm}
                 currentData={currentStepData}
                 steps={steps}
-                darkMode={darkMode}
                 enhanced={true}
               />
             </div>
           </div>
 
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-            darkMode 
-              ? 'bg-gray-800/20 border-gray-700/50' 
-              : 'bg-white/20 border-white/50'
-          }`}>
-            <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
+            <div className={`p-4 border-b ${classes.border}`}>
+              <h3 className={`text-lg font-bold ${classes.textPrimary}`}>
                 Performance Metrics
               </h3>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-blue-900/30' : 'bg-blue-50'
+                  isDark ? 'bg-blue-900/30' : 'bg-blue-50'
                 }`}>
                   <div className="text-3xl font-bold text-blue-600 animate-pulse">
                     {array.length}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
                     Array Size
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-green-900/30' : 'bg-green-50'
+                  isDark ? 'bg-green-900/30' : 'bg-green-50'
                 }`}>
                   <div className="text-3xl font-bold text-green-600 animate-pulse">
                     {steps.length}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-green-300' : 'text-green-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-green-300' : 'text-green-600'}`}>
                     Total Steps
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-purple-900/30' : 'bg-purple-50'
+                  isDark ? 'bg-purple-900/30' : 'bg-purple-50'
                 }`}>
                   <div className="text-3xl font-bold text-purple-600 animate-pulse">
                     {currentStepData.operations_count || 0}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                     Operations
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-orange-900/30' : 'bg-orange-50'
+                  isDark ? 'bg-orange-900/30' : 'bg-orange-50'
                 }`}>
                   <div className="text-3xl font-bold text-orange-600 animate-pulse">
                     {steps.length > 0 ? Math.round((currentStep / (steps.length - 1)) * 100) : 0}%
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-orange-300' : 'text-orange-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
                     Progress
                   </div>
                 </div>

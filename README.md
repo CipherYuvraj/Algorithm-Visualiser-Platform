@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="image.png" alt="Algorithm Visualizer Pro Logo" width="200"/>
+  <img src="image.png" alt="Algorithm Visualiser Pro Logo" width="200"/>
   
   # 🎯 Algorithm Visualizer Pro
   
@@ -39,7 +39,7 @@
 
 ## 🌟 Overview
 
-**Algorithm Visualizer Pro** is a cutting-edge educational platform that transforms abstract algorithmic concepts into engaging, interactive visual experiences. Built with modern web technologies, it serves as a comprehensive learning tool for students, educators, and algorithm enthusiasts worldwide.
+**Algorithm Visualiser Pro** is a cutting-edge educational platform that transforms abstract algorithmic concepts into engaging, interactive visual experiences. Built with modern web technologies, it serves as a comprehensive learning tool for students, educators, and algorithm enthusiasts worldwide.
 
 ### 🎯 Mission
 To bridge the gap between theoretical computer science and practical understanding by providing intuitive, step-by-step algorithm visualizations that make complex concepts accessible to learners at all levels.
@@ -128,7 +128,7 @@ To bridge the gap between theoretical computer science and practical understandi
   <table>
     <tr>
       <th>🆚 Feature</th>
-      <th>✅ Algorithm Visualizer Pro</th>
+      <th>✅ Algorithm Visualiser Pro</th>
       <th>❌ Traditional Learning</th>
     </tr>
     <tr>
@@ -188,15 +188,19 @@ To bridge the gap between theoretical computer science and practical understandi
 Get up and running in under 5 minutes!
 
 ```bash
-# 1️⃣ Clone the repository
-git clone https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform.git
-cd Algorithm-Visualizer-Platform
 
-# 2️⃣ Install dependencies
+# 1️⃣ Fork the repository
+
+# 2️⃣ Clone the repository
+git clone https://github.com/<your-username>/Algorithm-Visualiser-Platform.git
+cd Algorithm-Visualiser-Platform
+
+# 3️⃣ Install dependencies
 npm install
 cd backend && pip install -r requirements.txt
+cd backend && pip install -r requirements.txt
 
-# 3️⃣ Start development servers
+# 4️⃣ Start development servers
 npm run dev        # Frontend (http://localhost:3000)
 npm run dev:api    # Backend (http://localhost:8000)
 
@@ -220,7 +224,7 @@ npm run dev:api    # Backend (http://localhost:8000)
 
 ```bash
 # Navigate to project root
-cd Algorithm-Visualizer-Platform/frontend
+cd Algorithm-Visualiser-Platform/frontend
 
 # Install dependencies
 npm install
@@ -236,7 +240,7 @@ npm run lint:fix     # Fix ESLint issues
 **Environment Variables** (`.env`):
 ```env
 VITE_API_BASE_URL=http://localhost:8000
-VITE_APP_TITLE="Algorithm Visualizer Pro"
+VITE_APP_TITLE="Algorithm Visualiser Pro"
 VITE_ENABLE_ANALYTICS=false
 ```
 
@@ -247,7 +251,7 @@ VITE_ENABLE_ANALYTICS=false
 
 ```bash
 # Navigate to backend directory
-cd Algorithm-Visualizer-Platform/backend
+cd Algorithm-Visualiser-Platform/backend
 
 # Create virtual environment
 python -m venv venv
@@ -346,11 +350,11 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ```bash
 # Build and push images
-docker build -t yourusername/algo-visualizer-frontend ./frontend
-docker build -t yourusername/algo-visualizer-backend ./backend
+docker build -t yourusername/algo-visualiser-frontend ./frontend
+docker build -t yourusername/algo-visualiser-backend ./backend
 
-docker push yourusername/algo-visualizer-frontend
-docker push yourusername/algo-visualizer-backend
+docker push yourusername/algo-visualiser-frontend
+docker push yourusername/algo-visualiser-backend
 ```
 
 ### ☁️ Cloud Platforms
@@ -363,9 +367,9 @@ docker push yourusername/algo-visualizer-backend
 # Build and tag for ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin your-account.dkr.ecr.us-east-1.amazonaws.com
 
-docker build -t algo-visualizer .
-docker tag algo-visualizer:latest your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
-docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
+docker build -t algo-visualiser .
+docker tag algo-visualiser:latest your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualiser:latest
+docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualiser:latest
 ```
 
 </details>
@@ -376,8 +380,8 @@ docker push your-account.dkr.ecr.us-east-1.amazonaws.com/algo-visualizer:latest
 **Using Cloud Run:**
 ```bash
 # Build and deploy
-gcloud builds submit --tag gcr.io/PROJECT-ID/algo-visualizer
-gcloud run deploy --image gcr.io/PROJECT-ID/algo-visualizer --platform managed
+gcloud builds submit --tag gcr.io/PROJECT-ID/algo-visualiser
+gcloud run deploy --image gcr.io/PROJECT-ID/algo-visualiser --platform managed
 ```
 
 </details>
