@@ -1,7 +1,8 @@
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { useTheme } from "../../contexts/ThemeContext";
 
-const Footer = ({ theme }) => {
-  const isDark = theme === 'dark';
+const Footer = () => {
+  const { isDark, classes } = useTheme();
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
@@ -34,21 +35,15 @@ const Footer = ({ theme }) => {
   ];
 
   return (
-    <footer
-      className={`py-12 transition-all duration-500 ${
-        isDark ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-800"
-      }`}
-    >
+    <footer className={`py-12 transition-all duration-500 ${classes.bgSecondary} ${classes.textPrimary}`}>
       {/* Top Row: Social & Quick Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-between items-start lg:items-start gap-10 lg:gap-0">
         {/* Social Media */}
         <div className="flex flex-col space-y-4 flex-1">
-          <h2
-            className={`text-2xl font-bold text-blue-600`}
-          >
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             AlgoViz Pro
           </h2>
-          <p className="text-sm text-gray-400 max-w-xs">
+          <p className={`text-sm max-w-xs ${classes.textSecondary}`}>
             Learn algorithms interactively. Made possible by our amazing
             contributors.
           </p>
@@ -59,7 +54,13 @@ const Footer = ({ theme }) => {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-blue-500/20 transition-all transform hover:scale-110"
+                className={`
+                  p-2 rounded-lg transition-all transform hover:scale-110
+                  ${isDark 
+                    ? 'hover:bg-blue-500/20 text-gray-400 hover:text-blue-400' 
+                    : 'hover:bg-blue-500/10 text-gray-600 hover:text-blue-600'
+                  }
+                `}
               >
                 {link.icon}
               </a>
@@ -69,11 +70,7 @@ const Footer = ({ theme }) => {
 
         {/* Quick Links */}
         <div className="flex-1">
-          <h3
-            className={`text-lg font-semibold mb-4 ${
-              isDark ? "text-white" : "text-gray-900"
-            }`}
-          >
+          <h3 className={`text-lg font-semibold mb-4 ${classes.textPrimary}`}>
             Quick Links
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
@@ -81,7 +78,13 @@ const Footer = ({ theme }) => {
               <a
                 key={link.name}
                 href={link.path}
-                className="hover:text-blue-400 transition-colors"
+                className={`
+                  transition-colors duration-200
+                  ${isDark 
+                    ? 'text-gray-400 hover:text-blue-400' 
+                    : 'text-gray-600 hover:text-blue-600'
+                  }
+                `}
               >
                 {link.name}
               </a>
@@ -91,14 +94,10 @@ const Footer = ({ theme }) => {
       </div>
 
       {/* Divider */}
-      <div
-        className={`mt-10 border-t ${
-          isDark ? "border-gray-700" : "border-gray-300"
-        }`}
-      ></div>
+      <div className={`mt-10 border-t ${classes.borderPrimary}`}></div>
 
       {/* Centered Copyright */}
-      <div className="mt-4 text-center text-sm text-gray-400">
+      <div className={`mt-4 text-center text-sm ${classes.textSecondary}`}>
         <p>
           &copy; {currentYear} Algorithm Visualiser Platform. All rights
           reserved.
@@ -109,7 +108,10 @@ const Footer = ({ theme }) => {
             href="https://opensource.org/licenses/MIT"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-blue-400"
+            className={`
+              underline transition-colors duration-200
+              ${isDark ? 'hover:text-blue-400' : 'hover:text-blue-600'}
+            `}
           >
             MIT License
           </a>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, BarChart3, Network, Code, Zap, CheckCircle } from 'lucide-react';
 
-const GetStarted = ({ darkMode }) => {
+const GetStarted = ({ isDark }) => {
   const steps = [
     {
       number: '01',
@@ -69,7 +69,7 @@ const GetStarted = ({ darkMode }) => {
 
   return (
     <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
+      isDark 
         ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
         : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
     }`}>
@@ -77,12 +77,12 @@ const GetStarted = ({ darkMode }) => {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className={`text-4xl font-bold mb-6 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Get Started with Algorithm Visualizer Pro
           </h1>
           <p className={`text-xl mb-8 max-w-3xl mx-auto ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
+            isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
             Your journey to mastering algorithms starts here. Follow these simple steps to begin exploring 
             interactive algorithm visualizations.
@@ -99,7 +99,7 @@ const GetStarted = ({ darkMode }) => {
         {/* Steps */}
         <div className="mb-16">
           <h2 className={`text-3xl font-bold text-center mb-12 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             How It Works
           </h2>
@@ -110,7 +110,7 @@ const GetStarted = ({ darkMode }) => {
                 className={`
                   relative p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300 
                   transform hover:scale-105
-                  ${darkMode 
+                  ${isDark 
                     ? 'bg-gray-800/20 border-gray-700/50' 
                     : 'bg-white/20 border-white/50'
                   }
@@ -123,12 +123,12 @@ const GetStarted = ({ darkMode }) => {
                   {step.number}
                 </div>
                 <h3 className={`text-lg font-semibold mb-3 ${
-                  darkMode ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-white' : 'text-gray-900'
                 }`}>
                   {step.title}
                 </h3>
                 <p className={`text-sm mb-4 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                  isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   {step.description}
                 </p>
@@ -136,7 +136,7 @@ const GetStarted = ({ darkMode }) => {
                   to={step.link}
                   className={`
                     inline-flex items-center text-sm font-medium transition-colors
-                    ${darkMode 
+                    ${isDark 
                       ? 'text-blue-400 hover:text-blue-300' 
                       : 'text-blue-600 hover:text-blue-700'
                     }
@@ -153,7 +153,7 @@ const GetStarted = ({ darkMode }) => {
         {/* Algorithm Categories */}
         <div className="mb-16">
           <h2 className={`text-3xl font-bold text-center mb-12 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Available Algorithm Categories
           </h2>
@@ -164,7 +164,7 @@ const GetStarted = ({ darkMode }) => {
                 className={`
                   p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300 
                   ${feature.comingSoon ? 'opacity-75' : 'transform hover:scale-105'}
-                  ${darkMode 
+                  ${isDark 
                     ? 'bg-gray-800/20 border-gray-700/50' 
                     : 'bg-white/20 border-white/50'
                   }
@@ -183,20 +183,20 @@ const GetStarted = ({ darkMode }) => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       <h3 className={`text-xl font-semibold ${
-                        darkMode ? 'text-white' : 'text-gray-900'
+                        isDark ? 'text-white' : 'text-gray-900'
                       }`}>
                         {feature.title}
                       </h3>
                       {feature.comingSoon && (
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          darkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+                          isDark ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           Coming Soon
                         </span>
                       )}
                     </div>
                     <p className={`text-sm mb-4 ${
-                      darkMode ? 'text-gray-300' : 'text-gray-600'
+                      isDark ? 'text-gray-300' : 'text-gray-600'
                     }`}>
                       {feature.description}
                     </p>
@@ -208,11 +208,11 @@ const GetStarted = ({ darkMode }) => {
                     <div key={algoIndex} className="flex items-center space-x-2">
                       <CheckCircle className={`h-4 w-4 ${
                         feature.comingSoon 
-                          ? (darkMode ? 'text-gray-500' : 'text-gray-400')
-                          : (darkMode ? 'text-green-400' : 'text-green-500')
+                          ? (isDark ? 'text-gray-500' : 'text-gray-400')
+                          : (isDark ? 'text-green-400' : 'text-green-500')
                       }`} />
                       <span className={`text-sm ${
-                        darkMode ? 'text-gray-300' : 'text-gray-600'
+                        isDark ? 'text-gray-300' : 'text-gray-600'
                       }`}>
                         {algo}
                       </span>
@@ -226,7 +226,7 @@ const GetStarted = ({ darkMode }) => {
                     className={`
                       inline-flex items-center px-4 py-2 rounded-lg font-medium
                       transition-all duration-200 transform hover:scale-105
-                      ${darkMode 
+                      ${isDark 
                         ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                         : 'bg-blue-500 hover:bg-blue-600 text-white'
                       }
@@ -244,18 +244,18 @@ const GetStarted = ({ darkMode }) => {
         {/* Call to Action */}
         <div className={`
           text-center p-8 rounded-2xl backdrop-blur-xl border
-          ${darkMode 
+          ${isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
           }
         `}>
           <h2 className={`text-2xl font-bold mb-4 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Ready to Start Learning?
           </h2>
           <p className={`text-lg mb-6 ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
+            isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
             Choose your first algorithm to visualize and begin your journey into the world of algorithms.
           </p>

@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-const Layout = ({ children, theme, onThemeChange }) => {
+const Layout = ({ children }) => {
+  const { classes } = useTheme();
+  
   return (
-    <div className="min-h-screen">
-      <Navbar theme={theme} onThemeChange={onThemeChange} />
-      <main className="pt-16">{children}</main>
-      <Footer theme={theme} />
+    <div className={`min-h-screen ${classes.bgPrimary} ${classes.textPrimary}`}>
+      <Navbar />
+      {children}
+      <Footer />
     </div>
   );
 };

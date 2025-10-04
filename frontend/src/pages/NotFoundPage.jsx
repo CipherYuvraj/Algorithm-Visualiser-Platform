@@ -1,26 +1,23 @@
 import { Link } from "react-router-dom";
 import { AlertCircle, Cpu, ArrowLeft } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
-const NotFoundPage = ({ theme }) => {
-  const isDark = theme === "dark";
+const NotFoundPage = () => {
+  const { isDark, classes, getThemedGradient } = useTheme();
 
   return (
     <div
-      className={`relative flex-1 flex flex-col items-center justify-center p-6 transition-all duration-500 ${
-        isDark
-          ? "bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white"
-          : "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-gray-900"
-      }`}
+      className={`relative flex-1 flex flex-col items-center justify-center p-6 transition-all duration-500 ${classes.bgGradient} ${classes.textPrimary}`}
     >
       {/* Floating icons for tech vibe */}
       <div className="absolute top-20 left-10 opacity-40 animate-bounce-slow">
         <AlertCircle
-          className={`${isDark ? "text-white" : "text-gray-600"} w-12 h-12`}
+          className={`${classes.textSecondary} w-12 h-12`}
         />
       </div>
       <div className="absolute bottom-20 right-32 opacity-40 animate-spin-slow">
         <Cpu
-          className={`${isDark ? "text-white" : "text-gray-600"} w-20 h-20`}
+          className={`${classes.textSecondary} w-20 h-20`}
         />
       </div>
 
