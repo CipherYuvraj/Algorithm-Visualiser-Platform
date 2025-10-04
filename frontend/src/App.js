@@ -10,6 +10,8 @@ import HomePage from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import DocumentationPage from './pages/DocumentationPage';
 import ContributorsPage from './pages/ContributorsPage';
+import TutorialPage from './pages/TutorialPage';
+import TutorialsPage from './pages/TutorialsPage';
 import './App.css';
 
 function App() {
@@ -78,6 +80,14 @@ function App() {
             <Route 
               path="/contributors" 
               element={<ContributorsPage darkMode={darkMode} setDarkMode={setDarkMode} />} 
+            />
+            <Route 
+              path="/tutorials" 
+              element={<TutorialsPage darkMode={darkMode} />} 
+            />
+            <Route 
+              path="/tutorial/:tutorialId" 
+              element={<TutorialPage darkMode={darkMode} />} 
             />
           </Routes>
         </Layout>

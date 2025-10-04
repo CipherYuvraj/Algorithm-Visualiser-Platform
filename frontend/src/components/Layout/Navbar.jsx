@@ -38,6 +38,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
     { path: '/graph', label: 'Graph', icon: Network },
     { path: '/string', label: 'String', icon: Type },
     { path: '/dp', label: 'DP', icon: Layers },
+    { path: '/tutorials', label: 'Tutorials', icon: BookOpen },
     { path: '/about', label: 'About', icon: Info },
     { path: '/docs', label: 'Docs', icon: BookOpen }
   ];
