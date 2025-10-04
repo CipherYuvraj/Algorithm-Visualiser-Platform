@@ -1,7 +1,9 @@
 import React from 'react';
 import { Zap, Target, Users, Lightbulb, Github, Twitter, Mail } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
-const About = ({ darkMode }) => {
+const About = () => {
+  const { isDark, classes } = useTheme();
   const features = [
     {
       icon: Zap,
@@ -34,22 +36,14 @@ const About = ({ darkMode }) => {
   ];
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className={`text-4xl font-bold mb-6 ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h1 className={`text-4xl font-bold mb-6 ${classes.textPrimary}`}>
             About Algorithm Visualizer Pro
           </h1>
-          <p className={`text-xl mb-8 max-w-4xl mx-auto ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p className={`text-xl mb-8 max-w-4xl mx-auto ${classes.textSecondary}`}>
             We believe that understanding algorithms should be visual, interactive, and engaging. 
             Our platform transforms complex algorithmic concepts into intuitive, step-by-step visualizations 
             that make learning both effective and enjoyable.
@@ -59,18 +53,18 @@ const About = ({ darkMode }) => {
         {/* Mission Statement */}
         <div className={`
           p-8 rounded-2xl backdrop-blur-xl border mb-16
-          ${darkMode 
+          ${isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
           }
         `}>
           <h2 className={`text-2xl font-bold mb-4 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Our Mission
           </h2>
           <p className={`text-lg text-center leading-relaxed ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
+            isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
             To democratize algorithm education by providing an interactive, visual learning platform 
             that helps students, educators, and professionals understand the fundamental building blocks 
@@ -81,7 +75,7 @@ const About = ({ darkMode }) => {
         {/* Features */}
         <div className="mb-16">
           <h2 className={`text-3xl font-bold text-center mb-12 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             What Makes Us Different
           </h2>
@@ -92,7 +86,7 @@ const About = ({ darkMode }) => {
                 className={`
                   p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300 
                   transform hover:scale-105 text-center
-                  ${darkMode 
+                  ${isDark 
                     ? 'bg-gray-800/20 border-gray-700/50' 
                     : 'bg-white/20 border-white/50'
                   }
@@ -102,12 +96,12 @@ const About = ({ darkMode }) => {
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className={`text-lg font-semibold mb-2 ${
-                  darkMode ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-white' : 'text-gray-900'
                 }`}>
                   {feature.title}
                 </h3>
                 <p className={`text-sm ${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                  isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   {feature.description}
                 </p>
@@ -119,25 +113,25 @@ const About = ({ darkMode }) => {
         {/* Technology Stack */}
         <div className={`
           p-8 rounded-2xl backdrop-blur-xl border mb-16
-          ${darkMode 
+          ${isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
           }
         `}>
           <h2 className={`text-2xl font-bold mb-6 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Technology Stack
           </h2>
           <div className="grid md:grid-cols-3 gap-6 text-center">
             <div>
               <h3 className={`text-lg font-semibold mb-3 ${
-                darkMode ? 'text-blue-400' : 'text-blue-600'
+                isDark ? 'text-blue-400' : 'text-blue-600'
               }`}>
                 Frontend
               </h3>
               <ul className={`space-y-2 text-sm ${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 <li>React 18 with Hooks</li>
                 <li>TailwindCSS for styling</li>
@@ -147,12 +141,12 @@ const About = ({ darkMode }) => {
             </div>
             <div>
               <h3 className={`text-lg font-semibold mb-3 ${
-                darkMode ? 'text-green-400' : 'text-green-600'
+                isDark ? 'text-green-400' : 'text-green-600'
               }`}>
                 Backend
               </h3>
               <ul className={`space-y-2 text-sm ${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 <li>FastAPI (Python)</li>
                 <li>Pydantic for data validation</li>
@@ -162,12 +156,12 @@ const About = ({ darkMode }) => {
             </div>
             <div>
               <h3 className={`text-lg font-semibold mb-3 ${
-                darkMode ? 'text-purple-400' : 'text-purple-600'
+                isDark ? 'text-purple-400' : 'text-purple-600'
               }`}>
                 Performance
               </h3>
               <ul className={`space-y-2 text-sm ${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 <li>C++ algorithm engine</li>
                 <li>Python fallback system</li>
@@ -181,7 +175,7 @@ const About = ({ darkMode }) => {
         {/* Team */}
         <div className="mb-16">
           <h2 className={`text-3xl font-bold text-center mb-12 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             The Team
           </h2>
@@ -191,7 +185,7 @@ const About = ({ darkMode }) => {
                 key={index}
                 className={`
                   p-8 rounded-2xl backdrop-blur-xl border text-center max-w-md
-                  ${darkMode 
+                  ${isDark 
                     ? 'bg-gray-800/20 border-gray-700/50' 
                     : 'bg-white/20 border-white/50'
                   }
@@ -201,7 +195,7 @@ const About = ({ darkMode }) => {
                   <Users className="h-10 w-10 text-white" />
                 </div>
                 <h3 className={`text-xl font-semibold mb-2 ${
-                  darkMode ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-white' : 'text-gray-900'
                 }`}>
                   {member.name}
                 </h3>
@@ -209,7 +203,7 @@ const About = ({ darkMode }) => {
                   {member.role}
                 </p>
                 <p className={`text-sm ${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                  isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   {member.description}
                 </p>
@@ -221,25 +215,25 @@ const About = ({ darkMode }) => {
         {/* Contact */}
         <div className={`
           p-8 rounded-2xl backdrop-blur-xl border text-center
-          ${darkMode 
+          ${isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
           }
         `}>
           <h2 className={`text-2xl font-bold mb-6 ${
-            darkMode ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Get in Touch
           </h2>
           <p className={`text-lg mb-6 ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
+            isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
             Have questions, suggestions, or want to contribute? We'd love to hear from you!
           </p>
           <div className="flex justify-center space-x-6">
             <button className={`
               p-3 rounded-lg transition-colors
-              ${darkMode 
+              ${isDark 
                 ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
               }
@@ -248,7 +242,7 @@ const About = ({ darkMode }) => {
             </button>
             <button className={`
               p-3 rounded-lg transition-colors
-              ${darkMode 
+              ${isDark 
                 ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
               }
@@ -257,7 +251,7 @@ const About = ({ darkMode }) => {
             </button>
             <button className={`
               p-3 rounded-lg transition-colors
-              ${darkMode 
+              ${isDark 
                 ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
               }

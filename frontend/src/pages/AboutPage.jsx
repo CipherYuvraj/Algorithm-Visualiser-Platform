@@ -1,7 +1,9 @@
 import React from 'react';
 import { Code, Users, Target, Award, Github, Linkedin, Mail, ExternalLink, MapPin, Calendar, GraduationCap, Briefcase } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
-const AboutPage = ({ darkMode, setDarkMode }) => {
+const AboutPage = () => {
+  const { isDark, classes, getThemedGradient } = useTheme();
   const teamMembers = [
     {
       name: "Yuvraj Udaywal",
@@ -54,27 +56,19 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
   ];
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
         {/* Hero Section */}
         <div className={`text-center mb-16 p-8 rounded-2xl backdrop-blur-xl ${
-          darkMode 
+          isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
         } border`}>
-          <h1 className={`text-5xl font-bold mb-6 ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             About Algorithm Visualizer Pro
           </h1>
-          <p className={`text-xl leading-relaxed max-w-4xl mx-auto ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p className={`text-xl leading-relaxed max-w-4xl mx-auto ${classes.textSecondary}`}>
             An interactive platform designed to make algorithm learning engaging and intuitive. 
             Built with passion by a full-stack developer who believes in the power of visual learning 
             to make complex computer science concepts accessible to everyone.
@@ -82,19 +76,11 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
         </div>
 
         {/* Mission Statement */}
-        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${
-          darkMode 
-            ? 'bg-gray-800/20 border-gray-700/50' 
-            : 'bg-white/20 border-white/50'
-        } border`}>
-          <h2 className={`text-3xl font-bold mb-6 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${classes.cardBg} border`}>
+          <h2 className={`text-3xl font-bold mb-6 text-center ${classes.textPrimary}`}>
             My Mission
           </h2>
-          <p className={`text-lg leading-relaxed text-center max-w-3xl mx-auto ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p className={`text-lg leading-relaxed text-center max-w-3xl mx-auto ${classes.textSecondary}`}>
             To bridge the gap between theoretical computer science and practical understanding 
             by providing interactive, visual learning experiences. As a developer passionate about 
             education technology, I strive to make complex algorithms understandable through 
@@ -107,20 +93,14 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
           {stats.map((stat, index) => (
             <div 
               key={index}
-              className={`text-center p-6 rounded-xl backdrop-blur-xl ${
-                darkMode 
-                  ? 'bg-gray-800/30 border-gray-700/50' 
-                  : 'bg-white/30 border-white/50'
-              } border transform hover:scale-105 transition-all`}
+              className={`text-center p-6 rounded-xl backdrop-blur-xl ${classes.cardBg} border transform hover:scale-105 transition-all`}
             >
               <div className={`text-3xl font-bold mb-2 ${
-                darkMode ? 'text-blue-400' : 'text-blue-600'
+                isDark ? 'text-blue-400' : 'text-blue-600'
               }`}>
                 {stat.value}
               </div>
-              <div className={`text-sm ${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
+              <div className={`text-sm ${classes.textSecondary}`}>
                 {stat.label}
               </div>
             </div>
@@ -129,32 +109,22 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
 
         {/* Features */}
         <div className="mb-16">
-          <h2 className={`text-3xl font-bold mb-12 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h2 className={`text-3xl font-bold mb-12 text-center ${classes.textPrimary}`}>
             Key Features
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className={`p-6 rounded-xl backdrop-blur-xl ${
-                  darkMode 
-                    ? 'bg-gray-800/20 border-gray-700/50' 
-                    : 'bg-white/20 border-white/50'
-                } border transform hover:scale-105 transition-all`}
+                className={`p-6 rounded-xl backdrop-blur-xl ${classes.cardBg} border transform hover:scale-105 transition-all`}
               >
                 <feature.icon className={`h-12 w-12 mb-4 ${
-                  darkMode ? 'text-blue-400' : 'text-blue-600'
+                  isDark ? 'text-blue-400' : 'text-blue-600'
                 }`} />
-                <h3 className={`text-xl font-semibold mb-3 ${
-                  darkMode ? 'text-white' : 'text-gray-900'
-                }`}>
+                <h3 className={`text-xl font-semibold mb-3 ${classes.textPrimary}`}>
                   {feature.title}
                 </h3>
-                <p className={`${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>
+                <p className={classes.textSecondary}>
                   {feature.description}
                 </p>
               </div>
@@ -163,14 +133,8 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
         </div>
 
         {/* Developer Profile */}
-        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${
-          darkMode 
-            ? 'bg-gray-800/20 border-gray-700/50' 
-            : 'bg-white/20 border-white/50'
-        } border`}>
-          <h2 className={`text-3xl font-bold mb-12 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${classes.cardBg} border`}>
+          <h2 className={`text-3xl font-bold mb-12 text-center ${classes.textPrimary}`}>
             Meet the Developer
           </h2>
           
@@ -190,7 +154,7 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className={`p-3 rounded-lg transition-colors ${
-                        darkMode 
+                        isDark 
                           ? 'hover:bg-gray-600 text-gray-400 hover:text-white' 
                           : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                       }`}
@@ -202,7 +166,7 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className={`p-3 rounded-lg transition-colors ${
-                        darkMode 
+                        isDark 
                           ? 'hover:bg-gray-600 text-gray-400 hover:text-white' 
                           : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                       }`}
@@ -212,7 +176,7 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
                     <a 
                       href={`mailto:${member.email}`}
                       className={`p-3 rounded-lg transition-colors ${
-                        darkMode 
+                        isDark 
                           ? 'hover:bg-gray-600 text-gray-400 hover:text-white' 
                           : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                       }`}
@@ -224,19 +188,15 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
 
                 {/* Profile Info */}
                 <div className="md:col-span-2">
-                  <h3 className={`text-3xl font-bold mb-2 ${
-                    darkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <h3 className={`text-3xl font-bold mb-2 ${classes.textPrimary}`}>
                     {member.name}
                   </h3>
                   <p className={`text-lg mb-4 ${
-                    darkMode ? 'text-blue-400' : 'text-blue-600'
+                    isDark ? 'text-blue-400' : 'text-blue-600'
                   }`}>
                     {member.role}
                   </p>
-                  <p className={`text-base mb-6 leading-relaxed ${
-                    darkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
+                  <p className={`text-base mb-6 leading-relaxed ${classes.textSecondary}`}>
                     {member.description}
                   </p>
 
@@ -244,31 +204,25 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
                   <div className="space-y-3">
                     <div className="flex items-center">
                       <GraduationCap className={`h-5 w-5 mr-3 ${
-                        darkMode ? 'text-green-400' : 'text-green-600'
+                        isDark ? 'text-green-400' : 'text-green-600'
                       }`} />
-                      <span className={`${
-                        darkMode ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
+                      <span className={classes.textSecondary}>
                         {member.education}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <MapPin className={`h-5 w-5 mr-3 ${
-                        darkMode ? 'text-red-400' : 'text-red-600'
+                        isDark ? 'text-red-400' : 'text-red-600'
                       }`} />
-                      <span className={`${
-                        darkMode ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
+                      <span className={classes.textSecondary}>
                         {member.location}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <Briefcase className={`h-5 w-5 mr-3 ${
-                        darkMode ? 'text-purple-400' : 'text-purple-600'
+                        isDark ? 'text-purple-400' : 'text-purple-600'
                       }`} />
-                      <span className={`${
-                        darkMode ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
+                      <span className={classes.textSecondary}>
                         {member.experience}
                       </span>
                     </div>
@@ -280,14 +234,8 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
         </div>
 
         {/* Skills Section */}
-        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${
-          darkMode 
-            ? 'bg-gray-800/20 border-gray-700/50' 
-            : 'bg-white/20 border-white/50'
-        } border`}>
-          <h2 className={`text-3xl font-bold mb-8 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+        <div className={`mb-16 p-8 rounded-2xl backdrop-blur-xl ${classes.cardBg} border`}>
+          <h2 className={`text-3xl font-bold mb-8 text-center ${classes.textPrimary}`}>
             Technical Skills
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
@@ -295,7 +243,7 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
               <span 
                 key={index}
                 className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  darkMode 
+                  isDark 
                     ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
                     : 'bg-blue-100 text-blue-800 border border-blue-200'
                 } hover:scale-105 transition-transform`}
@@ -307,14 +255,8 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
         </div>
 
         {/* Technology Stack */}
-        <div className={`p-8 rounded-2xl backdrop-blur-xl ${
-          darkMode 
-            ? 'bg-gray-800/20 border-gray-700/50' 
-            : 'bg-white/20 border-white/50'
-        } border`}>
-          <h2 className={`text-3xl font-bold mb-8 text-center ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+        <div className={`p-8 rounded-2xl backdrop-blur-xl ${classes.cardBg} border`}>
+          <h2 className={`text-3xl font-bold mb-8 text-center ${classes.textPrimary}`}>
             Built With Modern Technologies
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -322,12 +264,10 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
               <div 
                 key={index}
                 className={`p-4 rounded-lg ${
-                  darkMode ? 'bg-gray-700/30' : 'bg-white/30'
+                  isDark ? 'bg-gray-700/30' : 'bg-white/30'
                 } transform hover:scale-105 transition-all`}
               >
-                <span className={`font-medium ${
-                  darkMode ? 'text-white' : 'text-gray-900'
-                }`}>
+                <span className={`font-medium ${classes.textPrimary}`}>
                   {tech}
                 </span>
               </div>
@@ -336,14 +276,10 @@ const AboutPage = ({ darkMode, setDarkMode }) => {
 
           {/* Project Vision */}
           <div className="mt-12 text-center">
-            <h3 className={`text-2xl font-bold mb-4 ${
-              darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
+            <h3 className={`text-2xl font-bold mb-4 ${classes.textPrimary}`}>
               Project Vision
             </h3>
-            <p className={`text-lg leading-relaxed max-w-3xl mx-auto ${
-              darkMode ? 'text-gray-300' : 'text-gray-600'
-            }`}>
+            <p className={`text-lg leading-relaxed max-w-3xl mx-auto ${classes.textSecondary}`}>
               This platform represents my commitment to education technology and the belief that 
               visual learning can transform how we understand algorithms. Every feature has been 
               carefully designed to provide an intuitive, engaging, and educational experience 

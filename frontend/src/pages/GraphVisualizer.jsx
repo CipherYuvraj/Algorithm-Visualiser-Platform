@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, RotateCcw, Zap, Settings, ChevronDown, ChevronUp, BookOpen, Network, Download, Search, Moon, Sun, User, Palette } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../contexts/ThemeContext';
 import GraphCanvas from '../components/Graph/GraphCanvas';
 import GraphInput from '../components/Graph/GraphInput';
 import ControlPanel from '../components/Sorting/ControlPanel';
 import ComplexityDisplay from '../components/Sorting/ComplexityDisplay';
 import { graphService } from '../services/api';
 
-const GraphVisualizer = ({ darkMode, setDarkMode }) => {
+const GraphVisualizer = () => {
+  const { isDark, classes, getThemedGradient, toggleTheme } = useTheme();
   const [nodes, setNodes] = useState([
     { id: 0, label: 'A', x: 100, y: 100 },
     { id: 1, label: 'B', x: 300, y: 100 },
@@ -289,7 +291,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
         icon: '⚡',
         style: {
           borderRadius: '12px',
-          background: darkMode ? '#1f2937' : '#333',
+          background: isDark ? '#1f2937' : '#333',
           color: '#fff',
           backdropFilter: 'blur(10px)',
         },
@@ -409,7 +411,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [algorithm, nodes, edges, startNode, endNode, selectedAlgorithm, darkMode, isLoading]);
+  }, [algorithm, nodes, edges, startNode, endNode, selectedAlgorithm, isDark, isLoading]);
 
   // Throttled play/pause to avoid repeated clicks
   const lastPlayPauseRef = useRef(0);
@@ -520,17 +522,13 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       {/* Conditional Particle Background */}
       {showParticles && !timeoutDetected && (
         <canvas
           ref={particleCanvasRef}
           className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: darkMode ? 0.4 : 0.2 }}
+          style={{ opacity: isDark ? 0.4 : 0.2 }}
         />
       )}
 
@@ -544,7 +542,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
       <div className="relative z-10 max-w-7xl mx-auto p-4">
         {/* Enhanced Header */}
         <div className={`backdrop-blur-xl rounded-2xl shadow-2xl mb-8 overflow-hidden border ${
-          darkMode 
+          isDark 
             ? 'bg-gray-800/20 border-gray-700/50' 
             : 'bg-white/20 border-white/50'
         }`}>
@@ -569,7 +567,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className={`w-full sm:w-auto pl-10 pr-4 py-2 rounded-lg backdrop-blur-md border transition-all ${
-                      darkMode 
+                      isDark 
                         ? 'bg-gray-800/50 border-gray-600 text-white' 
                         : 'bg-white/50 border-white/30 text-gray-800'
                     }`}
@@ -578,14 +576,14 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
 
                 {/* Theme Toggle */}
                 <button
-                  onClick={() => setDarkMode(!darkMode)}
+                  onClick={toggleTheme}
                   className={`p-3 rounded-lg backdrop-blur-md transition-all hover:scale-110 ${
-                    darkMode 
+                    isDark 
                       ? 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30' 
                       : 'bg-gray-800/20 text-gray-600 hover:bg-gray-800/30'
                   }`}
                 >
-                  {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 </button>
 
                 {/* Algorithm Selector */}
@@ -612,7 +610,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                   
                   {showUserMenu && (
                     <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-xl backdrop-blur-xl border z-50 ${
-                      darkMode 
+                      isDark 
                         ? 'bg-gray-800/90 border-gray-700' 
                         : 'bg-white/90 border-gray-200'
                     }`}>
@@ -620,7 +618,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                         <button 
                           onClick={() => setShowParticles(!showParticles)}
                           className={`w-full text-left px-3 py-2 rounded transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-800'
+                            isDark ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-800'
                           }`}
                         >
                           <Palette className="h-4 w-4 inline mr-2" />
@@ -637,7 +635,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
           {/* Algorithm Selector */}
           {isAlgorithmSelectorOpen && (
             <div className={`backdrop-blur-xl border-t transition-all duration-300 ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-800/40 border-gray-700/50' 
                 : 'bg-white/40 border-white/50'
             }`}>
@@ -648,8 +646,8 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                       key={algo.id}
                       className={`group p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 border ${
                         algorithm === algo.id
-                          ? `border-2 shadow-lg ${darkMode ? 'bg-gray-700/50' : 'bg-white/50'}`
-                          : `border ${darkMode ? 'border-gray-600 bg-gray-800/30 hover:bg-gray-700/50' : 'border-white/30 bg-white/20 hover:bg-white/40'}`
+                          ? `border-2 shadow-lg ${isDark ? 'bg-gray-700/50' : 'bg-white/50'}`
+                          : `border ${isDark ? 'border-gray-600 bg-gray-800/30 hover:bg-gray-700/50' : 'border-white/30 bg-white/20 hover:bg-white/40'}`
                       }`}
                       style={{
                         boxShadow: algorithm === algo.id ? `0 0 20px ${algo.color}40` : 'none'
@@ -672,7 +670,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                       onMouseLeave={() => setHoveredAlgorithm(null)}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <div className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                        <div className={`font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                           {algo.name}
                         </div>
                         <div 
@@ -680,15 +678,15 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                           style={{ backgroundColor: algo.color }}
                         />
                       </div>
-                      <div className={`text-sm mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <div className={`text-sm mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                         {algo.description}
                       </div>
-                      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         {algo.complexity}
                       </div>
                       
                       {hoveredAlgorithm === algo.id && (
-                        <div className={`mt-2 text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'} animate-fade-in`}>
+                        <div className={`mt-2 text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'} animate-fade-in`}>
                           {algo.preview}
                         </div>
                       )}
@@ -704,12 +702,12 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
           {/* Left Panel - Graph Configuration & Controls */}
           <div className="space-y-6">
             <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-800/20 border-gray-700/50' 
                 : 'bg-white/20 border-white/50'
             }`}>
-              <div className={`p-6 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-                <h3 className={`text-xl font-bold flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              <div className={`p-6 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
+                <h3 className={`text-xl font-bold flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
                   <Settings className="h-6 w-6 mr-3 text-blue-500" />
                   Graph Configuration & Controls
                 </h3>
@@ -718,7 +716,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
               <div className="p-6 space-y-8">
                 {/* Graph Configuration */}
                 <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     <span className="w-3 h-3 bg-blue-500 rounded-full mr-3 animate-pulse"></span>
                     Graph Setup
                   </h4>
@@ -733,13 +731,13 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                     onStartNodeChange={setStartNode}
                     onEndNodeChange={setEndNode}
                     onRandomize={generateRandomGraph}
-                    darkMode={darkMode}
+                    isDark={isDark}
                   />
                 </div>
 
                 {/* Controls */}
                 <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     <span className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
                     Playback Controls
                   </h4>
@@ -754,7 +752,7 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                     isLoading={isLoading}
                     onStepForward={stepForward}
                     onStepBackward={stepBackward}
-                    darkMode={darkMode}
+                    isDark={isDark}
                   />
                 </div>
               </div>
@@ -764,17 +762,17 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
           {/* Right Panel - Graph Visualization */}
           <div className="space-y-6">
             <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-800/20 border-gray-700/50' 
                 : 'bg-white/20 border-white/50'
             }`}>
-              <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
+              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                       {selectedAlgorithm?.name} Visualization
                     </h3>
-                    <div className={`flex items-center space-x-4 text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <div className={`flex items-center space-x-4 text-sm mt-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       <span className="flex items-center space-x-1">
                         <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
                         <span>Step {currentStep + 1} of {steps.length || 1}</span>
@@ -806,27 +804,27 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                   startNode={startNode}
                   endNode={endNode}
                   algorithm={algorithm}
-                  darkMode={darkMode}
+                  isDark={isDark}
                 />
               </div>
             </div>
 
             {/* Step Explanation */}
             <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              darkMode 
+              isDark 
                 ? 'bg-gray-800/20 border-gray-700/50' 
                 : 'bg-white/20 border-white/50'
             }`}>
-              <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
+              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
                 <div className="flex justify-between items-center">
-                  <h4 className={`text-lg font-bold flex items-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-bold flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     <BookOpen className="h-5 w-5 mr-2 text-purple-500" />
                     Step Explanation
                   </h4>
                   <button
                     onClick={() => setShowDetailedLog(!showDetailedLog)}
                     className={`text-sm px-3 py-1 rounded transition-colors ${
-                      darkMode 
+                      isDark 
                         ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                     }`}
@@ -838,23 +836,23 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
               
               <div className="p-4 space-y-4 max-h-80 overflow-y-auto">
                 <div className={`p-4 rounded-lg border-l-4 border-blue-500 ${
-                  darkMode ? 'bg-blue-900/20' : 'bg-blue-50'
+                  isDark ? 'bg-blue-900/20' : 'bg-blue-50'
                 }`}>
-                  <p className={`text-sm font-medium mb-1 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <p className={`text-sm font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     Current Operation:
                   </p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     {currentStepData.operation}
                   </p>
                 </div>
                 
                 <div className={`p-4 rounded-lg border-l-4 border-purple-500 ${
-                  darkMode ? 'bg-purple-900/20' : 'bg-purple-50'
+                  isDark ? 'bg-purple-900/20' : 'bg-purple-50'
                 }`}>
-                  <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  <p className={`text-sm font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     What's Happening:
                   </p>
-                  <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     {typewriterText}
                     <span className="animate-blink">|</span>
                   </p>
@@ -862,12 +860,12 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
 
                 {selectedAlgorithm && (
                   <div className={`p-4 rounded-lg border-l-4 border-green-500 ${
-                    darkMode ? 'bg-green-900/20' : 'bg-green-50'
+                    isDark ? 'bg-green-900/20' : 'bg-green-50'
                   }`}>
-                    <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <p className={`text-sm font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                       Algorithm Info:
                     </p>
-                    <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       {selectedAlgorithm.explanation}
                     </p>
                   </div>
@@ -880,12 +878,12 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
         {/* Bottom Panel - Analysis & Metrics */}
         <div className="mt-8 grid md:grid-cols-2 gap-8">
           <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-            darkMode 
+            isDark 
               ? 'bg-gray-800/20 border-gray-700/50' 
               : 'bg-white/20 border-white/50'
           }`}>
-            <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
+              <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 Complexity Analysis
               </h3>
             </div>
@@ -894,61 +892,61 @@ const GraphVisualizer = ({ darkMode, setDarkMode }) => {
                 algorithm={selectedAlgorithm}
                 currentData={currentStepData}
                 steps={steps}
-                darkMode={darkMode}
+                isDark={isDark}
                 enhanced={true}
               />
             </div>
           </div>
 
           <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-            darkMode 
+            isDark 
               ? 'bg-gray-800/20 border-gray-700/50' 
               : 'bg-white/20 border-white/50'
           }`}>
-            <div className={`p-4 border-b ${darkMode ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
+              <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 Graph Metrics
               </h3>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-blue-900/30' : 'bg-blue-50'
+                  isDark ? 'bg-blue-900/30' : 'bg-blue-50'
                 }`}>
                   <div className="text-3xl font-bold text-blue-600">
                     {nodes.length}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
                     Vertices
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-green-900/30' : 'bg-green-50'
+                  isDark ? 'bg-green-900/30' : 'bg-green-50'
                 }`}>
                   <div className="text-3xl font-bold text-green-600">
                     {edges.length}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-green-300' : 'text-green-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-green-300' : 'text-green-600'}`}>
                     Edges
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-purple-900/30' : 'bg-purple-50'
+                  isDark ? 'bg-purple-900/30' : 'bg-purple-50'
                 }`}>
                   <div className="text-3xl font-bold text-purple-600">
                     {steps.length}
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                     Total Steps
                   </div>
                 </div>
                 <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  darkMode ? 'bg-orange-900/30' : 'bg-orange-50'
+                  isDark ? 'bg-orange-900/30' : 'bg-orange-50'
                 }`}>
                   <div className="text-3xl font-bold text-orange-600">
                     {steps.length > 0 ? Math.round((currentStep / (steps.length - 1)) * 100) : 0}%
                   </div>
-                  <div className={`text-sm ${darkMode ? 'text-orange-300' : 'text-orange-600'}`}>
+                  <div className={`text-sm ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
                     Progress
                   </div>
                 </div>

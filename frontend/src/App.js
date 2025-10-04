@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import Layout from './components/Layout/Layout';
-import { getUserPreferences, setUserPreferences } from './services/userPreferences';
 import SortingVisualizer from './pages/SortingVisualizer';
 import GraphVisualizer from './pages/GraphVisualizer';
 import StringVisualizer from './pages/StringVisualizer';
@@ -11,114 +11,114 @@ import HomePage from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import DocumentationPage from './pages/DocumentationPage';
 import ContributorsPage from './pages/ContributorsPage';
+import TutorialPage from './pages/TutorialPage';
+import TutorialsPage from './pages/TutorialsPage';
+
 import NotFoundPage from './pages/NotFoundPage';
+
 import './App.css';
 
-function App() {
-  // Theme state with persistence
-  const [theme, setTheme] = useState(() => {
-    // Check system preference first
-    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    try {
-      const { theme: savedTheme } = getUserPreferences();
-      return savedTheme || systemPreference;
-    } catch (error) {
-      console.error('Error loading theme preference:', error);
-      return systemPreference;
-    }
-  });
-
-  // Update theme and save preference
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    
-    // Save to localStorage
-    const preferences = getUserPreferences();
-    setUserPreferences({ ...preferences, theme: newTheme });
-    
-    // Update document class for global styling
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e) => {
-      const systemTheme = e.matches ? 'dark' : 'light';
-      handleThemeChange(systemTheme);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  // Apply theme on mount and changes
-  useEffect(() => {
-    handleThemeChange(theme);
-  }, [theme]);
+const AppContent = () => {
+  const { isDark } = useTheme();
 
   return (
     <div className="App">
       <Router>
-        <Layout theme={theme} onThemeChange={handleThemeChange}>
+        <Layout>
           <Routes>
             <Route 
               path="/" 
-              element={<HomePage theme={theme} />} 
+              element={<HomePage />} 
             />
             <Route 
               path="/sorting" 
-              element={<SortingVisualizer theme={theme} />} 
+              element={<SortingVisualizer />} 
             />
             <Route 
               path="/graph" 
-              element={<GraphVisualizer theme={theme} />} 
+              element={<GraphVisualizer />} 
             />
             <Route 
               path="/string" 
-              element={<StringVisualizer theme={theme} />} 
+              element={<StringVisualizer />} 
             />
             <Route 
               path="/dp" 
-              element={<DPVisualizer theme={theme} />} 
+              element={<DPVisualizer />} 
             />
             <Route 
               path="/about" 
-              element={<AboutPage theme={theme} />} 
+              element={<AboutPage />} 
             />
             <Route 
               path="/docs" 
-              element={<DocumentationPage theme={theme} />} 
+              element={<DocumentationPage />} 
             />
             <Route 
               path="/contributors" 
-              element={<ContributorsPage theme={theme} />} 
+              element={<ContributorsPage />} 
             />
             <Route 
               path="*" 
-              element={<NotFoundPage theme={theme} />} 
+              element={<NotFoundPage />} 
+            />
+            <Route 
+              path="/tutorials" 
+              element={<TutorialsPage darkMode={darkMode} />} 
+            />
+            <Route 
+              path="/tutorial/:tutorialId" 
+              element={<TutorialPage darkMode={darkMode} />} 
             />
           </Routes>
         </Layout>
       </Router>
 
-      {/* Toast notifications */}
+      {/* Toast notifications with theme-aware styling */}
       <Toaster 
         position="top-right"
         toastOptions={{
           duration: 3000,
           style: {
-            background: theme === 'dark' ? '#374151' : '#ffffff',
-            color: theme === 'dark' ? '#ffffff' : '#000000',
-            border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
+            background: isDark ? 'rgb(31 41 55)' : 'rgb(255 255 255)',
+            color: isDark ? 'rgb(249 250 251)' : 'rgb(17 24 39)',
+            border: `1px solid ${isDark ? 'rgb(75 85 99)' : 'rgb(229 231 235)'}`,
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: isDark 
+              ? '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3)'
+              : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+          },
+          success: {
+            iconTheme: {
+              primary: isDark ? 'rgb(74 222 128)' : 'rgb(34 197 94)',
+              secondary: isDark ? 'rgb(31 41 55)' : 'rgb(255 255 255)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: isDark ? 'rgb(248 113 113)' : 'rgb(239 68 68)',
+              secondary: isDark ? 'rgb(31 41 55)' : 'rgb(255 255 255)',
+            },
+          },
+          loading: {
+            iconTheme: {
+              primary: isDark ? 'rgb(96 165 250)' : 'rgb(59 130 246)',
+              secondary: isDark ? 'rgb(31 41 55)' : 'rgb(255 255 255)',
+            },
           },
         }}
       />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
