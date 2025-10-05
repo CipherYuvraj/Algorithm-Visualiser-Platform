@@ -2,14 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Zap, Settings, BookOpen, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTheme } from '../contexts/ThemeContext';
+import { AlgorithmSettingsProvider, useAlgorithmSettings } from '../contexts/AlgorithmSettingsContext';
 import SortingCanvas from '../components/Sorting/SortingCanvas';
 import ArrayInput from '../components/Sorting/ArrayInput';
 import ControlPanel from '../components/Sorting/ControlPanel';
 import ComplexityDisplay from '../components/Sorting/ComplexityDisplay';
 import { sortingService } from '../services/api';
 
-const SortingVisualizer = () => {
+const SortingVisualizerContent = () => {
   const { isDark, classes, getThemedGradient } = useTheme();
+  const { settings } = useAlgorithmSettings();
   const [array, setArray] = useState([64, 34, 25, 12, 22, 11, 90]);
   const [algorithm, setAlgorithm] = useState('bubble');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,6 +28,7 @@ const SortingVisualizer = () => {
   const particleCanvasRef = useRef(null);
   const timeoutCountRef = useRef(0);
   const lastTimeoutCheck = useRef(Date.now());
+  const audioRef = useRef(new Audio('/sounds/swap.mp3'));
 
   const algorithms = [
     { 
@@ -346,6 +349,31 @@ const SortingVisualizer = () => {
     });
   };
 
+  // Convert speed setting (0.1x - 10x) to delay in ms (1000ms - 100ms)
+  const getDelay = useCallback(() => {
+    return Math.round(1000 / settings.speed);
+  }, [settings.speed]);
+
+  // Handle sound effects
+  const playSwapSound = useCallback(() => {
+    if (settings.soundEffects && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
+  }, [settings.soundEffects]);
+
+  useEffect(() => {
+    // Update speed when settings change
+    setSpeed(getDelay());
+  }, [settings.speed, getDelay]);
+
+  // Play step sound when moving forward
+  useEffect(() => {
+    if (currentStep > 0 && settings.soundEffects) {
+      playSwapSound();
+    }
+  }, [currentStep, settings.soundEffects, playSwapSound]);
+
   useEffect(() => {
     if (isPlaying && currentStep < steps.length - 1) {
       const timer = setTimeout(() => {
@@ -367,355 +395,81 @@ const SortingVisualizer = () => {
   }, [isPlaying, currentStep, steps.length, speed]);
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
-      {/* Conditional Particle Background */}
-      {shouldShowParticles && (
-        <canvas
-          ref={particleCanvasRef}
-          className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: isDark ? 0.4 : 0.2 }}
-        />
-      )}
-
-      {/* Timeout Warning */}
-      {timeoutDetected && (
-        <div className="fixed top-20 right-4 z-50 bg-yellow-500 text-black p-3 rounded-lg shadow-lg">
-          ⚠️ Performance issue detected. Some visual effects disabled.
-        </div>
-      )}
-
-      <div className="relative z-10 max-w-7xl mx-auto p-4">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left Panel - Enhanced Array & Controls */}
-          <div className="space-y-6">
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
-              isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
-            }`}>
-              <div className={`p-6 border-b ${classes.border}`}>
-                <h3 className={`text-xl font-bold flex items-center ${classes.textPrimary}`}>
-                  <Settings className="h-6 w-6 mr-3 text-blue-500" />
-                  Configuration & Controls
-                </h3>
-                
-                {/* Add algorithm selector here */}
-                <div className="mt-4">
-                  <label className={`block text-sm font-medium mb-2 ${classes.textSecondary}`}>
-                    Algorithm
-                  </label>
-                  <select
-                    value={algorithm}
-                    onChange={(e) => {
-                      setAlgorithm(e.target.value);
-                      reset();
-                    }}
-                    className={`w-full p-3 rounded-lg border transition-all ${
-                      isDark 
-                        ? 'bg-gray-800 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-800'
-                    }`}
-                  >
-                    {algorithms.map((algo) => (
-                      <option key={algo.id} value={algo.id}>
-                        {algo.name} - {algo.complexity}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="p-6 space-y-8">
-                {/* Enhanced Array Section */}
-                <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${classes.textPrimary}`}>
-                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-3 animate-pulse"></span>
-                    Array Configuration
-                  </h4>
-                  
-                  {/* Array Size Slider */}
-                  <div className="mb-6">
-                    <label className={`block text-sm font-medium mb-2 ${classes.textSecondary}`}>
-                      Array Size: {arraySize}
-                    </label>
-                    <input
-                      type="range"
-                      min="5"
-                      max="15"
-                      value={arraySize}
-                      onChange={(e) => setArraySize(parseInt(e.target.value))}
-                      className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((arraySize - 5) / 10) * 100}%, #e5e7eb ${((arraySize - 5) / 10) * 100}%, #e5e7eb 100%)`
-                      }}
-                    />
-                  </div>
-                  
-                  <ArrayInput
-                    array={array}
-                    onChange={setArray}
-                    onRandomize={generateRandomArray}
-                  />
-                </div>
-
-                {/* Enhanced Controls Section */}
-                <div>
-                  <h4 className={`text-lg font-semibold mb-4 flex items-center ${classes.textPrimary}`}>
-                    <span className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
-                    Playback Controls
-                  </h4>
-                  <ControlPanel
-                    isPlaying={isPlaying}
-                    onPlayPause={playPause}
-                    onReset={reset}
-                    onSpeedChange={setSpeed}
-                    speed={speed}
-                    currentStep={currentStep}
-                    totalSteps={steps.length}
-                    isLoading={isLoading}
-                    onStepForward={stepForward}
-                    onStepBackward={stepBackward}
-                  />
-                </div>
-
-                {/* Download Button */}
-                <button
-                  onClick={downloadVisualization}
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition-all hover:scale-105 flex items-center justify-center space-x-2 ${
-                    isDark 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : 'bg-purple-500 hover:bg-purple-600 text-white'
-                  }`}
-                >
-                  <Download className="h-5 w-5" />
-                  <span>Download Visualization</span>
-                </button>
-              </div>
-            </div>
+    <div className={`min-h-screen ${classes.bgGradient}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main content */}
+        <div className="space-y-6">
+          {/* Algorithm selection and array input */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ArrayInput
+              array={array}
+              onChange={setArray}
+              arraySize={arraySize}
+              onSizeChange={setArraySize}
+              isLoading={isLoading}
+            />
+            <ComplexityDisplay algorithm={selectedAlgorithm} />
           </div>
 
-          {/* Right Panel - Enhanced Visualization */}
-          <div className="space-y-6">
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
-              {/* Visualization Header */}
-              <div className={`p-4 border-b ${classes.border}`}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className={`text-xl font-bold ${classes.textPrimary}`}>
-                      {selectedAlgorithm?.name} Visualization
-                    </h3>
-                    <div className={`flex items-center space-x-4 text-sm mt-1 ${classes.textSecondary}`}>
-                      <span className="flex items-center space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                        <span>Step {currentStep + 1} of {steps.length || 1}</span>
-                      </span>
-                      <div className="flex items-center space-x-1">
-                        <Zap className="h-4 w-4 text-yellow-500" />
-                        <span>Ops: {currentStepData.operations_count || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div 
-                    className="px-4 py-2 rounded-full text-sm font-bold text-white shadow-lg animate-pulse"
-                    style={{ 
-                      backgroundColor: selectedAlgorithm?.color,
-                      boxShadow: `0 0 20px ${selectedAlgorithm?.color}40`
-                    }}
-                  >
-                    {selectedAlgorithm?.complexity}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                {/* Enhanced Visualization Canvas */}
-                <SortingCanvas
-                  ref={canvasRef}
-                  data={currentStepData}
-                  algorithm={algorithm}
-                  compact={true}
-                  selectedAlgorithm={selectedAlgorithm}
-                  enhanced={true}
-                />
-              </div>
-            </div>
-
-            {/* Enhanced Step Explanation with Typewriter Effect */}
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
-              <div className={`p-4 border-b ${classes.border}`}>
-                <div className="flex justify-between items-center">
-                  <h4 className={`text-lg font-bold flex items-center ${classes.textPrimary}`}>
-                    <BookOpen className="h-5 w-5 mr-2 text-purple-500" />
-                    Step Explanation
-                  </h4>
-                  <button
-                    onClick={() => setShowDetailedLog(!showDetailedLog)}
-                    className={`text-sm px-3 py-1 rounded transition-colors ${
-                      isDark 
-                        ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                    }`}
-                  >
-                    {showDetailedLog ? 'Hide' : 'Show'} Detailed Log
-                  </button>
-                </div>
-              </div>
-              
-              <div className="p-4 space-y-4 max-h-80 overflow-y-auto">
-                <div className={`p-4 rounded-lg border-l-4 border-blue-500 ${
-                  isDark ? 'bg-blue-900/20' : 'bg-blue-50'
-                }`}>
-                  <p className={`text-sm font-medium mb-1 ${classes.textPrimary}`}>
-                    Current Operation:
-                  </p>
-                  <p className={`text-sm ${classes.textSecondary}`}>
-                    {currentStepData.operation}
-                  </p>
-                </div>
-                
-                <div className={`p-4 rounded-lg border-l-4 border-purple-500 ${
-                  isDark ? 'bg-purple-900/20' : 'bg-purple-50'
-                }`}>
-                  <p className={`text-sm font-medium mb-2 ${classes.textPrimary}`}>
-                    What's Happening:
-                  </p>
-                  <p className={`text-sm leading-relaxed ${classes.textSecondary}`}>
-                    {typewriterText}
-                    <span className="animate-blink">|</span>
-                  </p>
-                </div>
-
-                {selectedAlgorithm && (
-                  <div className={`p-4 rounded-lg border-l-4 border-green-500 ${
-                    isDark ? 'bg-green-900/20' : 'bg-green-50'
-                  }`}>
-                    <p className={`text-sm font-medium mb-2 ${classes.textPrimary}`}>
-                      Algorithm Info:
-                    </p>
-                    <p className={`text-sm leading-relaxed ${classes.textSecondary}`}>
-                      {selectedAlgorithm.explanation}
-                    </p>
-                  </div>
-                )}
-
-                {/* Detailed Log */}
-                {showDetailedLog && (
-                  <div className={`p-4 rounded-lg ${
-                    isDark ? 'bg-gray-800/50' : 'bg-gray-100'
-                  }`}>
-                    <h5 className={`text-sm font-bold mb-2 ${classes.textPrimary}`}>
-                      Step History:
-                    </h5>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {steps.slice(Math.max(0, currentStep - 5), currentStep + 1).map((step, index) => (
-                        <div key={index} className={`text-xs p-2 rounded ${
-                          index === 5 || index === steps.slice(Math.max(0, currentStep - 5), currentStep + 1).length - 1
-                            ? (isDark ? 'bg-blue-800/50 text-blue-200' : 'bg-blue-100 text-blue-800')
-                            : (isDark ? 'text-gray-400' : 'text-gray-600')
-                        }`}>
-                          {step.operation}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* Control panel with new settings */}
+          <div className={`p-6 rounded-2xl backdrop-blur-xl ${
+            settings.theme === 'neon'
+              ? 'bg-gray-900/50 border-purple-500/20'
+              : settings.theme === 'minimal'
+                ? 'bg-gray-50/50 border-gray-200'
+                : 'bg-white/20 border-white/20'
+          } border`}>
+            <ControlPanel
+              isPlaying={isPlaying}
+              onPlayPause={playPause}
+              onReset={reset}
+              onSpeedChange={(newSpeed) => settings.updateSettings({ speed: newSpeed })}
+              speed={settings.speed}
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              isLoading={isLoading}
+              onStepForward={stepForward}
+              onStepBackward={stepBackward}
+              onCompareMode={() => settings.updateSettings({ compareMode: !settings.compareMode })}
+              onThemeChange={(theme) => settings.updateSettings({ theme })}
+            />
           </div>
-        </div>
 
-        {/* Enhanced Bottom Panel - Analysis & Metrics */}
-        <div className="mt-8 grid md:grid-cols-2 gap-8">
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
-            <div className={`p-4 border-b ${classes.border}`}>
-              <h3 className={`text-lg font-bold ${classes.textPrimary}`}>
-                Complexity Analysis
-              </h3>
-            </div>
-            <div className="p-6">
-              <ComplexityDisplay
-                algorithm={selectedAlgorithm}
-                currentData={currentStepData}
-                steps={steps}
-                enhanced={true}
+          {/* Visualization canvas */}
+          <div className={`relative overflow-hidden rounded-2xl ${
+            settings.theme === 'neon'
+              ? 'bg-gray-900/50 border-purple-500/20'
+              : settings.theme === 'minimal'
+                ? 'bg-gray-50/50 border-gray-200'
+                : 'bg-white/20 border-white/20'
+          } border p-6`}>
+            <SortingCanvas
+              ref={canvasRef}
+              array={currentStep < steps.length ? steps[currentStep].array : array}
+              comparing={currentStep < steps.length ? steps[currentStep].comparing : []}
+              swapping={currentStep < steps.length ? steps[currentStep].swapping : []}
+              sorted={currentStep < steps.length ? steps[currentStep].sorted : []}
+              theme={settings.theme}
+            />
+            {showParticles && (
+              <canvas
+                ref={particleCanvasRef}
+                className="absolute inset-0 pointer-events-none"
+                style={{ opacity: 0.5 }}
               />
-            </div>
-          </div>
-
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${classes.cardBg}`}>
-            <div className={`p-4 border-b ${classes.border}`}>
-              <h3 className={`text-lg font-bold ${classes.textPrimary}`}>
-                Performance Metrics
-              </h3>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-blue-900/30' : 'bg-blue-50'
-                }`}>
-                  <div className="text-3xl font-bold text-blue-600 animate-pulse">
-                    {array.length}
-                  </div>
-                  <div className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
-                    Array Size
-                  </div>
-                </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-green-900/30' : 'bg-green-50'
-                }`}>
-                  <div className="text-3xl font-bold text-green-600 animate-pulse">
-                    {steps.length}
-                  </div>
-                  <div className={`text-sm ${isDark ? 'text-green-300' : 'text-green-600'}`}>
-                    Total Steps
-                  </div>
-                </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-purple-900/30' : 'bg-purple-50'
-                }`}>
-                  <div className="text-3xl font-bold text-purple-600 animate-pulse">
-                    {currentStepData.operations_count || 0}
-                  </div>
-                  <div className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
-                    Operations
-                  </div>
-                </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-orange-900/30' : 'bg-orange-50'
-                }`}>
-                  <div className="text-3xl font-bold text-orange-600 animate-pulse">
-                    {steps.length > 0 ? Math.round((currentStep / (steps.length - 1)) * 100) : 0}%
-                  </div>
-                  <div className={`text-sm ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
-                    Progress
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Custom CSS for animations */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-          }
-          .animate-blink {
-            animation: blink 1s infinite;
-          }
-          .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-          }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        `
-      }} />
     </div>
+  );
+};
+
+const SortingVisualizer = () => {
+  return (
+    <AlgorithmSettingsProvider>
+      <SortingVisualizerContent />
+    </AlgorithmSettingsProvider>
   );
 };
 
