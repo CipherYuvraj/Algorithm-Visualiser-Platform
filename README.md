@@ -171,13 +171,13 @@ To bridge the gap between theoretical computer science and practical understandi
 <div align="center">
   
 ### 🏠 Home Page
-![Home Page](![alt text](image-1.png))
+![alt text](image-1.png)
 
 ### 🎮 Algorithm Visualization
-![Sorting Algorithm](![alt text](image-2.png))
+![alt text](image-2.png)
 
 ### 🌙 Dark Mode Experience
-![Dark Mode](![alt text](image-3.png))
+![alt text](image-3.png)
 
 </div>
 
