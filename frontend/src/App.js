@@ -64,11 +64,11 @@ const AppContent = () => {
             />
             <Route 
               path="/tutorials" 
-              element={<TutorialsPage darkMode={darkMode} />} 
+              element={<TutorialsPage  />} 
             />
             <Route 
               path="/tutorial/:tutorialId" 
-              element={<TutorialPage darkMode={darkMode} />} 
+              element={<TutorialPage />} 
             />
           </Routes>
         </Layout>

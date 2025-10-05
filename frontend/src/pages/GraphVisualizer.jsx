@@ -521,6 +521,9 @@ const GraphVisualizer = () => {
     operation: 'Ready to start'
   };
 
+
+  const [darkMode,setDarkMode]=useState(false);
+
   return (
     <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
       {/* Conditional Particle Background */}
