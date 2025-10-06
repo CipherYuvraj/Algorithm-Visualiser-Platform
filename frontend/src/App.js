@@ -62,14 +62,9 @@ const AppContent = () => {
               path="*" 
               element={<NotFoundPage />} 
             />
-            <Route 
-              path="/tutorials" 
-              element={<TutorialsPage  />} 
-            />
-            <Route 
-              path="/tutorial/:tutorialId" 
-              element={<TutorialPage />} 
-            />
+          <Route path="/tutorials" element={<TutorialsPage darkMode={isDark} />} />
+            <Route path="/tutorial/:tutorialId" element={<TutorialPage darkMode={isDark} />} />
+
           </Routes>
         </Layout>
       </Router>
