@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState,useEffect } from 'react';
+import { getTutorials } from '../services/api';
 
 const TutorialsPage = ({ darkMode }) => {
   const navigate = useNavigate();

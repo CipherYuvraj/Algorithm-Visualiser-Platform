@@ -191,7 +191,7 @@ const About = () => {
                   }
                 `}
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+                <div className="w-30 h-30 rounded-3xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
                   <Users className="h-10 w-10 text-white" />
                 </div>
                 <h3 className={`text-xl font-semibold mb-2 ${

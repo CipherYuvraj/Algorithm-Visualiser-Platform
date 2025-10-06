@@ -62,15 +62,9 @@ const AppContent = () => {
               path="*" 
               element={<NotFoundPage />} 
             />
-            {/* The variable is changed from 'darkMode' to 'isDark' here */}
-            <Route 
-              path="/tutorials" 
-              element={<TutorialsPage darkMode={isDark} />} 
-            />
-            <Route 
-              path="/tutorial/:tutorialId" 
-              element={<TutorialPage darkMode={isDark} />} 
-            />
+          <Route path="/tutorials" element={<TutorialsPage darkMode={isDark} />} />
+            <Route path="/tutorial/:tutorialId" element={<TutorialPage darkMode={isDark} />} />
+
           </Routes>
         </Layout>
       </Router>
