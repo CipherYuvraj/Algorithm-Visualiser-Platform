@@ -33,7 +33,7 @@ const ComplexityDisplay = ({ algorithm, currentData, steps }) => {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Steps:</span>
-          <span className="font-medium">{steps.length}</span>
+         <span className="font-medium">{steps?.length || 0}</span>
         </div>
       </div>
     </div>
