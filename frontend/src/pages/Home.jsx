@@ -119,7 +119,10 @@ const Home = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div key={index} className={`text-center p-6 ${classes.cardBg} border rounded-xl shadow-soft hover:shadow-medium transition-shadow`}>
+              <div 
+                key={index} 
+                className={`text-center p-6 ${classes.cardBg} border rounded-xl shadow-soft hover:shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer`}
+              >
                 <div className={`${
                   isDark ? 'bg-blue-900/40' : 'bg-blue-100'
                 } w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>
@@ -149,7 +152,7 @@ const Home = () => {
               <Link
                 key={index}
                 to={category.path}
-                className={`${classes.cardBg} rounded-xl shadow-soft hover:shadow-strong transition-all duration-300 p-6 group border`}
+                className={`${classes.cardBg} rounded-xl shadow-soft hover:shadow-lg hover:scale-105 transition-transform duration-300 p-6 group border cursor-pointer`}
               >
                 <div className="flex items-start space-x-4">
                   <div className={`${category.color} p-3 rounded-lg group-hover:scale-110 transition-transform`}>
