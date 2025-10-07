@@ -1,7 +1,7 @@
 <div align="center">
   <img src="image.png" alt="Algorithm Visualiser Pro Logo" width="200"/>
   
-  # 🎯 Algorithm Visualizer Pro
+  # 🎯 Algorithm Visualiser Pro
   
   **Transform Complex Algorithms into Interactive Visual Experiences**
   
@@ -9,7 +9,7 @@
   [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green?logo=fastapi)](https://fastapi.tiangolo.com/)
   [![Python](https://img.shields.io/badge/Python-3.11+-yellow?logo=python)](https://python.org/)
   [![License](https://img.shields.io/badge/License-MIT-purple)](LICENSE)
-  [![Deployment](https://img.shields.io/badge/Deploy-Ready-success)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform)
+  [![Deployment](https://img.shields.io/badge/Deploy-Ready-success)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform)
   
   [🚀 Live Demo](https://algorithm-visualiser-yuvraj.onrender.com/) · [📖 Documentation](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/) · [🐛 Report Bug](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues) · [💡 Request Feature](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
 </div>
@@ -21,7 +21,7 @@
 - [🌟 Overview](#-overview)
 - [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#️-tech-stack)
-- [🎯 Why Choose Algorithm Visualizer Pro?](#-why-choose-algorithm-visualizer-pro)
+- [🎯 Why Choose Algorithm Visualiser Pro?](#-why-choose-algorithm-Visualiser-pro)
 - [📸 Screenshots](#-screenshots)
 - [🚀 Quick Start](#-quick-start)
 - [⚙️ Installation](#️-installation)
@@ -96,7 +96,7 @@ To bridge the gap between theoretical computer science and practical understandi
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **React** | 18.2.0 | Core UI framework with hooks and context |
-| **Vite** | 5.0.0 | Lightning-fast build tool and dev server |
+| **Create React App** | 5.0.1 | Build tool and development server |
 | **TailwindCSS** | 3.3.0 | Utility-first styling framework |
 | **Lucide React** | 0.294.0 | Beautiful icon library |
 | **Framer Motion** | 10.16.0 | Smooth animations and transitions |
@@ -122,7 +122,7 @@ To bridge the gap between theoretical computer science and practical understandi
 
 ---
 
-## 🎯 Why Choose Algorithm Visualizer Pro?
+## 🎯 Why Choose Algorithm Visualiser Pro?
 
 <div align="center">
   <table>
@@ -171,13 +171,13 @@ To bridge the gap between theoretical computer science and practical understandi
 <div align="center">
   
 ### 🏠 Home Page
-![Home Page](![alt text](image-1.png))
+![alt text](image-1.png)
 
 ### 🎮 Algorithm Visualization
-![Sorting Algorithm](![alt text](image-2.png))
+![alt text](image-2.png)
 
 ### 🌙 Dark Mode Experience
-![Dark Mode](![alt text](image-3.png))
+![alt text](image-3.png)
 
 </div>
 
@@ -185,24 +185,40 @@ To bridge the gap between theoretical computer science and practical understandi
 
 ## 🚀 Quick Start
 
-Get up and running in under 5 minutes!
+Get up and running with these steps.
 
 ```bash
-
-# 1️⃣ Fork the repository
-
-# 2️⃣ Clone the repository
+# 1. Fork and Clone the repository
 git clone https://github.com/<your-username>/Algorithm-Visualiser-Platform.git
 cd Algorithm-Visualiser-Platform
 
-# 3️⃣ Install dependencies
+# 2. Install Frontend Dependencies
+# (This command installs for the entire monorepo, including the frontend)
 npm install
-cd backend && pip install -r requirements.txt
-cd backend && pip install -r requirements.txt
 
-# 4️⃣ Start development servers
-npm run dev        # Frontend (http://localhost:3000)
-npm run dev:api    # Backend (http://localhost:8000)
+# 3. Setup and Install Backend Dependencies
+# Create a virtual environment with Python 3.11
+py -3.11 -m venv venv
+
+# Activate the virtual environment
+.\venv\Scripts\Activate.ps1
+# On macOS/Linux, use: source venv/bin/activate
+
+# Install Python packages
+cd backend
+pip install -r requirements.txt
+cd ..
+
+# 4. Run the Development Servers (in two separate terminals)
+
+# In your FIRST terminal, run the backend:
+# (Make sure your venv is active)
+cd backend
+uvicorn main:app --reload
+
+# In your SECOND terminal, run the frontend:
+cd frontend
+npm start
 
 # 🎉 Open your browser and start exploring!
 ```
@@ -214,7 +230,7 @@ npm run dev:api    # Backend (http://localhost:8000)
 ### 📋 Prerequisites
 
 - **Node.js** 18.0+ ([Download](https://nodejs.org/))
-- **Python** 3.11+ ([Download](https://python.org/))
+ - **Python** 3.11.x ([Download](https://www.python.org/downloads/release/python-3119/)) - *Note: Versions 3.12 and newer are not compatible with the project's dependencies.*
 - **Git** ([Download](https://git-scm.com/))
 
 ### 🔧 Detailed Setup
@@ -489,7 +505,7 @@ export default defineConfig({
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
-    app_name: str = "Algorithm Visualizer API"
+    app_name: str = "Algorithm Visualiser API"
     debug: bool = False
     cors_origins: list = ["http://localhost:3000"]
     
@@ -563,11 +579,11 @@ We welcome contributions from the community! Here's how you can help:
 
 ### 🐛 Bug Reports
 
-Use the [issue template](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues/new?template=bug_report.md) to report bugs.
+Use the [issue template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues/new?template=bug_report.md) to report bugs.
 
 ### 💡 Feature Requests
 
-Use the [feature request template](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues/new?template=feature_request.md) to suggest new features.
+Use the [feature request template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues/new?template=feature_request.md) to suggest new features.
 
 ---
 
@@ -630,9 +646,9 @@ Passionate about creating innovative web applications and making complex algorit
   
   **Need Help?**
   
-  [![Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/wiki)
-  [![Issues](https://img.shields.io/badge/🐛-Report%20Bug-red)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/issues)
-  [![Discussions](https://img.shields.io/badge/💬-Discussions-green)](https://github.com/CipherYuvraj/Algorithm-Visualizer-Platform/discussions)
+  [![Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/wiki)
+  [![Issues](https://img.shields.io/badge/🐛-Report%20Bug-red)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
+  [![Discussions](https://img.shields.io/badge/💬-Discussions-green)](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/discussions)
   [![Email](https://img.shields.io/badge/📧-Contact-purple)](mailto:yuvraj.udaywal45@gmail.com)
   
   ---
@@ -641,6 +657,6 @@ Passionate about creating innovative web applications and making complex algorit
   
   **🔗 Share with friends and colleagues who might benefit from visual algorithm learning**
   
-  <sub>Made with ❤️ by [Yuvraj Udaywal](https://github.com/CipherYuvraj) | © 2024 Algorithm Visualizer Pro</sub>
+  <sub>Made with ❤️ by [Yuvraj Udaywal](https://github.com/CipherYuvraj) | © 2024 Algorithm Visualiser Pro</sub>
   
 </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TutorialStep from './TutorialStep';
 import TutorialProgress from './TutorialProgress';
 import TutorialQuiz from './TutorialQuiz';
+import { getTutorialById } from '../../services/api';
 
 const TutorialLayout = ({ tutorialId }) => {
   const [currentTutorial, setCurrentTutorial] = useState(null);
