@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, RotateCcw, Zap, Settings, ChevronDown, ChevronUp, BookOpen, Network, Download, Search, Moon, Sun, User, Palette } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTheme } from '../contexts/ThemeContext';
+import { AlgorithmSettingsProvider } from '../contexts/AlgorithmSettingsContext';
 import GraphCanvas from '../components/Graph/GraphCanvas';
 import GraphInput from '../components/Graph/GraphInput';
 import ControlPanel from '../components/Sorting/ControlPanel';
@@ -525,9 +526,10 @@ const GraphVisualizer = () => {
   const [darkMode,setDarkMode]=useState(false);
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
-      {/* Conditional Particle Background */}
-      {showParticles && !timeoutDetected && (
+    <AlgorithmSettingsProvider>
+      <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
+        {/* Conditional Particle Background */}
+        {showParticles && !timeoutDetected && (
         <canvas
           ref={particleCanvasRef}
           className="fixed inset-0 pointer-events-none z-0"
@@ -985,7 +987,8 @@ const GraphVisualizer = () => {
           to { opacity: 1; transform: translateY(0); }
         }
       `}} />
-    </div>
+      </div>
+    </AlgorithmSettingsProvider>
   );
 };
 
