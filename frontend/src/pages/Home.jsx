@@ -119,13 +119,13 @@ const Home = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div key={index} className={`text-center p-6 ${classes.cardBg} border rounded-xl shadow-soft hover:shadow-medium transition-shadow`}>
+              <div key={index} className={`group text-center p-6 ${classes.cardBg} border rounded-xl shadow-soft transition-all duration-300 hover:shadow-strong hover:-translate-y-1 `}>
                 <div className={`${
                   isDark ? 'bg-blue-900/40' : 'bg-blue-100'
-                } w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>
+                } w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform duration-300 group-hover:scale-110`}>
                   <Icon className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className={`text-lg font-semibold ${classes.textPrimary} mb-2`}>
+                <h3 className={`text-lg font-semibold ${classes.textPrimary} mb-2  group-hover:text-blue-600 transition-colors`}>
                   {feature.title}
                 </h3>
                 <p className={classes.textSecondary}>
