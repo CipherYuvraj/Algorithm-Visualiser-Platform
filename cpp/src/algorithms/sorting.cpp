@@ -198,6 +198,47 @@ void heapify(std::vector<int>& arr, int n, int i, std::vector<SortingStep>& step
         heapify(arr, n, largest, steps, operations);
     }
 }
+std::vector<SortingStep> shellSort(std::vector<int> arr) {
+    std::vector<SortingStep> steps;
+    int n = static_cast<int>(arr.size());
+    int operations = 0;
+
+    steps.push_back(SortingStep(arr, {}, {}, "Starting Shell Sort", operations, "O(n log² n)", "O(1)"));
+
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        steps.push_back(SortingStep(arr, {}, {}, 
+                       "Current gap: " + std::to_string(gap), 
+                       operations, "O(n log² n)", "O(1)"));
+
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+
+            steps.push_back(SortingStep(arr, {i}, {}, 
+                           "Inserting element " + std::to_string(temp), 
+                           operations, "O(n log² n)", "O(1)"));
+
+            while (j >= gap && arr[j - gap] > temp) {
+                operations++;
+                arr[j] = arr[j - gap];
+
+                std::vector<int> moved = {j, j - gap};
+                steps.push_back(SortingStep(arr, moved, {}, 
+                               "Moved " + std::to_string(arr[j]) + " right by gap", 
+                               operations, "O(n log² n)", "O(1)"));
+                j -= gap;
+            }
+            arr[j] = temp;
+            steps.push_back(SortingStep(arr, {j}, {}, 
+                           "Placed " + std::to_string(temp) + " at correct position", 
+                           operations, "O(n log² n)", "O(1)"));
+        }
+    }
+
+    steps.push_back(SortingStep(arr, {}, {}, "Shell Sort Complete", operations, "O(n log² n)", "O(1)"));
+    return steps;
+}
+
 
 std::vector<SortingStep> countingSort(std::vector<int> arr) {
     std::vector<SortingStep> steps;
