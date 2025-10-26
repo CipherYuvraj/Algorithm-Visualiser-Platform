@@ -527,97 +527,109 @@ const GraphVisualizer = () => {
 
   return (
     <AlgorithmSettingsProvider>
-      <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient}`}>
-        {/* Conditional Particle Background */}
+      <div className={`min-h-screen transition-all duration-500 ${classes.bgGradient} relative overflow-hidden`}>
+        {/* Enhanced Particle Background with Glow Effect */}
         {showParticles && !timeoutDetected && (
-        <canvas
-          ref={particleCanvasRef}
-          className="fixed inset-0 pointer-events-none z-0"
-          style={{ opacity: isDark ? 0.4 : 0.2 }}
-        />
+        <>
+          <canvas
+            ref={particleCanvasRef}
+            className="fixed inset-0 z-0 pointer-events-none"
+            style={{ opacity: isDark ? 0.4 : 0.2 }}
+          />
+          <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className={`absolute top-0 left-0 w-96 h-96 ${isDark ? 'bg-blue-500/10' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
+            <div className={`absolute bottom-0 right-0 w-96 h-96 ${isDark ? 'bg-purple-500/10' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
+            <div className={`absolute top-1/2 left-1/2 w-96 h-96 ${isDark ? 'bg-pink-500/10' : 'bg-pink-300/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '2s' }}></div>
+          </div>
+        </>
       )}
 
-      {/* Timeout Warning */}
+      {/* Timeout Warning with Animation */}
       {timeoutDetected && (
-        <div className="fixed top-20 right-4 z-50 bg-yellow-500 text-black p-3 rounded-lg shadow-lg">
+        <div className="fixed z-50 p-3 text-black bg-yellow-500 rounded-lg shadow-lg top-20 right-4 animate-bounce">
           ⚠️ Performance issue detected. Visual effects disabled.
         </div>
       )}
 
-      <div className="relative z-10 max-w-7xl mx-auto p-4">
-        {/* Enhanced Header */}
-        <div className={`backdrop-blur-xl rounded-2xl shadow-2xl mb-8 overflow-hidden border ${
+      <div className="relative z-10 p-4 mx-auto max-w-7xl">
+        {/* Enhanced Header with Gradient Animation */}
+        <div className={`backdrop-blur-xl rounded-2xl shadow-2xl mb-8 overflow-hidden border transform hover:scale-[1.01] transition-all duration-300 ${
           isDark 
-            ? 'bg-gray-800/20 border-gray-700/50' 
-            : 'bg-white/20 border-white/50'
+            ? 'bg-gray-800/20 border-gray-700/50 hover:shadow-blue-500/20' 
+            : 'bg-white/20 border-white/50 hover:shadow-blue-300/40'
         }`}>
-          <div className={`bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 md:pt-6 md:px-6  pt-6 px-6  ${showUserMenu ? "pb-20 md:pb-14" : "pb-6 md:pb-6"}`}>
-            <div className="flex justify-between items-center md:flex-row flex-col">
+          <div className={`bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 md:pt-6 md:px-6 pt-6 px-6 ${showUserMenu ? "pb-20 md:pb-14" : "pb-6 md:pb-6"} relative overflow-hidden`}>
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+            </div>
+            
+            <div className="relative z-10 flex flex-col items-center justify-between md:flex-row">
               <div className="flex-1">
-                <h1 className="text-4xl font-bold mb-2 text-white">
-                  Graph Algorithm Visualizer
+                <h1 className="mb-2 text-4xl font-bold text-white animate-fade-in-down">
+                  <span className="inline-block transition-transform hover:scale-110">🔗</span> Graph Algorithm Visualizer
                 </h1>
-                <p className="text-sm sm:text-base text-blue-100">
-                  Interactive graph algorithm visualization platform
+                <p className="text-sm text-blue-100 sm:text-base animate-fade-in-up">
+                  Interactive graph algorithm visualization platform with real-time analysis
                 </p>
               </div>
 
-              <div className="flex items-center md:flex-row flex-col md:mt-0 mt-5 w-full md:w-auto space-y-3 md:space-y-0 md:space-x-4">
+              <div className="flex flex-col items-center w-full mt-5 space-y-3 md:flex-row md:mt-0 md:w-auto md:space-y-0 md:space-x-4">
                 {/* Search + Theme Toggle */}
-                <div className="flex space-x-4 w-full md:w-auto">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <div className="flex w-full space-x-4 md:w-auto">
+                  <div className="relative flex-1 group">
+                    <Search className="absolute w-4 h-4 text-gray-400 transition-colors transform -translate-y-1/2 left-3 top-1/2 group-hover:text-blue-400" />
                     <input
                       type="text"
                       placeholder="Search algorithms..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`pl-10 pr-4 py-2 w-full rounded-lg backdrop-blur-md border transition-all ${
+                      className={`pl-10 pr-4 py-2 w-full rounded-lg backdrop-blur-md border transition-all focus:ring-2 focus:ring-blue-400 focus:scale-105 ${
                         darkMode
-                          ? "bg-gray-800/50 border-gray-600 text-white"
-                          : "bg-white/50 border-white/30 text-gray-800"
+                          ? "bg-gray-800/50 border-gray-600 text-white placeholder-gray-400"
+                          : "bg-white/50 border-white/30 text-gray-800 placeholder-gray-500"
                       }`}
                     />
                   </div>
 
-                  {/* Theme Toggle */}
+                  {/* Theme Toggle with Rotation Animation */}
                   <button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`p-3 rounded-lg backdrop-blur-md transition-all hover:scale-110 ${
+                    className={`p-3 rounded-lg backdrop-blur-md transition-all hover:scale-110 hover:rotate-12 active:scale-95 ${
                       darkMode
-                        ? "bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30"
-                        : "bg-gray-800/20 text-gray-600 hover:bg-gray-800/30"
-                    }`}
+                        ? "bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 shadow-yellow-500/50"
+                        : "bg-gray-800/20 text-gray-600 hover:bg-gray-800/30 shadow-gray-800/50"
+                    } shadow-lg`}
                   >
-                    {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                    {darkMode ? <Sun className="w-5 h-5 animate-spin-slow" /> : <Moon className="w-5 h-5 animate-pulse" />}
                   </button>
                 </div>
 
                 {/* Algorithm Selector + User Menu */}
-                <div className="flex space-x-4 w-full md:w-auto">
-                  {/* Algorithm Selector */}
+                <div className="flex w-full space-x-4 md:w-auto">
+                  {/* Algorithm Selector with Enhanced Hover */}
                   <button
                     onClick={() => setIsAlgorithmSelectorOpen(!isAlgorithmSelectorOpen)}
-                    className="px-4 py-2 w-full md:w-auto bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all flex items-center justify-between border border-white/30"
+                    className="flex items-center justify-between w-full px-4 py-2 transition-all border rounded-lg md:w-auto bg-white/20 backdrop-blur-md hover:bg-white/30 border-white/30 hover:scale-105 hover:shadow-lg active:scale-95"
                   >
-                    <Network className="h-5 w-5 text-white" />
-                    <span className="text-white text-sm md:text-md font-medium flex-1 text-center">
+                    <Network className="w-5 h-5 text-white animate-pulse" />
+                    <span className="flex-1 text-sm font-medium text-center text-white md:text-md">
                       {selectedAlgorithm?.name}
                     </span>
                     {isAlgorithmSelectorOpen ? (
-                      <ChevronUp className="h-4 w-4 text-white" />
+                      <ChevronUp className="w-4 h-4 text-white animate-bounce" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-white" />
+                      <ChevronDown className="w-4 h-4 text-white" />
                     )}
                   </button>
 
-                  {/* User Menu */}
+                  {/* User Menu with Ripple Effect */}
                   <div className="relative">
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="p-3 bg-white/20 backdrop-blur-md rounded-lg hover:bg-white/30 transition-all border border-white/30"
+                      className="p-3 transition-all border rounded-lg shadow-lg bg-white/20 backdrop-blur-md hover:bg-white/30 border-white/30 hover:scale-110 hover:rotate-6 active:scale-95"
                     >
-                      <User className="h-5 w-5 text-white" />
+                      <User className="w-5 h-5 text-white" />
                     </button>
 
                     {showUserMenu && (
@@ -637,7 +649,7 @@ const GraphVisualizer = () => {
                                 : "hover:bg-gray-100 text-gray-800"
                             }`}
                           >
-                            <Palette className="h-4 w-4 inline mr-2" />
+                            <Palette className="inline w-4 h-4 mr-2" />
                             {showParticles ? "Hide" : "Show"} Particles
                           </button>
                         </div>
@@ -650,25 +662,26 @@ const GraphVisualizer = () => {
           </div>
 
 
-          {/* Algorithm Selector */}
+          {/* Algorithm Selector with Staggered Animation */}
           {isAlgorithmSelectorOpen && (
-            <div className={`backdrop-blur-xl border-t transition-all duration-300 ${
+            <div className={`backdrop-blur-xl border-t transition-all duration-300 animate-slide-down ${
               isDark 
                 ? 'bg-gray-800/40 border-gray-700/50' 
                 : 'bg-white/40 border-white/50'
             }`}>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredAlgorithms.map((algo) => (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredAlgorithms.map((algo, index) => (
                     <div
                       key={algo.id}
-                      className={`group p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 border ${
+                      className={`group p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border animate-fade-in-up ${
                         algorithm === algo.id
                           ? `border-2 shadow-lg ${isDark ? 'bg-gray-700/50' : 'bg-white/50'}`
                           : `border ${isDark ? 'border-gray-600 bg-gray-800/30 hover:bg-gray-700/50' : 'border-white/30 bg-white/20 hover:bg-white/40'}`
                       }`}
                       style={{
-                        boxShadow: algorithm === algo.id ? `0 0 20px ${algo.color}40` : 'none'
+                        boxShadow: algorithm === algo.id ? `0 0 20px ${algo.color}40` : 'none',
+                        animationDelay: `${index * 0.1}s`
                       }}
                       onClick={() => {
                         setAlgorithm(algo.id);
@@ -688,23 +701,23 @@ const GraphVisualizer = () => {
                       onMouseLeave={() => setHoveredAlgorithm(null)}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <div className={`font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                        <div className={`font-semibold group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all ${isDark ? 'text-white' : 'text-gray-800'}`} style={{ backgroundImage: `linear-gradient(45deg, ${algo.color}, ${algo.color}dd)` }}>
                           {algo.name}
                         </div>
                         <div 
-                          className="w-4 h-4 rounded-full shadow-lg transform group-hover:scale-125 transition-transform"
+                          className="w-4 h-4 transition-transform transform rounded-full shadow-lg group-hover:scale-125 group-hover:animate-ping-slow"
                           style={{ backgroundColor: algo.color }}
                         />
                       </div>
                       <div className={`text-sm mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                         {algo.description}
                       </div>
-                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <div className={`text-xs font-mono px-2 py-1 rounded inline-block ${isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-200/50 text-gray-600'}`}>
                         {algo.complexity}
                       </div>
                       
                       {hoveredAlgorithm === algo.id && (
-                        <div className={`mt-2 text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'} animate-fade-in`}>
+                        <div className={`mt-2 text-xs p-2 rounded-lg border-l-2 ${isDark ? 'text-gray-300 bg-gray-700/30' : 'text-gray-600 bg-gray-100/50'} animate-slide-in-left`} style={{ borderColor: algo.color }}>
                           {algo.preview}
                         </div>
                       )}
@@ -716,17 +729,18 @@ const GraphVisualizer = () => {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid gap-8 lg:grid-cols-2">
           {/* Left Panel - Graph Configuration & Controls */}
-          <div className="space-y-6">
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
+          <div className="space-y-6 animate-fade-in-left">
+            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden transform hover:scale-[1.02] transition-all duration-300 ${
               isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
+                ? 'bg-gray-800/20 border-gray-700/50 hover:border-blue-500/50' 
+                : 'bg-white/20 border-white/50 hover:border-blue-300/50'
             }`}>
-              <div className={`p-6 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
-                <h3 className={`text-xl font-bold flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                  <Settings className="h-6 w-6 mr-3 text-blue-500" />
+              <div className={`p-6 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'} relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-gradient-x"></div>
+                <h3 className={`text-xl font-bold flex items-center relative z-10 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                  <Settings className="w-6 h-6 mr-3 text-blue-500 animate-spin-slow" />
                   Graph Configuration & Controls
                 </h3>
               </div>
@@ -735,7 +749,7 @@ const GraphVisualizer = () => {
                 {/* Graph Configuration */}
                 <div>
                   <h4 className={`text-lg font-semibold mb-4 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-3 animate-pulse"></span>
+                    <span className="w-3 h-3 mr-3 bg-blue-500 rounded-full animate-pulse"></span>
                     Graph Setup
                   </h4>
                   
@@ -756,7 +770,7 @@ const GraphVisualizer = () => {
                 {/* Controls */}
                 <div>
                   <h4 className={`text-lg font-semibold mb-4 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    <span className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
+                    <span className="w-3 h-3 mr-3 bg-green-500 rounded-full animate-pulse"></span>
                     Playback Controls
                   </h4>
                   <ControlPanel
@@ -778,31 +792,32 @@ const GraphVisualizer = () => {
           </div>
 
           {/* Right Panel - Graph Visualization */}
-          <div className="space-y-6">
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
+          <div className="space-y-6 animate-fade-in-right">
+            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden transform hover:scale-[1.02] transition-all duration-300 ${
               isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
+                ? 'bg-gray-800/20 border-gray-700/50 hover:border-purple-500/50' 
+                : 'bg-white/20 border-white/50 hover:border-purple-300/50'
             }`}>
-              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
-                <div className="flex justify-between items-center">
+              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'} relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-gradient-x"></div>
+                <div className="relative z-10 flex items-center justify-between">
                   <div>
                     <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                       {selectedAlgorithm?.name} Visualization
                     </h3>
                     <div className={`flex items-center space-x-4 text-sm mt-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       <span className="flex items-center space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                         <span>Step {currentStep + 1} of {steps.length || 1}</span>
                       </span>
                       <div className="flex items-center space-x-1">
-                        <Network className="h-4 w-4 text-green-500" />
+                        <Network className="w-4 h-4 text-green-500 animate-pulse" />
                         <span>Nodes: {nodes.length}</span>
                       </div>
                     </div>
                   </div>
                   <div 
-                    className="px-4 py-2 rounded-full text-sm font-bold text-white shadow-lg"
+                    className="px-4 py-2 text-sm font-bold text-white transition-transform rounded-full shadow-lg animate-pulse-slow hover:scale-110"
                     style={{ 
                       backgroundColor: selectedAlgorithm?.color,
                       boxShadow: `0 0 20px ${selectedAlgorithm?.color}40`
@@ -827,21 +842,22 @@ const GraphVisualizer = () => {
               </div>
             </div>
 
-            {/* Step Explanation */}
-            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
+            {/* Step Explanation with Enhanced Animation */}
+            <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden transform hover:scale-[1.02] transition-all duration-300 ${
               isDark 
-                ? 'bg-gray-800/20 border-gray-700/50' 
-                : 'bg-white/20 border-white/50'
+                ? 'bg-gray-800/20 border-gray-700/50 hover:border-green-500/50' 
+                : 'bg-white/20 border-white/50 hover:border-green-300/50'
             }`}>
-              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
-                <div className="flex justify-between items-center">
+              <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'} relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-blue-500/10 animate-gradient-x"></div>
+                <div className="relative z-10 flex items-center justify-between">
                   <h4 className={`text-lg font-bold flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    <BookOpen className="h-5 w-5 mr-2 text-purple-500" />
+                    <BookOpen className="w-5 h-5 mr-2 text-purple-500 animate-pulse" />
                     Step Explanation
                   </h4>
                   <button
                     onClick={() => setShowDetailedLog(!showDetailedLog)}
-                    className={`text-sm px-3 py-1 rounded transition-colors ${
+                    className={`text-sm px-3 py-1 rounded transition-all hover:scale-105 active:scale-95 ${
                       isDark 
                         ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
@@ -852,11 +868,12 @@ const GraphVisualizer = () => {
                 </div>
               </div>
               
-              <div className="p-4 space-y-4 max-h-80 overflow-y-auto">
-                <div className={`p-4 rounded-lg border-l-4 border-blue-500 ${
-                  isDark ? 'bg-blue-900/20' : 'bg-blue-50'
+              <div className="p-4 space-y-4 overflow-y-auto max-h-80 custom-scrollbar">
+                <div className={`p-4 rounded-lg border-l-4 border-blue-500 transform hover:scale-[1.02] transition-all animate-fade-in-up ${
+                  isDark ? 'bg-blue-900/20 hover:bg-blue-900/30' : 'bg-blue-50 hover:bg-blue-100'
                 }`}>
-                  <p className={`text-sm font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                  <p className={`text-sm font-medium mb-1 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    <span className="w-2 h-2 mr-2 bg-blue-500 rounded-full animate-pulse"></span>
                     Current Operation:
                   </p>
                   <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -864,10 +881,11 @@ const GraphVisualizer = () => {
                   </p>
                 </div>
                 
-                <div className={`p-4 rounded-lg border-l-4 border-purple-500 ${
-                  isDark ? 'bg-purple-900/20' : 'bg-purple-50'
-                }`}>
-                  <p className={`text-sm font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <div className={`p-4 rounded-lg border-l-4 border-purple-500 transform hover:scale-[1.02] transition-all animate-fade-in-up ${
+                  isDark ? 'bg-purple-900/20 hover:bg-purple-900/30' : 'bg-purple-50 hover:bg-purple-100'
+                }`} style={{ animationDelay: '0.1s' }}>
+                  <p className={`text-sm font-medium mb-2 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    <span className="w-2 h-2 mr-2 bg-purple-500 rounded-full animate-pulse"></span>
                     What's Happening:
                   </p>
                   <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -877,10 +895,11 @@ const GraphVisualizer = () => {
                 </div>
 
                 {selectedAlgorithm && (
-                  <div className={`p-4 rounded-lg border-l-4 border-green-500 ${
-                    isDark ? 'bg-green-900/20' : 'bg-green-50'
-                  }`}>
-                    <p className={`text-sm font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                  <div className={`p-4 rounded-lg border-l-4 border-green-500 transform hover:scale-[1.02] transition-all animate-fade-in-up ${
+                    isDark ? 'bg-green-900/20 hover:bg-green-900/30' : 'bg-green-50 hover:bg-green-100'
+                  }`} style={{ animationDelay: '0.2s' }}>
+                    <p className={`text-sm font-medium mb-2 flex items-center ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                      <span className="w-2 h-2 mr-2 bg-green-500 rounded-full animate-pulse"></span>
                       Algorithm Info:
                     </p>
                     <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -893,15 +912,17 @@ const GraphVisualizer = () => {
           </div>
         </div>
 
-        {/* Bottom Panel - Analysis & Metrics */}
-        <div className="mt-8 grid md:grid-cols-2 gap-8">
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
+        {/* Bottom Panel - Analysis & Metrics with Staggered Animation */}
+        <div className="grid gap-8 mt-8 md:grid-cols-2">
+          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden transform hover:scale-[1.02] transition-all duration-300 animate-fade-in-up ${
             isDark 
-              ? 'bg-gray-800/20 border-gray-700/50' 
-              : 'bg-white/20 border-white/50'
+              ? 'bg-gray-800/20 border-gray-700/50 hover:border-yellow-500/50' 
+              : 'bg-white/20 border-white/50 hover:border-yellow-300/50'
           }`}>
-            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'} relative overflow-hidden`}>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 animate-gradient-x"></div>
+              <h3 className={`text-lg font-bold flex items-center relative z-10 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <Zap className="w-5 h-5 mr-2 text-yellow-500 animate-pulse" />
                 Complexity Analysis
               </h3>
             </div>
@@ -916,52 +937,54 @@ const GraphVisualizer = () => {
             </div>
           </div>
 
-          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden ${
+          <div className={`backdrop-blur-xl rounded-2xl shadow-2xl border overflow-hidden transform hover:scale-[1.02] transition-all duration-300 animate-fade-in-up ${
             isDark 
-              ? 'bg-gray-800/20 border-gray-700/50' 
-              : 'bg-white/20 border-white/50'
-          }`}>
-            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'}`}>
-              <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+              ? 'bg-gray-800/20 border-gray-700/50 hover:border-cyan-500/50' 
+              : 'bg-white/20 border-white/50 hover:border-cyan-300/50'
+          }`} style={{ animationDelay: '0.2s' }}>
+            <div className={`p-4 border-b ${isDark ? 'border-gray-700/50' : 'border-white/50'} relative overflow-hidden`}>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 animate-gradient-x"></div>
+              <h3 className={`text-lg font-bold flex items-center relative z-10 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <Network className="w-5 h-5 mr-2 text-cyan-500 animate-pulse" />
                 Graph Metrics
               </h3>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 gap-6">
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-blue-900/30' : 'bg-blue-50'
+                <div className={`p-6 rounded-xl text-center transform hover:scale-110 hover:-rotate-2 transition-all cursor-pointer animate-fade-in-up ${
+                  isDark ? 'bg-blue-900/30 hover:bg-blue-900/50' : 'bg-blue-50 hover:bg-blue-100'
                 }`}>
-                  <div className="text-3xl font-bold text-blue-600">
+                  <div className="text-3xl font-bold text-blue-600 animate-count-up">
                     {nodes.length}
                   </div>
                   <div className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
                     Vertices
                   </div>
                 </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-green-900/30' : 'bg-green-50'
-                }`}>
-                  <div className="text-3xl font-bold text-green-600">
+                <div className={`p-6 rounded-xl text-center transform hover:scale-110 hover:rotate-2 transition-all cursor-pointer animate-fade-in-up ${
+                  isDark ? 'bg-green-900/30 hover:bg-green-900/50' : 'bg-green-50 hover:bg-green-100'
+                }`} style={{ animationDelay: '0.1s' }}>
+                  <div className="text-3xl font-bold text-green-600 animate-count-up">
                     {edges.length}
                   </div>
                   <div className={`text-sm ${isDark ? 'text-green-300' : 'text-green-600'}`}>
                     Edges
                   </div>
                 </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-purple-900/30' : 'bg-purple-50'
-                }`}>
-                  <div className="text-3xl font-bold text-purple-600">
+                <div className={`p-6 rounded-xl text-center transform hover:scale-110 hover:-rotate-2 transition-all cursor-pointer animate-fade-in-up ${
+                  isDark ? 'bg-purple-900/30 hover:bg-purple-900/50' : 'bg-purple-50 hover:bg-purple-100'
+                }`} style={{ animationDelay: '0.2s' }}>
+                  <div className="text-3xl font-bold text-purple-600 animate-count-up">
                     {steps.length}
                   </div>
                   <div className={`text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                     Total Steps
                   </div>
                 </div>
-                <div className={`p-6 rounded-xl text-center transform hover:scale-105 transition-all ${
-                  isDark ? 'bg-orange-900/30' : 'bg-orange-50'
-                }`}>
-                  <div className="text-3xl font-bold text-orange-600">
+                <div className={`p-6 rounded-xl text-center transform hover:scale-110 hover:rotate-2 transition-all cursor-pointer animate-fade-in-up ${
+                  isDark ? 'bg-orange-900/30 hover:bg-orange-900/50' : 'bg-orange-50 hover:bg-orange-100'
+                }`} style={{ animationDelay: '0.3s' }}>
+                  <div className="text-3xl font-bold text-orange-600 animate-count-up">
                     {steps.length > 0 ? Math.round((currentStep / (steps.length - 1)) * 100) : 0}%
                   </div>
                   <div className={`text-sm ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
@@ -974,17 +997,97 @@ const GraphVisualizer = () => {
         </div>
       </div>
 
-      {/* Custom CSS for animations */}
+      {/* Enhanced Custom CSS for animations */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }
         }
-        .animate-blink { animation: blink 1s infinite; }
-        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInRight {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes gradientX {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pingSlow {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        @keyframes pulseSlow {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        @keyframes countUp {
+          from { opacity: 0; transform: scale(0.5); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        
+        .animate-blink { animation: blink 1s infinite; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .animate-fade-in-down { animation: fadeInDown 0.6s ease-out; }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+        .animate-fade-in-left { animation: fadeInLeft 0.6s ease-out; }
+        .animate-fade-in-right { animation: fadeInRight 0.6s ease-out; }
+        .animate-slide-down { animation: slideDown 0.4s ease-out; }
+        .animate-slide-in-left { animation: slideInLeft 0.3s ease-out; }
+        .animate-shimmer { animation: shimmer 2s infinite; }
+        .animate-gradient-x { 
+          background-size: 200% 200%;
+          animation: gradientX 3s ease infinite; 
+        }
+        .animate-spin-slow { animation: spinSlow 3s linear infinite; }
+        .animate-ping-slow { animation: pingSlow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        .animate-pulse-slow { animation: pulseSlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .animate-count-up { animation: countUp 0.5s ease-out; }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: ${isDark ? '#1f2937' : '#f3f4f6'};
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: ${isDark ? '#4b5563' : '#d1d5db'};
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: ${isDark ? '#6b7280' : '#9ca3af'};
         }
       `}} />
       </div>
