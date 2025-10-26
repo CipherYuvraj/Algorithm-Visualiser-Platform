@@ -14,6 +14,10 @@
   [🚀 Live Demo](https://algorithm-visualiser-yuvraj.onrender.com/) · [📖 Documentation](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/) · [🐛 Report Bug](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues) · [💡 Request Feature](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues)
 </div>
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="700">
+</p>
+
 ---
 
 ## 📋 Table of Contents
@@ -43,6 +47,10 @@
 
 ### 🎯 Mission
 To bridge the gap between theoretical computer science and practical understanding by providing intuitive, step-by-step algorithm visualizations that make complex concepts accessible to learners at all levels.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="1000">
+</p>
 
 ---
 
@@ -86,6 +94,10 @@ To bridge the gap between theoretical computer science and practical understandi
 - **📱 PWA Support**: Install as a desktop/mobile app
 - **🌐 Multi-language**: Support for multiple programming languages
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284158-e840e285-664b-44d7-b79b-e264b5e54825.gif" width="400">
+</p>
+
 ---
 
 ## 🛠️ Tech Stack
@@ -119,6 +131,10 @@ To bridge the gap between theoretical computer science and practical understandi
 | **GitHub Actions** | CI/CD pipeline automation |
 
 </div>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284087-bbe7e430-757e-4901-90bf-4cd2ce3e1852.gif" width="100">
+</p>
 
 ---
 
@@ -164,6 +180,10 @@ To bridge the gap between theoretical computer science and practical understandi
   </table>
 </div>
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284136-03988914-d899-44b4-b1d9-4eeccf656e44.gif" width="1000">
+</p>
+
 ---
 
 ## 📸 Screenshots
@@ -180,6 +200,10 @@ To bridge the gap between theoretical computer science and practical understandi
 ![alt text](image-3.png)
 
 </div>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="700">
+</p>
 
 ---
 
@@ -222,6 +246,10 @@ npm start
 
 # 🎉 Open your browser and start exploring!
 ```
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284158-e840e285-664b-44d7-b79b-e264b5e54825.gif" width="400">
+</p>
 
 ---
 
@@ -311,6 +339,10 @@ docker-compose logs -f
 # Stop services
 docker-compose down
 ```
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284087-bbe7e430-757e-4901-90bf-4cd2ce3e1852.gif" width="100">
+</p>
 
 ### 📄 Docker Configuration
 
@@ -431,6 +463,10 @@ gcloud run deploy --image gcr.io/PROJECT-ID/algo-visualiser --platform managed
 - **String Algorithms**: KMP, Rabin-Karp, Boyer-Moore
 - **Machine Learning**: Neural Networks, Decision Trees
 - **Cryptography**: RSA, AES, Hash Functions
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="700">
+</p>
 
 ---
 
@@ -585,6 +621,10 @@ Use the [issue template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Pl
 
 Use the [feature request template](https://github.com/CipherYuvraj/Algorithm-Visualiser-Platform/issues/new?template=feature_request.md) to suggest new features.
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="1000">
+</p>
+
 ---
 
 ## 📄 License
@@ -627,6 +667,10 @@ Passionate about creating innovative web applications and making complex algorit
 ### 🎯 Vision
 > "To democratize algorithm education by making complex concepts visually intuitive and accessible to learners worldwide."
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284136-03988914-d899-44b4-b1d9-4eeccf656e44.gif" width="1000">
+</p>
+
 ---
 
 ## 🙏 Acknowledgments
@@ -637,6 +681,10 @@ Passionate about creating innovative web applications and making complex algorit
 - **Lucide** for the beautiful icon library
 - **Vercel** for seamless deployment experience
 - **Open Source Community** for inspiration and contributions
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="700">
+</p>
 
 ---
 
